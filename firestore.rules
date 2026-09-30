@@ -1,6 +1,35 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isValidLocation(loc) {
+      return loc is map
+        && loc.keys().hasOnly(["lat", "lng"])
+        && loc.keys().hasAll(["lat", "lng"])
+        && loc.lat is number && loc.lat >= -90 && loc.lat <= 90
+        && loc.lng is number && loc.lng >= -180 && loc.lng <= 180;
+    }
+
+    match /reports/{reportId} {
+      allow read: if resource.data.status == "published"
+        || (request.auth != null && resource.data.reporterId == request.auth.uid);
+
+      // aiAnalysis and the final status are written only by the analyzeReport
+      // function through the Admin SDK, which bypasses these rules.
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(["type", "photoPath", "location", "reporterId", "createdAt", "status"])
+        && request.resource.data.keys().hasAll(["type", "photoPath", "location", "reporterId", "createdAt", "status"])
+        && request.resource.data.type in ["trash", "coral"]
+        && request.resource.data.reporterId == request.auth.uid
+        && request.resource.data.status == "processing"
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.photoPath is string
+        && request.resource.data.photoPath.matches("reports/" + request.auth.uid + "/[^/]+")
+        && isValidLocation(request.resource.data.location);
+
+      allow update, delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
