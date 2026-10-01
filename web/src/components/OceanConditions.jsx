@@ -31,6 +31,12 @@ function SeaTemp({ sst }) {
           {Math.abs(sst.weekChange).toFixed(1)}°C vs. 7 days ago
         </span>
       )}
+      {sst.waveHeight != null && (
+        <>
+          <br />
+          <span className="report-meta">Waves about {sst.waveHeight.toFixed(1)} m</span>
+        </>
+      )}
     </p>
   );
 }
@@ -38,7 +44,7 @@ function SeaTemp({ sst }) {
 function Coral({ coral }) {
   if (coral === undefined) return <p className="report-meta">Checking coral bleaching alerts…</p>;
   if (coral === "error") return <p className="report-meta">Coral bleaching data is unavailable right now.</p>;
-  if (coral === null) return <p className="report-meta">This spot isn't covered by coral bleaching monitoring.</p>;
+  if (coral === null) return <p className="report-meta">No coral bleaching monitoring in the waters near here.</p>;
   const level = BLEACHING_LEVELS[coral.level] ?? { label: `Alert level ${coral.level}`, tone: "heavy" };
   return (
     <p>
@@ -48,7 +54,7 @@ function Coral({ coral }) {
       </span>
       <br />
       <span className="report-meta">
-        Heat stress {coral.dhw.toFixed(1)} °C-weeks, NOAA data from {coral.date}
+        Nearby waters, heat stress {coral.dhw.toFixed(1)} °C-weeks, NOAA data from {coral.date}
       </span>
     </p>
   );

@@ -9,6 +9,15 @@
 .map-canvas {
   position: absolute;
   inset: var(--nav-height) 0 0 0;
+  /* Own stacking context: Leaflet's controls (z-index up to 1000) stay under the header and panel. */
+  z-index: 0;
+}
+
+/* Phones pinch to zoom; the buttons would sit on top of the panel. */
+@media (max-width: 899px) {
+  .reports-map .leaflet-control-zoom {
+    display: none;
+  }
 }
 
 .reports-map {
@@ -166,4 +175,74 @@
     max-height: calc(100% - var(--nav-height) - 2 * var(--space-3));
     border-radius: var(--radius-md);
   }
+}
+
+.level-dot-beach {
+  background: #23727a;
+}
+
+.beach-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 2.25rem;
+  line-height: 1.05;
+  padding-right: 44px;
+}
+
+.beach-about {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.beach-about img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: var(--sand);
+}
+
+.beach-about p {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  /* Long Wikipedia extracts get trimmed; the link carries the rest. */
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.beach-about a {
+  font-size: var(--text-sm);
+}
+
+.beach-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+}
+
+.beach-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.beach-links .btn {
+  min-height: 40px;
+  padding: 0 var(--space-4);
+}
+
+.beach-links svg {
+  width: 16px;
+  height: 16px;
+}
+
+.history-detail {
+  padding: var(--space-3) 0 var(--space-4);
 }

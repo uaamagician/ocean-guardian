@@ -11,17 +11,20 @@ import { Reveal } from "../components/Motion";
 import { Audiences, FinalCta, Gap, IccItems, Prepare, Problem, Sdg14, TaiwanNumbers } from "../components/Story";
 import { CATEGORIES, TONE_COLORS, formatTime } from "../lib/labels";
 import usePublishedReports from "../lib/usePublishedReports";
+import { useBeaches, useReportsByBeach } from "../lib/beaches";
 import "./Home.css";
 
 function WorldMap({ reports }) {
   const navigate = useNavigate();
+  const { beaches } = useBeaches();
+  const { unmatched, tones } = useReportsByBeach(beaches, reports);
   return (
     <section className="band">
       <div className="band-inner">
         <div className="band-split">
           <Reveal className="band-head">
             <h2>Beaches around the world, right now</h2>
-            <p>Every dot is a report analyzed by AI. Click anywhere on the sea to see that spot's live water temperature and coral bleaching alert.</p>
+            <p>Over 15,000 beaches, colored by what people have reported. Click one for live water conditions, reports, and reviews on Google Maps.</p>
           </Reveal>
           <Link to="/map" className="btn">
             Open the full map
@@ -29,10 +32,12 @@ function WorldMap({ reports }) {
         </div>
         <Reveal className="map-preview">
           <ReportsMap
-            reports={reports}
+            beaches={beaches}
+            beachTones={tones}
+            onSelectBeach={(id) => navigate(`/map?b=${encodeURIComponent(id)}`)}
+            reports={unmatched}
+            onSelectReport={(id) => navigate(`/map?r=${id}`)}
             scrollWheelZoom={false}
-            onSelect={(id) => navigate(`/map?r=${id}`)}
-            onMapClick={({ lat, lng }) => navigate(`/map?lat=${lat.toFixed(3)}&lng=${lng.toFixed(3)}`)}
           />
         </Reveal>
       </div>

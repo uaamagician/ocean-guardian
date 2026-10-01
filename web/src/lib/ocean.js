@@ -25,7 +25,7 @@ function seaTempParams(lats, lngs) {
   return new URLSearchParams({
     latitude: lats.join(","),
     longitude: lngs.join(","),
-    current: "sea_surface_temperature",
+    current: "sea_surface_temperature,wave_height",
     daily: "sea_surface_temperature_max",
     past_days: "7",
     forecast_days: "1",
@@ -37,7 +37,12 @@ function parseSeaTemp(json) {
   const now = json.current?.sea_surface_temperature;
   if (now == null) return null;
   const week = (json.daily?.sea_surface_temperature_max ?? []).filter((v) => v != null);
-  return { now, week, weekChange: week.length > 1 ? now - week[0] : null };
+  return {
+    now,
+    week,
+    weekChange: week.length > 1 ? now - week[0] : null,
+    waveHeight: json.current?.wave_height ?? null,
+  };
 }
 
 // Returns null when the point is on land (no ocean cell).
@@ -72,15 +77,25 @@ export const BLEACHING_LEVELS = [
   { label: "Alert level 5", tone: "heavy" },
 ];
 
-// Returns null when the 5km cell is land or has no data.
+// Beaches sit on the shoreline, where the 5km cell is often classed as land, so
+// read the surrounding 3x3 cells and report the strongest alert in nearby water.
+// Returns null when every cell is land or has no data.
+const CELL = 0.05;
+
 export function fetchCoralStress(lat, lng) {
   return cached(`crw:${round(lat)},${round(lng)}`, async () => {
-    const at = `%5B(last)%5D%5B(${lat})%5D%5B(${lng})%5D`;
+    const range = (v) => `(${(v - CELL * 1.2).toFixed(3)}):(${(v + CELL * 1.2).toFixed(3)})`;
+    const at = `%5B(last)%5D%5B${range(lat)}%5D%5B${range(lng)}%5D`;
     const res = await fetch(`${CRW}?CRW_BAA${at},CRW_DHW${at}`);
     if (!res.ok) throw new Error(`Coral Reef Watch ${res.status}`);
-    const [time, , , level, dhw] = (await res.json()).table.rows[0];
-    if (level == null || Number.isNaN(Number(level))) return null;
-    return { date: time.slice(0, 10), level: Number(level), dhw: Number(dhw) };
+    let worst = null;
+    for (const [time, , , level, dhw] of (await res.json()).table.rows) {
+      if (level == null || Number.isNaN(Number(level))) continue;
+      if (!worst || level > worst.level || (level === worst.level && dhw > worst.dhw)) {
+        worst = { date: time.slice(0, 10), level: Number(level), dhw: Number(dhw) };
+      }
+    }
+    return worst;
   });
 }
 

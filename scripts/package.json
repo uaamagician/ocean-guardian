@@ -1,0 +1,11 @@
+{
+  "name": "ocean-guardian-scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:beaches": "node build-beaches.mjs"
+  },
+  "dependencies": {
+    "pinyin-pro": "^3.29.4"
+  }
+}

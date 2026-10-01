@@ -1,78 +1,59 @@
 import { useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import { X } from "lucide-react";
 import ReportsMap from "../components/ReportsMap";
-import ReportDetail, { Level } from "../components/ReportDetail";
+import ReportDetail from "../components/ReportDetail";
 import OceanConditions from "../components/OceanConditions";
-import usePublishedReports, { distanceKm } from "../lib/usePublishedReports";
-import { CATEGORIES, formatTime } from "../lib/labels";
+import BeachPanel from "../components/BeachPanel";
+import usePublishedReports from "../lib/usePublishedReports";
+import { useBeaches, useReportsByBeach } from "../lib/beaches";
+import { CATEGORIES } from "../lib/labels";
 import "./MapPage.css";
 
-const HISTORY_RADIUS_KM = 2;
-const NEARBY_RADIUS_KM = 5;
 const LEGEND = ["clean", "light", "moderate", "heavy"];
 
-function formatCoords({ lat, lng }) {
-  const ns = lat >= 0 ? "N" : "S";
-  const ew = lng >= 0 ? "E" : "W";
-  return `${Math.abs(lat).toFixed(2)}° ${ns}, ${Math.abs(lng).toFixed(2)}° ${ew}`;
-}
-
-function History({ reports, center, excludeId, radiusKm, title, onSelect }) {
-  const nearby = reports
-    .filter((r) => r.id !== excludeId && distanceKm(center, r.location) <= radiusKm)
-    .slice(0, 10);
-  return (
-    <div className="section">
-      <span className="report-label">{title}</span>
-      {nearby.length === 0 ? (
-        <p className="report-meta">No other reports within {radiusKm} km yet.</p>
-      ) : (
-        <ol className="history">
-          {nearby.map((r) => (
-            <li key={r.id}>
-              <button type="button" onClick={() => onSelect(r.id)}>
-                <Level category={r.aiAnalysis?.category} />
-                <span className="report-meta">{formatTime(r.createdAt)}</span>
-              </button>
-            </li>
-          ))}
-        </ol>
-      )}
-    </div>
-  );
-}
-
 export default function MapPage() {
-  const { reports, error } = usePublishedReports();
+  const { reports, error: reportsError } = usePublishedReports();
+  const { beaches, error: beachesError } = useBeaches();
+  const { byBeach, unmatched, beachOfReport, tones } = useReportsByBeach(beaches, reports);
   const [params, setParams] = useSearchParams();
-  const selectedId = params.get("r");
-  const picked = useMemo(() => {
-    const lat = Number(params.get("lat"));
-    const lng = Number(params.get("lng"));
-    return params.has("lat") && Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
-  }, [params]);
 
-  const selected = reports?.find((r) => r.id === selectedId);
-  const select = (id) => setParams({ r: id });
-  const pick = ({ lat, lng }) => setParams({ lat: lat.toFixed(3), lng: lng.toFixed(3) });
-  const close = () => setParams({});
+  const reportParam = params.get("r");
+  const beachId = params.get("b") ?? (reportParam ? beachOfReport.get(reportParam) : null);
+  const beach = beaches?.find((b) => b.id === beachId) ?? null;
+  const loneReport = !beach && reportParam ? unmatched.find((r) => r.id === reportParam) : null;
 
   // Center on a deep link (from the home page) once; later clicks shouldn't move the map.
-  const [entry] = useState(() => ({ r: selectedId, point: picked }));
+  const [entry] = useState(() => ({ b: params.get("b"), r: reportParam }));
   const focus = useMemo(() => {
+    if (entry.b) {
+      const b = beaches?.find((x) => x.id === entry.b);
+      return b ? { lat: b.lat, lng: b.lng } : null;
+    }
     if (entry.r) return reports?.find((r) => r.id === entry.r)?.location ?? null;
-    return entry.point;
-  }, [entry, reports]);
+    return null;
+  }, [entry, beaches, reports]);
+
+  const selectBeach = (id) => setParams({ b: id });
+  const close = () => setParams({});
+  const status = beachesError
+    ? "Couldn't load the beach list. Refresh the page to try again."
+    : reportsError
+      ? "Couldn't load reports. Refresh the page to try again."
+      : !beaches
+        ? "Loading beaches…"
+        : `${beaches.length.toLocaleString("en-US")} beaches. Click one to see its conditions, reports and reviews.`;
 
   return (
     <div className="map-page">
       <header className="map-header">
         <h1>World beach map</h1>
-        <p className="report-meta">
-          {error ? "Couldn't load reports. Refresh the page to try again." : reports === null ? "Loading reports…" : `${reports.length} public reports. Click anywhere on the sea for live conditions.`}
-        </p>
+        <p className="report-meta">{status}</p>
         <ul className="map-legend" aria-label="Legend">
+          <li>
+            <span className="level-dot level-dot-beach" />
+            No reports yet
+          </li>
           {LEGEND.map((key) => (
             <li key={key}>
               <span className="level-dot" data-tone={CATEGORIES[key].tone} />
@@ -84,57 +65,39 @@ export default function MapPage() {
 
       <div className="map-canvas">
         <ReportsMap
-          reports={reports}
-          selectedId={selectedId}
-          onSelect={select}
-          onMapClick={pick}
-          picked={picked}
+          beaches={beaches}
+          beachTones={tones}
+          selectedBeachId={beach?.id}
+          onSelectBeach={selectBeach}
+          reports={unmatched}
+          selectedReportId={loneReport?.id}
+          onSelectReport={(id) => setParams({ r: id })}
           focus={focus}
         />
       </div>
 
-      {selected && (
-        <aside className="map-sheet" aria-label="Report details">
+      {beach && (
+        <aside className="map-sheet" aria-label={beach.name}>
           <button type="button" className="map-sheet-close" onClick={close} aria-label="Close">
             <X />
           </button>
-          <ReportDetail report={selected} />
-          <OceanConditions lat={selected.location.lat} lng={selected.location.lng} />
-          <History
-            reports={reports}
-            center={selected.location}
-            excludeId={selected.id}
-            radiusKm={HISTORY_RADIUS_KM}
-            title="History of this beach"
-            onSelect={select}
+          <BeachPanel
+            beach={beach}
+            reports={byBeach.get(beach.id) ?? []}
+            focusReportId={reportParam}
+            onSelectReport={(id) => setParams(id ? { b: beach.id, r: id } : { b: beach.id })}
           />
         </aside>
       )}
 
-      {!selected && picked && (
-        <aside className="map-sheet" aria-label="Conditions at this spot">
+      {loneReport && (
+        <aside className="map-sheet" aria-label="Report details">
           <button type="button" className="map-sheet-close" onClick={close} aria-label="Close">
             <X />
           </button>
-          <div className="section">
-            <h2>Conditions at this spot</h2>
-            <p className="report-meta">
-              {formatCoords(picked)}
-            </p>
-          </div>
-          <OceanConditions lat={picked.lat} lng={picked.lng} />
-          {reports && (
-            <History
-              reports={reports}
-              center={picked}
-              radiusKm={NEARBY_RADIUS_KM}
-              title="Nearby reports"
-              onSelect={select}
-            />
-          )}
-          <Link to="/report" className="btn btn-primary">
-            Report this beach
-          </Link>
+          <ReportDetail report={loneReport} />
+          <p className="report-meta">This report isn't near any beach on our list.</p>
+          <OceanConditions lat={loneReport.location.lat} lng={loneReport.location.lng} />
         </aside>
       )}
     </div>
