@@ -9,14 +9,16 @@ const { GoogleGenAI } = require("@google/genai");
 initializeApp();
 
 const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
-const GEMINI_MODEL = "gemini-flash-latest";
+const GEMINI_MODELS = ["gemini-flash-latest", "gemini-flash-lite-latest"];
 const CONFIDENCE_THRESHOLD = 0.5;
 
 const SHARED_RULES =
+  "Write items and uncertainItems in Traditional Chinese (Taiwan), using short common names. " +
   "All photos come from the same report at the same place, possibly taken from different distances and angles; " +
   "combine them into one assessment and do not double-count an item that appears in several photos. " +
   "Only list items you can clearly identify. If something might be an item but you cannot tell for sure " +
-  "(too far, blurry, partly hidden), put it in uncertainItems instead, describing where it is in which photo. " +
+  "(too far, blurry, partly hidden), put it in uncertainItems instead, describing where it is; " +
+  'when there are several photos, say which one as "第 N 張" (never "Photo N"). ' +
   "If a closer or wider photo would let you resolve uncertain items or rate the area more reliably, " +
   "set retakeSuggestion to one short instruction for the reporter, written in Traditional Chinese (Taiwan), " +
   'e.g. "左側沙灘上有一團綠色物體看不清楚，請靠近 1-2 公尺拍一張"; otherwise set it to null. ' +
@@ -29,7 +31,7 @@ const PROMPTS = {
       "You are analyzing citizen-submitted photos of a beach or coastline for a marine debris map. " +
       "Rate the overall man-made debris level as one of: clean, light, moderate, heavy. " +
       "If the photos do not show a beach or coastline, use not_beach. " +
-      "In items, list only man-made debris (e.g. plastic bottle, fishing net, rope, styrofoam, cigarette butt). " +
+      "In items, list only man-made debris (e.g. 寶特瓶, 漁網, 繩索, 保麗龍, 菸蒂). " +
       "Natural material is NOT debris: never list vegetation, seaweed, driftwood, shells, rocks or footprints. " +
       SHARED_RULES,
   },
@@ -39,30 +41,43 @@ const PROMPTS = {
       "You are analyzing citizen-submitted underwater photos of coral for a reef health map. " +
       "Rate the coral condition as one of: healthy, partially_bleached, severely_bleached, dead. " +
       "If the photos do not show coral, use not_coral. " +
-      "In items, list what you observe about the reef (e.g. coral types, bleached patches, algae cover, visible damage). " +
+      "In items, list what you observe about the reef (e.g. 軸孔珊瑚, 白化區塊, 藻類覆蓋, 斷裂). " +
       SHARED_RULES,
   },
 };
 
 const IRRELEVANT = new Set(["not_beach", "not_coral"]);
 
+// Retries alone weren't enough: Flash stayed at 503 through a full minute of
+// backoff, so fall back to Flash-Lite, which has separate capacity.
+async function generateWithFallback(ai, request) {
+  for (const [i, model] of GEMINI_MODELS.entries()) {
+    try {
+      return await ai.models.generateContent({ ...request, model });
+    } catch (err) {
+      const overloaded = err.status === 429 || err.status === 503;
+      if (!overloaded || i === GEMINI_MODELS.length - 1) throw err;
+      logger.warn("Gemini model overloaded, falling back", { model, status: err.status });
+    }
+  }
+}
+
 async function analyzePhotos(apiKey, type, photos) {
   const { categories, instruction } = PROMPTS[type];
   // Gemini returns transient 429/503 under load; the SDK only retries when
-  // retryOptions is set explicitly. ~2+4+8+16s of backoff fits the 120s timeout.
+  // retryOptions is set explicitly.
   const ai = new GoogleGenAI({
     apiKey,
-    httpOptions: { retryOptions: { attempts: 5, initialDelay: 2, maxDelay: 20 } },
+    httpOptions: { retryOptions: { attempts: 4, initialDelay: 2, maxDelay: 10 } },
   });
 
   const parts = photos.flatMap((photo, i) => [
-    { text: `Photo ${i + 1}:` },
+    { text: `第 ${i + 1} 張照片:` },
     { inlineData: { mimeType: photo.mimeType, data: photo.bytes.toString("base64") } },
   ]);
   parts.push({ text: instruction });
 
-  const response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
+  const response = await generateWithFallback(ai, {
     contents: [{ role: "user", parts }],
     config: {
       responseMimeType: "application/json",
@@ -100,7 +115,7 @@ exports.analyzeReport = onDocumentCreated(
     region: "us-central1",
     secrets: [GEMINI_API_KEY],
     memory: "1GiB",
-    timeoutSeconds: 120,
+    timeoutSeconds: 300,
   },
   async (event) => {
     const snap = event.data;
