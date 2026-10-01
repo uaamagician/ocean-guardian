@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import "leaflet/dist/leaflet.css";
 import "./index.css";
 import App from "./App.jsx";
+import HomePage from "./pages/HomePage.jsx";
 import MapPage from "./pages/MapPage.jsx";
 import ReportPage from "./pages/ReportPage.jsx";
 import MyReportsPage from "./pages/MyReportsPage.jsx";
@@ -15,7 +16,8 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      { index: true, element: <MapPage /> },
+      { index: true, element: <HomePage /> },
+      { path: "map", element: <MapPage /> },
       { path: "report", element: <ReportPage /> },
       { path: "mine", element: <MyReportsPage /> },
       { path: "info", element: <InfoPage /> },
