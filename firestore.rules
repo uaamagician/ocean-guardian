@@ -10,6 +10,20 @@ service cloud.firestore {
         && loc.lng is number && loc.lng >= -180 && loc.lng <= 180;
     }
 
+    function isOwnPhotoPath(path) {
+      return path is string && path.matches("reports/" + request.auth.uid + "/[^/]+");
+    }
+
+    // Rules have no loops, so each of the (at most 4) entries is checked explicitly.
+    function isValidPhotos(photos) {
+      return photos is list
+        && photos.size() >= 1 && photos.size() <= 4
+        && isOwnPhotoPath(photos[0])
+        && (photos.size() < 2 || isOwnPhotoPath(photos[1]))
+        && (photos.size() < 3 || isOwnPhotoPath(photos[2]))
+        && (photos.size() < 4 || isOwnPhotoPath(photos[3]));
+    }
+
     match /reports/{reportId} {
       allow read: if resource.data.status == "published"
         || (request.auth != null && resource.data.reporterId == request.auth.uid);
@@ -17,14 +31,13 @@ service cloud.firestore {
       // aiAnalysis and the final status are written only by the analyzeReport
       // function through the Admin SDK, which bypasses these rules.
       allow create: if request.auth != null
-        && request.resource.data.keys().hasOnly(["type", "photoPath", "location", "reporterId", "createdAt", "status"])
-        && request.resource.data.keys().hasAll(["type", "photoPath", "location", "reporterId", "createdAt", "status"])
+        && request.resource.data.keys().hasOnly(["type", "photos", "location", "reporterId", "createdAt", "status"])
+        && request.resource.data.keys().hasAll(["type", "photos", "location", "reporterId", "createdAt", "status"])
         && request.resource.data.type in ["trash", "coral"]
         && request.resource.data.reporterId == request.auth.uid
         && request.resource.data.status == "processing"
         && request.resource.data.createdAt == request.time
-        && request.resource.data.photoPath is string
-        && request.resource.data.photoPath.matches("reports/" + request.auth.uid + "/[^/]+")
+        && isValidPhotos(request.resource.data.photos)
         && isValidLocation(request.resource.data.location);
 
       allow update, delete: if false;
