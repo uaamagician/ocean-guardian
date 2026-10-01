@@ -37,7 +37,12 @@ const IRRELEVANT = new Set(["not_beach", "not_coral"]);
 
 async function analyzeImage(apiKey, type, imageBytes, mimeType) {
   const { categories, instruction } = PROMPTS[type];
-  const ai = new GoogleGenAI({ apiKey });
+  // Gemini returns transient 429/503 under load; the SDK only retries when
+  // retryOptions is set explicitly. ~2+4+8+16s of backoff fits the 120s timeout.
+  const ai = new GoogleGenAI({
+    apiKey,
+    httpOptions: { retryOptions: { attempts: 5, initialDelay: 2, maxDelay: 20 } },
+  });
   const response = await ai.models.generateContent({
     model: GEMINI_MODEL,
     contents: [
