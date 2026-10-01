@@ -1,0 +1,118 @@
+.map-page {
+  position: relative;
+  height: calc(100dvh - var(--nav-height) - env(safe-area-inset-bottom));
+}
+
+.map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #d4e4e8;
+}
+
+/* Mute the busy OSM palette so the condition markers carry the color. */
+.map .leaflet-tile-pane {
+  filter: saturate(0.35) brightness(1.04) contrast(0.92);
+}
+
+.map-header {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  right: var(--space-3);
+  z-index: 500;
+  max-width: 420px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(238, 243, 241, 0.94);
+  box-shadow: 0 2px 10px rgba(15, 46, 61, 0.15);
+}
+
+.map-header h1 {
+  font-size: var(--text-xl);
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.map-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.map-legend .level-dot {
+  width: 10px;
+  height: 10px;
+}
+
+.map-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 500;
+  max-height: 62%;
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-4) var(--space-4);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: var(--surface);
+  box-shadow: 0 -4px 16px rgba(15, 46, 61, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+  animation: sheet-in 0.22s ease-out;
+}
+
+.map-sheet .report {
+  width: 100%;
+}
+
+.map-sheet-close {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--foam);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.map-sheet .report-head {
+  padding-right: 44px;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .map-page {
+    height: 100dvh;
+  }
+
+  .map-sheet {
+    left: auto;
+    top: var(--space-3);
+    right: var(--space-3);
+    bottom: auto;
+    width: 400px;
+    max-height: calc(100% - 2 * var(--space-3));
+    border-radius: var(--radius-md);
+  }
+}
