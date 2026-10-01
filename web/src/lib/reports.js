@@ -36,7 +36,7 @@ export async function resizePhoto(file) {
   try {
     bitmap = await createImageBitmap(file);
   } catch {
-    throw new Error(`「${file.name}」這個格式無法讀取，請改用 JPG 或 PNG。`);
+    throw new Error(`Can't read "${file.name}". Try a JPG or PNG instead.`);
   }
   const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement("canvas");
@@ -49,13 +49,13 @@ export async function resizePhoto(file) {
     const blob = await canvasToJpeg(canvas, quality);
     if (blob.size < MAX_BYTES) return blob;
   }
-  throw new Error(`「${file.name}」壓縮後仍超過 3MB，請換一張照片。`);
+  throw new Error(`"${file.name}" is still over 3MB after compressing. Try a different photo.`);
 }
 
 export function getPosition() {
   return new Promise((resolve, reject) => {
     if (!("geolocation" in navigator)) {
-      reject(new Error("這個瀏覽器不支援定位，請換用手機瀏覽器回報。"));
+      reject(new Error("This browser can't share your location. Try reporting from your phone's browser."));
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -69,8 +69,8 @@ export function getPosition() {
         reject(
           new Error(
             err.code === err.PERMISSION_DENIED
-              ? "定位權限被關閉了。請到瀏覽器設定允許這個網站使用位置，再按「重新定位」。"
-              : "暫時抓不到位置，請到空曠處再按「重新定位」。",
+              ? "Location access is turned off. Allow this site to use your location in your browser settings, then tap Locate again."
+              : "Couldn't get your location. Move somewhere with a clearer view of the sky and tap Locate again.",
           ),
         ),
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },

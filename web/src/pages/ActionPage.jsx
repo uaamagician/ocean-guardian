@@ -4,22 +4,22 @@ export default function ActionPage() {
   return (
     <div className="page">
       <div className="section">
-        <h1>淨灘行動</h1>
+        <h1>Beach cleanups</h1>
         <p className="page-intro">
-          同一片海灘累積足夠的回報後，AI 會估算需要多少人、多少時間、要帶哪些工具，讓社團、企業和學校可以直接揪團出發。
+          Once a beach has enough reports, AI estimates the crew size, time, and tools a cleanup needs, so clubs, companies, and schools can head out together.
         </p>
       </div>
 
       <section className="notice">
-        <h2>近期淨灘活動</h2>
-        <p>目前還沒有淨灘活動。活動報名功能開發中。</p>
+        <h2>Upcoming cleanups</h2>
+        <p>No cleanups scheduled yet. Event sign-up is in development.</p>
       </section>
 
       <section className="notice">
-        <h2>還沒有足夠回報的海灘</h2>
-        <p>AI 需要同一片海灘的多筆回報才能估算淨灘規模。你常去的海灘，也可以由你來補上第一筆。</p>
+        <h2>Beaches that need more reports</h2>
+        <p>The AI needs several reports from the same beach to size up a cleanup. If there's a beach you visit often, you can add the first one.</p>
         <Link to="/report" className="btn btn-primary">
-          回報海灘現況
+          Report a beach
         </Link>
       </section>
     </div>

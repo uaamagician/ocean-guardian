@@ -67,9 +67,9 @@ AI 分析通常 5-10 秒，Gemini 塞車時會自動重試，最慢實測約 70 
 |---|---|
 | `category` | 垃圾：`clean` / `light` / `moderate` / `heavy` / `not_beach`；珊瑚：`healthy` / `partially_bleached` / `severely_bleached` / `dead` / `not_coral` |
 | `confidence` | 0 到 1 |
-| `items` | AI 確定辨識出的人造垃圾（繁體中文） |
+| `items` | AI 確定辨識出的人造垃圾（英文） |
 | `uncertainItems` | 看不清楚、無法確定的東西 |
-| `retakeSuggestion` | AI 建議補拍時的一句中文提示，不需要時是 `null`。在「我的回報」顯示，要不要補拍由使用者決定 |
+| `retakeSuggestion` | AI 建議補拍時的一句英文提示，不需要時是 `null`。在 My Reports 顯示，要不要補拍由使用者決定 |
 
 ## 讀取權限
 

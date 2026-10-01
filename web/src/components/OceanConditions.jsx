@@ -18,15 +18,17 @@ function useOcean(lat, lng) {
 }
 
 function SeaTemp({ sst }) {
-  if (sst === undefined) return <p className="report-meta">查詢海溫中…</p>;
-  if (sst === "error") return <p className="report-meta">海溫資料暫時無法取得。</p>;
-  if (sst === null) return <p className="report-meta">這個位置沒有海溫資料，可能在陸地上，試著點靠海一點的地方。</p>;
+  if (sst === undefined) return <p className="report-meta">Checking sea temperature…</p>;
+  if (sst === "error") return <p className="report-meta">Sea temperature is unavailable right now.</p>;
+  if (sst === null) return <p className="report-meta">No sea temperature here. This spot may be on land, so try clicking a little further out to sea.</p>;
   return (
     <p>
       <strong className="ocean-temp">{sst.now.toFixed(1)}°C</strong>
       {sst.weekChange != null && (
         <span className="report-meta">
-          ，比 7 天前{sst.weekChange >= 0 ? "高" : "低"} {Math.abs(sst.weekChange).toFixed(1)}°C
+          {" "}
+          {sst.weekChange >= 0 ? "+" : "−"}
+          {Math.abs(sst.weekChange).toFixed(1)}°C vs. 7 days ago
         </span>
       )}
     </p>
@@ -34,10 +36,10 @@ function SeaTemp({ sst }) {
 }
 
 function Coral({ coral }) {
-  if (coral === undefined) return <p className="report-meta">查詢珊瑚白化警報中…</p>;
-  if (coral === "error") return <p className="report-meta">珊瑚白化資料暫時無法取得。</p>;
-  if (coral === null) return <p className="report-meta">這裡不在珊瑚白化監測範圍內。</p>;
-  const level = BLEACHING_LEVELS[coral.level] ?? { label: `警報等級 ${coral.level}`, tone: "heavy" };
+  if (coral === undefined) return <p className="report-meta">Checking coral bleaching alerts…</p>;
+  if (coral === "error") return <p className="report-meta">Coral bleaching data is unavailable right now.</p>;
+  if (coral === null) return <p className="report-meta">This spot isn't covered by coral bleaching monitoring.</p>;
+  const level = BLEACHING_LEVELS[coral.level] ?? { label: `Alert level ${coral.level}`, tone: "heavy" };
   return (
     <p>
       <span className="level">
@@ -46,7 +48,7 @@ function Coral({ coral }) {
       </span>
       <br />
       <span className="report-meta">
-        累積熱壓力 {coral.dhw.toFixed(1)} °C-週，NOAA {coral.date} 資料
+        Heat stress {coral.dhw.toFixed(1)} °C-weeks, NOAA data from {coral.date}
       </span>
     </p>
   );
@@ -56,9 +58,9 @@ export default function OceanConditions({ lat, lng }) {
   const { sst, coral } = useOcean(lat, lng);
   return (
     <div className="ocean">
-      <span className="report-label">即時海溫</span>
+      <span className="report-label">Sea temperature now</span>
       <SeaTemp sst={sst} />
-      <span className="report-label">珊瑚白化警報</span>
+      <span className="report-label">Coral bleaching alert</span>
       <Coral coral={coral} />
     </div>
   );

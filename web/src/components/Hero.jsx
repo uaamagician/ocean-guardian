@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router";
 
-// Placeholder pair (public domain, USFWS via Wikimedia Commons). Replace with a
-// matched clean/trash pair of the same framing for the final design.
+// Placeholder pair (public domain, USFWS via Wikimedia Commons): two different
+// beaches, so the coastline shifts at the spotlight's edge. For the final design,
+// put a matched pair (same shot, with and without debris) in web/public/hero/ and
+// point these at "/hero/clean.jpg" and "/hero/trash.jpg".
 const BG_CLEAN =
   "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Midway_Atoll_beach_-_DPLA_-_bf2efbe93a65d318eb836aab4fa97dbf.jpg/1920px-Midway_Atoll_beach_-_DPLA_-_bf2efbe93a65d318eb836aab4fa97dbf.jpg";
 const BG_TRASH =
@@ -100,25 +102,25 @@ export default function Hero() {
       <div className="hero-heading">
         <h1>
           <span className="hero-line-1 serif-italic hero-anim hero-reveal" style={{ animationDelay: "0.25s" }}>
-            Look closer,
+            Beautiful shores
           </span>
           <span className="hero-line-2 hero-anim hero-reveal" style={{ animationDelay: "0.42s" }}>
-            海灘不只有浪花
+            hide what we leave
           </span>
         </h1>
         <p className="hero-hint hero-anim hero-fade" style={{ animationDelay: "1.1s" }}>
-          移動游標或用手指劃過畫面，照出沙灘上的垃圾
+          Move your cursor, or drag a finger, to see what the tide brought in
         </p>
       </div>
 
       <div className="hero-left hero-anim hero-fade" style={{ animationDelay: "0.7s" }}>
-        <p>每年超過 1,100 萬公噸的塑膠流進海洋，其中一部分被浪推回岸上，藏在我們以為乾淨的沙灘裡。</p>
+        <p>More than 11 million tonnes of plastic enter the ocean every year. Some of it washes back, onto beaches we think are clean.</p>
       </div>
 
       <div className="hero-right hero-anim hero-fade" style={{ animationDelay: "0.85s" }}>
-        <p>路過海灘隨手拍一張，AI 會判讀垃圾的種類和多寡，即時更新到全世界都看得到的海灘地圖。</p>
+        <p>Snap a photo as you walk by. AI identifies the debris and how much there is, and the beach map updates for everyone.</p>
         <Link to="/report" className="btn btn-primary">
-          開始回報
+          Start reporting
         </Link>
       </div>
     </section>

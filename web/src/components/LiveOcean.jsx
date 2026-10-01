@@ -22,14 +22,14 @@ function useFeaturedConditions() {
   return { temps, corals };
 }
 
-export default function LiveOcean({ title = "現在的海" }) {
+export default function LiveOcean({ title = "The ocean right now" }) {
   const { temps, corals } = useFeaturedConditions();
   return (
     <section className="band band-dark">
       <div className="band-inner">
         <div className="band-head">
           <h2>{title}</h2>
-          <p>海水連續幾週偏熱，珊瑚就會白化。這是台灣幾片海域今天的海溫和珊瑚白化警報。</p>
+          <p>Coral bleaches when the water stays too warm for weeks. Here are today's sea temperatures and bleaching alerts around Taiwan.</p>
         </div>
         <div className="spots">
           {FEATURED_SPOTS.map((spot, i) => {
@@ -47,10 +47,10 @@ export default function LiveOcean({ title = "現在的海" }) {
                   <small>°C</small>
                 </div>
                 <div className="spot-change">
-                  {temps === null && "讀取中…"}
-                  {temps === "error" && "海溫暫時無法取得"}
+                  {temps === null && "Loading…"}
+                  {temps === "error" && "Temperature unavailable"}
                   {sst?.weekChange != null &&
-                    `比一週前${sst.weekChange >= 0 ? "高" : "低"} ${Math.abs(sst.weekChange).toFixed(1)}°C`}
+                    `${sst.weekChange >= 0 ? "+" : "−"}${Math.abs(sst.weekChange).toFixed(1)}°C vs. last week`}
                 </div>
                 <div className="spot-coral">
                   {level ? (
@@ -59,16 +59,16 @@ export default function LiveOcean({ title = "現在的海" }) {
                       {level.label}
                     </span>
                   ) : (
-                    <span>{coral === "error" ? "白化資料暫時無法取得" : coral === null ? "無監測資料" : "讀取中…"}</span>
+                    <span>{coral === "error" ? "Bleaching data unavailable" : coral === null ? "Not monitored" : "Loading…"}</span>
                   )}
-                  {level && <small>累積熱壓力 {coral.dhw.toFixed(1)} °C-週</small>}
+                  {level && <small>Heat stress {coral.dhw.toFixed(1)} °C-weeks</small>}
                 </div>
               </article>
             );
           })}
         </div>
         <p className="data-note">
-          海溫來自 Open-Meteo，每小時更新；珊瑚白化警報來自 NOAA Coral Reef Watch，每天更新。
+          Sea temperature from Open-Meteo, updated hourly. Bleaching alerts from NOAA Coral Reef Watch, updated daily.
         </p>
       </div>
     </section>

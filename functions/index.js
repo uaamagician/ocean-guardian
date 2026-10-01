@@ -13,15 +13,15 @@ const GEMINI_MODELS = ["gemini-flash-latest", "gemini-flash-lite-latest"];
 const CONFIDENCE_THRESHOLD = 0.5;
 
 const SHARED_RULES =
-  "Write items and uncertainItems in Traditional Chinese (Taiwan), using short common names. " +
+  "Write items and uncertainItems in English, using short lowercase common names. " +
   "All photos come from the same report at the same place, possibly taken from different distances and angles; " +
   "combine them into one assessment and do not double-count an item that appears in several photos. " +
   "Only list items you can clearly identify. If something might be an item but you cannot tell for sure " +
   "(too far, blurry, partly hidden), put it in uncertainItems instead, describing where it is; " +
-  'when there are several photos, say which one as "第 N 張" (never "Photo N"). ' +
+  'when there are several photos, say which one as "photo N". ' +
   "If a closer or wider photo would let you resolve uncertain items or rate the area more reliably, " +
-  "set retakeSuggestion to one short instruction for the reporter, written in Traditional Chinese (Taiwan), " +
-  'e.g. "左側沙灘上有一團綠色物體看不清楚，請靠近 1-2 公尺拍一張"; otherwise set it to null. ' +
+  "set retakeSuggestion to one short instruction for the reporter, in plain English, " +
+  'e.g. "Take a closer photo of the green clump on the left, from about 1-2 m away."; otherwise set it to null. ' +
   "confidence is your confidence in the category, from 0 to 1; lower it when important items are uncertain.";
 
 const PROMPTS = {
@@ -31,7 +31,7 @@ const PROMPTS = {
       "You are analyzing citizen-submitted photos of a beach or coastline for a marine debris map. " +
       "Rate the overall man-made debris level as one of: clean, light, moderate, heavy. " +
       "If the photos do not show a beach or coastline, use not_beach. " +
-      "In items, list only man-made debris (e.g. 寶特瓶, 漁網, 繩索, 保麗龍, 菸蒂). " +
+      "In items, list only man-made debris (e.g. plastic bottle, fishing net, rope, styrofoam, cigarette butt). " +
       "Natural material is NOT debris: never list vegetation, seaweed, driftwood, shells, rocks or footprints. " +
       SHARED_RULES,
   },
@@ -41,7 +41,7 @@ const PROMPTS = {
       "You are analyzing citizen-submitted underwater photos of coral for a reef health map. " +
       "Rate the coral condition as one of: healthy, partially_bleached, severely_bleached, dead. " +
       "If the photos do not show coral, use not_coral. " +
-      "In items, list what you observe about the reef (e.g. 軸孔珊瑚, 白化區塊, 藻類覆蓋, 斷裂). " +
+      "In items, list what you observe about the reef (e.g. branching coral, bleached patches, algae cover, broken branches). " +
       SHARED_RULES,
   },
 };
@@ -72,7 +72,7 @@ async function analyzePhotos(apiKey, type, photos) {
   });
 
   const parts = photos.flatMap((photo, i) => [
-    { text: `第 ${i + 1} 張照片:` },
+    { text: `Photo ${i + 1}:` },
     { inlineData: { mimeType: photo.mimeType, data: photo.bytes.toString("base64") } },
   ]);
   parts.push({ text: instruction });

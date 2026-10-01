@@ -12,6 +12,12 @@ const HISTORY_RADIUS_KM = 2;
 const NEARBY_RADIUS_KM = 5;
 const LEGEND = ["clean", "light", "moderate", "heavy"];
 
+function formatCoords({ lat, lng }) {
+  const ns = lat >= 0 ? "N" : "S";
+  const ew = lng >= 0 ? "E" : "W";
+  return `${Math.abs(lat).toFixed(2)}° ${ns}, ${Math.abs(lng).toFixed(2)}° ${ew}`;
+}
+
 function History({ reports, center, excludeId, radiusKm, title, onSelect }) {
   const nearby = reports
     .filter((r) => r.id !== excludeId && distanceKm(center, r.location) <= radiusKm)
@@ -20,7 +26,7 @@ function History({ reports, center, excludeId, radiusKm, title, onSelect }) {
     <div className="section">
       <span className="report-label">{title}</span>
       {nearby.length === 0 ? (
-        <p className="report-meta">方圓 {radiusKm} 公里內還沒有其他回報。</p>
+        <p className="report-meta">No other reports within {radiusKm} km yet.</p>
       ) : (
         <ol className="history">
           {nearby.map((r) => (
@@ -62,11 +68,11 @@ export default function MapPage() {
   return (
     <div className="map-page">
       <header className="map-header">
-        <h1>世界海灘地圖</h1>
+        <h1>World beach map</h1>
         <p className="report-meta">
-          {error ? "回報資料載入失敗，請重新整理頁面。" : reports === null ? "載入回報中…" : `${reports.length} 筆公開回報。點任何一片海，查詢即時海況。`}
+          {error ? "Couldn't load reports. Refresh the page to try again." : reports === null ? "Loading reports…" : `${reports.length} public reports. Click anywhere on the sea for live conditions.`}
         </p>
-        <ul className="map-legend" aria-label="圖例">
+        <ul className="map-legend" aria-label="Legend">
           {LEGEND.map((key) => (
             <li key={key}>
               <span className="level-dot" data-tone={CATEGORIES[key].tone} />
@@ -88,8 +94,8 @@ export default function MapPage() {
       </div>
 
       {selected && (
-        <aside className="map-sheet" aria-label="回報詳情">
-          <button type="button" className="map-sheet-close" onClick={close} aria-label="關閉">
+        <aside className="map-sheet" aria-label="Report details">
+          <button type="button" className="map-sheet-close" onClick={close} aria-label="Close">
             <X />
           </button>
           <ReportDetail report={selected} />
@@ -99,21 +105,21 @@ export default function MapPage() {
             center={selected.location}
             excludeId={selected.id}
             radiusKm={HISTORY_RADIUS_KM}
-            title="這片海灘的歷史紀錄"
+            title="History of this beach"
             onSelect={select}
           />
         </aside>
       )}
 
       {!selected && picked && (
-        <aside className="map-sheet" aria-label="這個位置的海況">
-          <button type="button" className="map-sheet-close" onClick={close} aria-label="關閉">
+        <aside className="map-sheet" aria-label="Conditions at this spot">
+          <button type="button" className="map-sheet-close" onClick={close} aria-label="Close">
             <X />
           </button>
           <div className="section">
-            <h2>這個位置的海況</h2>
+            <h2>Conditions at this spot</h2>
             <p className="report-meta">
-              北緯 {picked.lat.toFixed(2)}°，東經 {picked.lng.toFixed(2)}°
+              {formatCoords(picked)}
             </p>
           </div>
           <OceanConditions lat={picked.lat} lng={picked.lng} />
@@ -122,12 +128,12 @@ export default function MapPage() {
               reports={reports}
               center={picked}
               radiusKm={NEARBY_RADIUS_KM}
-              title="附近的回報"
+              title="Nearby reports"
               onSelect={select}
             />
           )}
           <Link to="/report" className="btn btn-primary">
-            回報這片海灘
+            Report this beach
           </Link>
         </aside>
       )}

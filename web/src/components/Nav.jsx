@@ -3,10 +3,10 @@ import { Link, NavLink, useLocation } from "react-router";
 import { Camera, Menu, X } from "lucide-react";
 
 const LINKS = [
-  { to: "/map", label: "海灘地圖" },
-  { to: "/info", label: "海洋資訊" },
-  { to: "/action", label: "淨灘行動" },
-  { to: "/mine", label: "我的回報" },
+  { to: "/map", label: "Beach Map" },
+  { to: "/info", label: "Ocean Data" },
+  { to: "/action", label: "Cleanups" },
+  { to: "/mine", label: "My Reports" },
 ];
 
 function Logo() {
@@ -44,7 +44,7 @@ export default function Nav() {
 
   return (
     <>
-      <nav className="nav" data-solid={solid || open} aria-label="主要選單">
+      <nav className="nav" data-solid={solid || open} aria-label="Main">
         <Link to="/" className="nav-logo">
           <Logo />
           <span className="nav-wordmark">Ocean Guardian</span>
@@ -62,14 +62,14 @@ export default function Nav() {
           <Link to="/report" className="nav-cta">
             <Camera aria-hidden="true" />
             <span>
-              回報<span className="nav-cta-long">海灘</span>
+              Report<span className="nav-cta-long"> a beach</span>
             </span>
           </Link>
           <button
             type="button"
             className="nav-menu-button"
             aria-expanded={open}
-            aria-label={open ? "關閉選單" : "開啟選單"}
+            aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => {
               setOpenedAt(pathname);
               setOpen((v) => !v);

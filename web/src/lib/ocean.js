@@ -62,14 +62,14 @@ export async function fetchSeaTemps(spots) {
 }
 
 export const BLEACHING_LEVELS = [
-  { label: "無白化壓力", tone: "clean" },
-  { label: "白化觀察", tone: "light" },
-  { label: "白化警告", tone: "light" },
-  { label: "白化警報一級", tone: "moderate" },
-  { label: "白化警報二級", tone: "heavy" },
-  { label: "白化警報三級", tone: "heavy" },
-  { label: "白化警報四級", tone: "heavy" },
-  { label: "白化警報五級", tone: "heavy" },
+  { label: "No stress", tone: "clean" },
+  { label: "Bleaching watch", tone: "light" },
+  { label: "Bleaching warning", tone: "light" },
+  { label: "Alert level 1", tone: "moderate" },
+  { label: "Alert level 2", tone: "heavy" },
+  { label: "Alert level 3", tone: "heavy" },
+  { label: "Alert level 4", tone: "heavy" },
+  { label: "Alert level 5", tone: "heavy" },
 ];
 
 // Returns null when the 5km cell is land or has no data.
@@ -86,9 +86,9 @@ export function fetchCoralStress(lat, lng) {
 
 // Offshore points: coastal 5km cells are often classed as land and return no data.
 export const FEATURED_SPOTS = [
-  { name: "金山", region: "新北", lat: 25.26, lng: 121.66 },
-  { name: "福隆", region: "新北", lat: 25.04, lng: 121.97 },
-  { name: "澎湖", region: "澎湖", lat: 23.55, lng: 119.5 },
-  { name: "綠島", region: "台東", lat: 22.66, lng: 121.5 },
-  { name: "墾丁南灣", region: "屏東", lat: 21.92, lng: 120.76 },
+  { name: "Jinshan", region: "New Taipei", lat: 25.26, lng: 121.66 },
+  { name: "Fulong", region: "New Taipei", lat: 25.04, lng: 121.97 },
+  { name: "Penghu", region: "Penghu Islands", lat: 23.55, lng: 119.5 },
+  { name: "Green Island", region: "Taitung", lat: 22.66, lng: 121.5 },
+  { name: "Nanwan, Kenting", region: "Pingtung", lat: 21.92, lng: 120.76 },
 ];

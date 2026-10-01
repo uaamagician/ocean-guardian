@@ -45,52 +45,52 @@ function PhotoPicker({ photos, onAdd, onRemove, busy, error }) {
       />
       {photos.length === 0 ? (
         <button type="button" className="picker-empty" onClick={() => inputRef.current.click()} disabled={busy}>
-          <strong>{busy ? "處理照片中…" : "拍照或選擇照片"}</strong>
-          <span>最多 {MAX_PHOTOS} 張，可以一次選多張</span>
+          <strong>{busy ? "Preparing photos…" : "Take or choose photos"}</strong>
+          <span>Up to {MAX_PHOTOS} photos. You can pick several at once.</span>
         </button>
       ) : (
         <div className="picker-grid">
           {photos.map((photo, i) => (
             <figure key={photo.id} className="picker-thumb">
-              <img src={photo.url} alt={`第 ${i + 1} 張照片`} />
-              <button type="button" onClick={() => onRemove(photo.id)} aria-label={`移除第 ${i + 1} 張照片`}>
+              <img src={photo.url} alt={`Photo ${i + 1}`} />
+              <button type="button" onClick={() => onRemove(photo.id)} aria-label={`Remove photo ${i + 1}`}>
                 ×
               </button>
             </figure>
           ))}
           {remaining > 0 && (
             <button type="button" className="picker-add" onClick={() => inputRef.current.click()} disabled={busy}>
-              {busy ? "處理中…" : "再加一張"}
+              {busy ? "Preparing…" : "Add another"}
             </button>
           )}
         </div>
       )}
       {error && <p className="error-text">{error}</p>}
       <ul className="tips">
-        <li>退後一點，把整片沙灘拍進來，AI 比較能判斷髒亂範圍。</li>
-        <li>看到垃圾可以再靠近 1-2 公尺多拍一張，辨識會更準。</li>
+        <li>Step back and fit the whole beach in, so the AI can judge how far the debris spreads.</li>
+        <li>See something? Take another photo from 1–2 m away for a more accurate result.</li>
       </ul>
     </div>
   );
 }
 
 function LocationStatus({ state, onRetry }) {
-  if (state.status === "locating") return <p className="location">正在取得你的位置…</p>;
+  if (state.status === "locating") return <p className="location">Finding your location…</p>;
   if (state.status === "error") {
     return (
       <div className="location">
         <p className="error-text">{state.message}</p>
         <button type="button" className="btn-text" onClick={onRetry}>
-          重新定位
+          Locate again
         </button>
       </div>
     );
   }
   return (
     <p className="location">
-      已取得位置，誤差約 {Math.round(state.value.accuracy)} 公尺。{" "}
+      Location found, accurate to about {Math.round(state.value.accuracy)} m.{" "}
       <button type="button" className="btn-text" onClick={onRetry}>
-        重新定位
+        Locate again
       </button>
     </p>
   );
@@ -106,11 +106,11 @@ function Submitted({ reportId, onAgain }) {
   const analyzing = !report || report.status === "processing";
   return (
     <div className="page">
-      <h1>{analyzing ? "回報已送出" : "分析完成"}</h1>
+      <h1>{analyzing ? "Report sent" : "Analysis complete"}</h1>
       {analyzing ? (
         <div className="notice" role="status">
           <p>
-            AI 正在看你的照片，通常 10 秒內完成，忙碌時可能要一分鐘。你可以先離開，結果會留在「我的回報」。
+            The AI is looking at your photos. This usually takes under 10 seconds, or up to a minute when it's busy. You can leave this page; the result will be waiting in My Reports.
           </p>
           <span className="analyzing-bar" aria-hidden="true" />
         </div>
@@ -121,10 +121,10 @@ function Submitted({ reportId, onAgain }) {
       )}
       <div className="actions">
         <button type="button" className="btn" onClick={onAgain}>
-          再回報一筆
+          Report another
         </button>
         <Link to="/mine" className="btn">
-          看我的回報
+          Go to My Reports
         </Link>
       </div>
     </div>
@@ -151,7 +151,7 @@ export default function ReportPage() {
   const addPhotos = async (files) => {
     setPhotoError("");
     const room = MAX_PHOTOS - photos.length;
-    if (files.length > room) setPhotoError(`最多 ${MAX_PHOTOS} 張，多選的 ${files.length - room} 張沒有加入。`);
+    if (files.length > room) setPhotoError(`Up to ${MAX_PHOTOS} photos. ${files.length - room} of the ones you picked weren't added.`);
     setPhotoBusy(true);
     const added = [];
     for (const file of files.slice(0, room)) {
@@ -191,7 +191,7 @@ export default function ReportPage() {
       setReportId(id);
     } catch (err) {
       console.error(err);
-      setSubmitError("送出失敗，請確認網路連線後再試一次。照片都還在，不用重選。");
+      setSubmitError("Couldn't send your report. Check your connection and try again. Your photos are still here.");
     } finally {
       setSubmitting(null);
     }
@@ -210,12 +210,12 @@ export default function ReportPage() {
   return (
     <form className="page" onSubmit={handleSubmit}>
       <div className="section">
-        <h1>回報海灘現況</h1>
-        <p className="page-intro">拍下眼前的海灘，AI 會判讀垃圾狀況，更新到大家看得到的地圖上。</p>
+        <h1>Report a beach</h1>
+        <p className="page-intro">Photograph the beach in front of you. AI checks it for debris and adds it to the map everyone can see.</p>
       </div>
 
       <fieldset className="type-toggle">
-        <legend className="visually-hidden">回報類型</legend>
+        <legend className="visually-hidden">What are you reporting?</legend>
         {Object.entries(TYPES).map(([value, label]) => (
           <label key={value}>
             <input
@@ -242,10 +242,10 @@ export default function ReportPage() {
 
       <div className="section">
         <button type="submit" className="btn btn-primary" disabled={!canSubmit}>
-          {submitting ? `上傳照片 ${submitting.done}/${submitting.total}` : "送出回報"}
+          {submitting ? `Uploading photos ${submitting.done}/${submitting.total}` : "Send report"}
         </button>
         {submitError && <p className="error-text">{submitError}</p>}
-        {!submitting && photos.length === 0 && <p className="report-meta">先加一張照片就能送出。</p>}
+        {!submitting && photos.length === 0 && <p className="report-meta">Add a photo to send your report.</p>}
       </div>
     </form>
   );

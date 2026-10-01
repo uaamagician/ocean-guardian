@@ -37,18 +37,18 @@ export default function MyReportsPage() {
   return (
     <div className="page">
       <div className="section">
-        <h1>我的回報</h1>
-        <p className="page-intro">這台裝置送出的回報都在這裡，包含還在分析和等待人工確認的。</p>
+        <h1>My reports</h1>
+        <p className="page-intro">Every report sent from this device, including ones still being analyzed or waiting for review.</p>
       </div>
 
-      {loadError && <p className="error-text">回報載入失敗，請重新整理頁面。</p>}
-      {!loadError && reports === null && <p className="report-meta">載入中…</p>}
+      {loadError && <p className="error-text">Couldn't load your reports. Refresh the page to try again.</p>}
+      {!loadError && reports === null && <p className="report-meta">Loading…</p>}
 
       {reports?.length === 0 && (
         <div className="notice">
-          <p>你還沒有回報過。下次經過海灘，拍一張就能幫大家更新現況。</p>
+          <p>You haven't reported a beach yet. Next time you pass one, a single photo helps everyone see how it's doing.</p>
           <Link to="/report" className="btn btn-primary">
-            回報海灘現況
+            Report a beach
           </Link>
         </div>
       )}

@@ -17,11 +17,11 @@ function WorldMap({ reports }) {
       <div className="band-inner">
         <div className="band-split">
           <div className="band-head">
-            <h2>世界各地的海灘，現在長什麼樣子</h2>
-            <p>每個點都是一筆經過 AI 判讀的回報。點地圖上任何一片海，也能查到當地的即時海溫和珊瑚白化警報。</p>
+            <h2>Beaches around the world, right now</h2>
+            <p>Every dot is a report analyzed by AI. Click anywhere on the sea to see that spot's live water temperature and coral bleaching alert.</p>
           </div>
           <Link to="/map" className="btn">
-            打開完整地圖
+            Open the full map
           </Link>
         </div>
         <div className="map-preview">
@@ -58,18 +58,18 @@ function DebrisStats({ reports }) {
     <section className="band band-deep">
       <div className="band-inner">
         <div className="band-head">
-          <h2>海洋垃圾狀況</h2>
-          <p>從所有公開回報統計出來的結果。回報越多，這張圖就越接近真實的海岸。</p>
+          <h2>Marine debris at a glance</h2>
+          <p>Counted from every public report. The more people report, the closer this gets to the real coastline.</p>
         </div>
         <div className="stats">
           <div className="stat-big">
             <strong>{reports === null ? "–" : stats.total}</strong>
-            <span>筆海灘垃圾回報</span>
+            <span>beach debris reports</span>
           </div>
 
           <div className="stat-block">
-            <h3>髒亂程度分布</h3>
-            <div className="level-bar" role="img" aria-label="各髒亂程度的回報比例">
+            <h3>Debris levels</h3>
+            <div className="level-bar" role="img" aria-label="Share of reports at each debris level">
               {LEVEL_ORDER.map((k) =>
                 stats.levels[k] ? (
                   <span
@@ -93,9 +93,9 @@ function DebrisStats({ reports }) {
           </div>
 
           <div className="stat-block">
-            <h3>最常出現的垃圾</h3>
+            <h3>Most common items</h3>
             {stats.topItems.length === 0 ? (
-              <p className="data-note">還沒有足夠的辨識結果。</p>
+              <p className="data-note">Not enough analyzed reports yet.</p>
             ) : (
               <ul className="item-bars">
                 {stats.topItems.map(([name, count]) => (
@@ -139,30 +139,30 @@ function HowItWorks({ reports }) {
       <div className="band-inner">
         <div className="band-split">
           <div className="band-head">
-            <h2>回報一片海灘，只要三步</h2>
-            <p>不用註冊、不用填表單。拍照的方式也不限制，遠景近景都可以，一次最多四張。</p>
+            <h2>Report a beach in three steps</h2>
+            <p>No sign-up and no forms. Shoot it however you like, wide or close up, with up to four photos.</p>
           </div>
           <Link to="/report" className="btn btn-primary">
-            開始回報
+            Start reporting
           </Link>
         </div>
         <ol className="steps">
           <li>
-            <h3>拍照上傳</h3>
-            <p>拍下眼前的海灘，位置會自動帶入。</p>
+            <h3>Snap and upload</h3>
+            <p>Photograph the beach in front of you. Your location is added automatically.</p>
           </li>
           <li>
-            <h3>AI 判讀</h3>
-            <p>Gemini 辨識垃圾種類和髒亂程度，看不清楚的會提醒你補拍。</p>
+            <h3>AI analysis</h3>
+            <p>Gemini identifies the debris and how bad it is, and asks for another photo when something is unclear.</p>
           </li>
           <li>
-            <h3>地圖更新</h3>
-            <p>判讀結果可信的回報，會立刻出現在世界海灘地圖上。</p>
+            <h3>Map update</h3>
+            <p>Reports the AI is confident about appear on the world beach map right away.</p>
           </li>
         </ol>
         {latest.length > 0 && (
           <>
-            <h3>最新回報</h3>
+            <h3>Latest reports</h3>
             <div className="latest">
               {latest.map((r) => (
                 <LatestCard key={r.id} report={r} />
@@ -181,40 +181,40 @@ function CleanupPreview() {
       <div className="band-inner">
         <div className="band-split">
           <div className="band-head">
-            <h2>我要參加淨灘</h2>
+            <h2>Join a beach cleanup</h2>
             <p>
-              同一片海灘累積足夠的回報後，AI 會估算淨灘需要多少人、多少時間、帶哪些工具。主辦單位不用先去場勘，小社團也能和企業志工隊一起湊成一團。
+              Once a beach has enough reports, AI estimates how many people, how much time, and which tools a cleanup needs. Organizers can skip the site visit, and a small club can team up with a company volunteer group to fill a crew.
             </p>
           </div>
           <div className="plan-example">
-            <span className="plan-tag">示意畫面，功能開發中</span>
+            <span className="plan-tag">Preview, in development</span>
             <dl>
-              <dt>建議人數</dt>
-              <dd>20 至 25 人</dd>
-              <dt>預估工時</dt>
-              <dd>1.5 小時</dd>
-              <dt>必備裝備</dt>
-              <dd>割網刀、推車、防刺手套</dd>
-              <dt>大型器械</dt>
-              <dd>不需要</dd>
+              <dt>Volunteers</dt>
+              <dd>20 to 25 people</dd>
+              <dt>Estimated time</dt>
+              <dd>1.5 hours</dd>
+              <dt>Gear</dt>
+              <dd>Net cutters, carts, puncture-proof gloves</dd>
+              <dt>Heavy machinery</dt>
+              <dd>Not needed</dd>
             </dl>
           </div>
         </div>
         <ul className="features">
           <li>
             <Sparkles aria-hidden="true" />
-            <h3>AI 淨灘規劃</h3>
-            <p>依據回報的垃圾種類和範圍，估算人力、工時和需要準備的物品。</p>
+            <h3>AI cleanup planning</h3>
+            <p>From the reported debris and how far it spreads, estimate the crew, the hours, and what to bring.</p>
           </li>
           <li>
             <Users aria-hidden="true" />
-            <h3>揪團報名</h3>
-            <p>企業 CSR、NGO、學校社團都能開團，民眾直接線上報名。</p>
+            <h3>Team up and sign up</h3>
+            <p>Companies, NGOs, and school clubs can host a cleanup, and anyone can sign up online.</p>
           </li>
           <li>
             <Package aria-hidden="true" />
-            <h3>淨灘成效</h3>
-            <p>淨灘後再拍一張，自動比對前後差異，成為可以放進 ESG 報告的數據。</p>
+            <h3>Cleanup impact</h3>
+            <p>Take another photo afterward. The before-and-after comparison becomes data you can put in an ESG report.</p>
           </li>
         </ul>
       </div>
