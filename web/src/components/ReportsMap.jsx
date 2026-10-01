@@ -1,9 +1,21 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
-import { CircleMarker, MapContainer, TileLayer, ZoomControl, useMap } from "react-leaflet";
+import { CircleMarker, MapContainer, TileLayer, ZoomControl, useMap, useMapEvents } from "react-leaflet";
 import { CATEGORIES, TONE_COLORS } from "../lib/labels";
+import { isCommunityBeach } from "../lib/beaches";
 
 const NO_REPORT_COLOR = "#23727a";
+const COMMUNITY_RING = "#e8702a";
+
+// While placing a new beach, the map takes clicks and shows a crosshair cursor.
+function PlaceHandler({ active, onPlace }) {
+  const map = useMap();
+  useMapEvents({ click: (e) => active && onPlace?.({ lat: e.latlng.lat, lng: e.latlng.wrap().lng }) });
+  useEffect(() => {
+    map.getContainer().classList.toggle("is-placing", Boolean(active));
+  }, [map, active]);
+  return null;
+}
 
 function FocusOn({ lat, lng }) {
   const map = useMap();
@@ -61,13 +73,14 @@ function BeachLayer({ beaches, tones, selectedId, onSelect }) {
       for (const [id, marker] of markers.current) {
         const tone = tones?.get(id);
         const selected = id === selectedId;
-        marker.setRadius(radiusFor(zoom, Boolean(tone), selected));
+        const community = isCommunityBeach(id);
+        marker.setRadius(radiusFor(zoom, Boolean(tone) || community, selected));
         marker.setStyle({
           fillColor: tone ? TONE_COLORS[tone] : NO_REPORT_COLOR,
-          color: selected ? "#05141c" : "#ffffff",
-          weight: selected ? 3 : tone ? 2 : 1,
+          color: selected ? "#05141c" : community ? COMMUNITY_RING : "#ffffff",
+          weight: selected || community ? 3 : tone ? 2 : 1,
         });
-        if (tone || selected) front.push(marker);
+        if (tone || selected || community) front.push(marker);
       }
       // Reported and selected beaches draw on top of the plain ones.
       front.forEach((m) => m.bringToFront());
@@ -89,6 +102,9 @@ export default function ReportsMap({
   selectedReportId,
   onSelectReport,
   focus,
+  placing = false,
+  onPlace,
+  draft,
   center = [18, 125],
   zoom = 3,
   scrollWheelZoom = true,
@@ -112,6 +128,15 @@ export default function ReportsMap({
         maxZoom={19}
       />
       <FocusOn lat={focus?.lat} lng={focus?.lng} />
+      <PlaceHandler active={placing} onPlace={onPlace} />
+      {draft && (
+        <CircleMarker
+          center={[draft.lat, draft.lng]}
+          radius={10}
+          interactive={false}
+          pathOptions={{ color: COMMUNITY_RING, weight: 3, dashArray: "4 4", fillColor: "#ffffff", fillOpacity: 0.9 }}
+        />
+      )}
       <BeachLayer beaches={beaches} tones={beachTones} selectedId={selectedBeachId} onSelect={onSelectBeach} />
       {/* Reports that aren't near any known beach still get their own marker. */}
       {reports?.map((r) => {

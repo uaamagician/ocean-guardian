@@ -43,6 +43,24 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Beaches people add themselves, often spots that aren't tourist beaches.
+    match /beaches/{beachId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(["name", "kind", "notes", "location", "createdBy", "createdAt"])
+        && request.resource.data.keys().hasAll(["name", "kind", "notes", "location", "createdBy", "createdAt"])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.kind in ["sand", "pebble", "rock", "mixed", "unknown"]
+        && request.resource.data.notes is string
+        && request.resource.data.notes.size() <= 280
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && isValidLocation(request.resource.data.location);
+      allow update, delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

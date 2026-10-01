@@ -171,7 +171,7 @@
     top: calc(var(--nav-height) + var(--space-3));
     right: var(--space-3);
     bottom: auto;
-    width: 420px;
+    width: 460px;
     max-height: calc(100% - var(--nav-height) - 2 * var(--space-3));
     border-radius: var(--radius-md);
   }
@@ -190,59 +190,406 @@
   padding-right: 44px;
 }
 
-.beach-about {
+.history-detail {
+  padding: var(--space-3) 0 var(--space-4);
+}
+
+/* ---------- Beach panel ---------- */
+
+.map-sheet-panel {
+  padding: 0;
+  gap: 0;
+}
+
+.map-sheet-close {
+  z-index: 3;
+}
+
+.level-dot-community {
+  background: #23727a;
+  box-shadow: 0 0 0 2px var(--buoy);
+}
+
+.reports-map.is-placing,
+.reports-map.is-placing .leaflet-interactive {
+  cursor: crosshair;
+}
+
+.map-add {
+  margin-top: var(--space-3);
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  background: var(--surface);
+}
+
+.map-add svg {
+  width: 16px;
+  height: 16px;
+}
+
+.bp {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  /* Grow with the content: sticky tabs and footer only stick within this box. */
+  flex-shrink: 0;
+}
+
+.bp-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-5) var(--space-4);
+}
+
+.bp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-right: 44px;
+}
+
+.bp-tag {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+.bp-tag-community {
+  background: rgba(232, 112, 42, 0.12);
+  color: #a9481a;
+}
+
+.bp-local {
+  color: var(--ink-soft);
+}
+
+.bp-coords {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.bp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.chip-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.chip-button:hover {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+
+.chip-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.bp-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  gap: var(--space-5);
+  padding: 0 var(--space-5);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.bp-tab {
+  padding: var(--space-3) 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.bp-tab:hover {
+  color: var(--ink);
+}
+
+.bp-tab.is-active {
+  color: var(--ink);
+  border-bottom-color: var(--buoy);
+}
+
+.bp-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5);
+}
+
+.bp-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.bp-status p {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.bp-status-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.bp-priority {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.bp-priority[data-tone="clean"] { background: color-mix(in srgb, var(--lv-clean) 20%, white); }
+.bp-priority[data-tone="light"] { background: color-mix(in srgb, var(--lv-light) 28%, white); }
+.bp-priority[data-tone="moderate"] { background: color-mix(in srgb, var(--lv-moderate) 25%, white); }
+.bp-priority[data-tone="heavy"] { background: color-mix(in srgb, var(--lv-heavy) 22%, white); }
+
+.bp-count {
+  color: var(--ink-soft);
+}
+
+.bp-section h3 {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.bp-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+@media (max-width: 420px) {
+  .bp-tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.bp-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+}
+
+.bp-tile-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.bp-tile-label svg {
+  width: 14px;
+  height: 14px;
+}
+
+.bp-tile strong {
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.bp-tile-detail {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.bp-rows {
+  display: flex;
+  flex-direction: column;
+  margin: var(--space-3) 0 0;
+}
+
+.bp-rows div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-sm);
+}
+
+.bp-rows dt {
+  color: var(--ink-soft);
+}
+
+.bp-rows dd {
+  margin: 0;
+  font-weight: 500;
+  text-align: right;
+}
+
+.bp-note {
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.bp-about {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  font-size: var(--text-sm);
 }
 
-.beach-about img {
+.bp-about img {
   width: 100%;
-  max-height: 220px;
+  max-height: 240px;
   object-fit: cover;
   border-radius: var(--radius-sm);
   background: var(--sand);
 }
 
-.beach-about p {
-  font-size: var(--text-sm);
-  color: var(--ink-soft);
-  /* Long Wikipedia extracts get trimmed; the link carries the rest. */
-  display: -webkit-box;
-  -webkit-line-clamp: 6;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.bp-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface);
+  border-top: 1px solid var(--line);
 }
 
-.beach-about a {
-  font-size: var(--text-sm);
+.bp-footer .btn {
+  width: 100%;
 }
 
-.beach-status {
+.bp-footer-split {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-4);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--line);
-}
-
-.beach-links {
-  display: flex;
-  flex-wrap: wrap;
   gap: var(--space-2);
 }
 
-.beach-links .btn {
-  min-height: 40px;
-  padding: 0 var(--space-4);
+.bp-footer-split .btn {
+  flex: 1;
 }
 
-.beach-links svg {
-  width: 16px;
-  height: 16px;
+/* ---------- Add a beach ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 
-.history-detail {
-  padding: var(--space-3) 0 var(--space-4);
+.field > span,
+.field legend {
+  padding: 0;
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.field input,
+.field textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font: inherit;
+  color: inherit;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: 2px solid var(--tide);
+  outline-offset: 1px;
+}
+
+.field-count {
+  align-self: flex-end;
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.kind-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.kind-option {
+  position: relative;
+}
+
+.kind-option input {
+  position: absolute;
+  opacity: 0;
+}
+
+.kind-option span {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.kind-option input:checked + span {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+
+.kind-option input:focus-visible + span {
+  outline: 2px solid var(--tide);
+  outline-offset: 2px;
+}
+
+.add-beach-point p {
+  font-variant-numeric: tabular-nums;
+}
+
+.add-beach-warning {
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: rgba(232, 112, 42, 0.1);
+  font-size: var(--text-sm);
 }

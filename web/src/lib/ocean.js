@@ -107,3 +107,96 @@ export const FEATURED_SPOTS = [
   { name: "Green Island", region: "Taitung", lat: 22.66, lng: 121.5 },
   { name: "Nanwan, Kenting", region: "Pingtung", lat: 21.92, lng: 120.76 },
 ];
+
+const FORECAST = "https://api.open-meteo.com/v1/forecast";
+
+// WMO weather codes, grouped the way Open-Meteo documents them.
+const WEATHER_CODES = [
+  [[0], "Clear"],
+  [[1], "Mostly clear"],
+  [[2], "Partly cloudy"],
+  [[3], "Overcast"],
+  [[45, 48], "Fog"],
+  [[51, 53, 55, 56, 57], "Drizzle"],
+  [[61, 63, 65, 66, 67], "Rain"],
+  [[71, 73, 75, 77], "Snow"],
+  [[80, 81, 82], "Rain showers"],
+  [[85, 86], "Snow showers"],
+  [[95, 96, 99], "Thunderstorm"],
+];
+
+export function describeWeather(code) {
+  return WEATHER_CODES.find(([codes]) => codes.includes(code))?.[1] ?? "Unknown";
+}
+
+// WHO UV index bands.
+export function describeUv(uv) {
+  if (uv < 3) return "Low";
+  if (uv < 6) return "Moderate";
+  if (uv < 8) return "High";
+  if (uv < 11) return "Very high";
+  return "Extreme";
+}
+
+const COMPASS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+export const compass = (deg) => COMPASS[Math.round(deg / 45) % 8];
+
+// Times come back in the beach's own time zone ("2026-10-01T17:46").
+export const localClock = (iso) => iso?.slice(11, 16) ?? null;
+
+export function fetchWeather(lat, lng) {
+  return cached(`wx:${round(lat)},${round(lng)}`, async () => {
+    const params = new URLSearchParams({
+      latitude: lat,
+      longitude: lng,
+      current: "temperature_2m,wind_speed_10m,wind_direction_10m,uv_index,weather_code",
+      daily: "sunrise,sunset",
+      forecast_days: "1",
+      timezone: "auto",
+    });
+    const res = await fetch(`${FORECAST}?${params}`);
+    if (!res.ok) throw new Error(`Open-Meteo forecast ${res.status}`);
+    const json = await res.json();
+    const c = json.current;
+    return {
+      temp: c.temperature_2m,
+      wind: c.wind_speed_10m,
+      windDir: c.wind_direction_10m,
+      uv: c.uv_index,
+      code: c.weather_code,
+      sunrise: json.daily?.sunrise?.[0] ?? null,
+      sunset: json.daily?.sunset?.[0] ?? null,
+    };
+  });
+}
+
+// Open-Meteo's sea level height includes tides, so the next turning points are
+// the next high and low tide. A model estimate: fine for planning, not navigation.
+export function fetchTides(lat, lng) {
+  return cached(`tide:${round(lat)},${round(lng)}`, async () => {
+    const params = new URLSearchParams({
+      latitude: lat,
+      longitude: lng,
+      hourly: "sea_level_height_msl",
+      forecast_days: "2",
+      timezone: "auto",
+    });
+    const res = await fetch(`${OPEN_METEO}?${params}`);
+    if (!res.ok) throw new Error(`Open-Meteo tides ${res.status}`);
+    const json = await res.json();
+    const times = json.hourly?.time ?? [];
+    const levels = json.hourly?.sea_level_height_msl ?? [];
+    if (!levels.some((v) => v != null)) return null;
+
+    const nowLocal = new Date(Date.now() + json.utc_offset_seconds * 1000).toISOString().slice(0, 16);
+    let high = null;
+    let low = null;
+    for (let i = 1; i < levels.length - 1 && !(high && low); i++) {
+      const [prev, cur, next] = [levels[i - 1], levels[i], levels[i + 1]];
+      if (times[i] < nowLocal || prev == null || cur == null || next == null) continue;
+      if (!high && cur > prev && cur >= next) high = { time: times[i], height: cur };
+      if (!low && cur < prev && cur <= next) low = { time: times[i], height: cur };
+    }
+    return { high, low };
+  });
+}

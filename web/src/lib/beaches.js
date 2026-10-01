@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { collection, doc, limit, onSnapshot, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
+import { db } from "../firebase";
 import { distanceKm } from "./usePublishedReports";
+import { ensureSignedIn } from "./reports";
 import { CATEGORIES } from "./labels";
 
 // A report counts toward a beach if it was taken within this distance of it.
@@ -106,9 +109,88 @@ export function useReportsByBeach(beaches, reports) {
 export function googleMapsLinks(beach) {
   // Searching by name opens the place listing (photos, reviews); Taiwan's
   // listings match the Chinese name far more reliably than a romanization.
-  const query = beach.local ?? [beach.name, beach.country].filter(Boolean).join(", ");
+  // Community beaches often have informal names, so they open at their coordinates.
+  const query = isCommunityBeach(beach.id)
+    ? `${beach.lat},${beach.lng}`
+    : (beach.local ?? [beach.name, beach.country].filter(Boolean).join(", "));
   return {
     place: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`,
     directions: `https://www.google.com/maps/dir/?api=1&destination=${beach.lat},${beach.lng}`,
   };
+}
+
+export const BEACH_KINDS = {
+  sand: "Sand",
+  pebble: "Pebbles",
+  rock: "Rocky shore",
+  mixed: "Mixed",
+  unknown: "Not sure",
+};
+
+const COMMUNITY_PREFIX = "user-";
+export const isCommunityBeach = (id) => id.startsWith(COMMUNITY_PREFIX);
+
+const communityQuery = query(collection(db, "beaches"), orderBy("createdAt", "desc"), limit(2000));
+
+function useCommunityBeaches() {
+  const [beaches, setBeaches] = useState([]);
+  useEffect(
+    () =>
+      onSnapshot(
+        communityQuery,
+        (snap) =>
+          setBeaches(
+            snap.docs.map((d) => {
+              const data = d.data();
+              return {
+                id: `${COMMUNITY_PREFIX}${d.id}`,
+                name: data.name,
+                local: null,
+                lat: data.location.lat,
+                lng: data.location.lng,
+                country: null,
+                desc: null,
+                wiki: null,
+                kind: data.kind,
+                notes: data.notes,
+                createdAt: data.createdAt,
+              };
+            }),
+          ),
+        (err) => console.error(err),
+      ),
+    [],
+  );
+  return beaches;
+}
+
+// The listed beaches plus the ones people have added.
+export function useAllBeaches() {
+  const { beaches, error } = useBeaches();
+  const community = useCommunityBeaches();
+  const all = useMemo(() => (beaches ? [...beaches, ...community] : null), [beaches, community]);
+  return { beaches: all, error };
+}
+
+export function findNearby(beaches, point, km = 0.3) {
+  let best = null;
+  for (const b of beaches ?? []) {
+    const d = distanceKm(point, b);
+    if (d <= km && (!best || d < best.km)) best = { beach: b, km: d };
+  }
+  return best;
+}
+
+export async function addBeach({ name, kind, notes, location }) {
+  const user = await ensureSignedIn();
+  const ref = doc(collection(db, "beaches"));
+  await setDoc(ref, {
+    name: name.trim(),
+    kind,
+    notes: notes.trim(),
+    location: { lat: location.lat, lng: location.lng },
+    createdBy: user.uid,
+    createdAt: serverTimestamp(),
+  });
+  return `${COMMUNITY_PREFIX}${ref.id}`;
 }
