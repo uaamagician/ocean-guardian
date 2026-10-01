@@ -6,6 +6,9 @@ import ReportsMap from "../components/ReportsMap";
 import { Level } from "../components/ReportDetail";
 import usePhotoUrls from "../lib/usePhotoUrls";
 import LiveOcean from "../components/LiveOcean";
+import Journey from "../components/Journey";
+import { Reveal } from "../components/Motion";
+import { Audiences, FinalCta, Gap, IccItems, Prepare, Problem, Sdg14, TaiwanNumbers } from "../components/Story";
 import { CATEGORIES, TONE_COLORS, formatTime } from "../lib/labels";
 import usePublishedReports from "../lib/usePublishedReports";
 import "./Home.css";
@@ -16,22 +19,22 @@ function WorldMap({ reports }) {
     <section className="band">
       <div className="band-inner">
         <div className="band-split">
-          <div className="band-head">
+          <Reveal className="band-head">
             <h2>Beaches around the world, right now</h2>
             <p>Every dot is a report analyzed by AI. Click anywhere on the sea to see that spot's live water temperature and coral bleaching alert.</p>
-          </div>
+          </Reveal>
           <Link to="/map" className="btn">
             Open the full map
           </Link>
         </div>
-        <div className="map-preview">
+        <Reveal className="map-preview">
           <ReportsMap
             reports={reports}
             scrollWheelZoom={false}
             onSelect={(id) => navigate(`/map?r=${id}`)}
             onMapClick={({ lat, lng }) => navigate(`/map?lat=${lat.toFixed(3)}&lng=${lng.toFixed(3)}`)}
           />
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -57,10 +60,10 @@ function DebrisStats({ reports }) {
   return (
     <section className="band band-deep">
       <div className="band-inner">
-        <div className="band-head">
+        <Reveal className="band-head">
           <h2>Marine debris at a glance</h2>
           <p>Counted from every public report. The more people report, the closer this gets to the real coastline.</p>
-        </div>
+        </Reveal>
         <div className="stats">
           <div className="stat-big">
             <strong>{reports === null ? "–" : stats.total}</strong>
@@ -109,6 +112,7 @@ function DebrisStats({ reports }) {
             )}
           </div>
         </div>
+        <IccItems />
       </div>
     </section>
   );
@@ -138,10 +142,10 @@ function HowItWorks({ reports }) {
     <section className="band">
       <div className="band-inner">
         <div className="band-split">
-          <div className="band-head">
+          <Reveal className="band-head">
             <h2>Report a beach in three steps</h2>
             <p>No sign-up and no forms. Shoot it however you like, wide or close up, with up to four photos.</p>
-          </div>
+          </Reveal>
           <Link to="/report" className="btn btn-primary">
             Start reporting
           </Link>
@@ -180,12 +184,12 @@ function CleanupPreview() {
     <section className="band band-dark">
       <div className="band-inner">
         <div className="band-split">
-          <div className="band-head">
+          <Reveal className="band-head">
             <h2>Join a beach cleanup</h2>
             <p>
               Once a beach has enough reports, AI estimates how many people, how much time, and which tools a cleanup needs. Organizers can skip the site visit, and a small club can team up with a company volunteer group to fill a crew.
             </p>
-          </div>
+          </Reveal>
           <div className="plan-example">
             <span className="plan-tag">Preview, in development</span>
             <dl>
@@ -227,11 +231,19 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <Problem />
+      <Journey />
+      <Gap />
+      <Sdg14 />
+      <TaiwanNumbers />
       <LiveOcean />
       <WorldMap reports={reports} />
       <DebrisStats reports={reports} />
       <HowItWorks reports={reports} />
       <CleanupPreview />
+      <Audiences />
+      <Prepare />
+      <FinalCta />
     </>
   );
 }

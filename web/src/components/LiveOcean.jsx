@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BLEACHING_LEVELS, FEATURED_SPOTS, fetchCoralStress, fetchSeaTemps } from "../lib/ocean";
+import { Reveal } from "./Motion";
 import "../pages/Home.css";
 
 function useFeaturedConditions() {
@@ -27,10 +28,10 @@ export default function LiveOcean({ title = "The ocean right now" }) {
   return (
     <section className="band band-dark">
       <div className="band-inner">
-        <div className="band-head">
+        <Reveal className="band-head">
           <h2>{title}</h2>
           <p>Coral bleaches when the water stays too warm for weeks. Here are today's sea temperatures and bleaching alerts around Taiwan.</p>
-        </div>
+        </Reveal>
         <div className="spots">
           {FEATURED_SPOTS.map((spot, i) => {
             const sst = Array.isArray(temps) ? temps[i] : null;

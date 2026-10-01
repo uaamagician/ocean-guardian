@@ -23,7 +23,8 @@ function useSolid(isHome) {
   const [pastHero, setPastHero] = useState(false);
   useEffect(() => {
     if (!isHome) return;
-    const onScroll = () => setPastHero(window.scrollY > window.innerHeight - 80);
+    // Go solid before the hero's bottom copy slides up under the bar.
+    const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.45);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
