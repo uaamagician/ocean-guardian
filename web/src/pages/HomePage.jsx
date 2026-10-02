@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router";
 import { Package, Sparkles, Users } from "lucide-react";
 import Hero from "../components/Hero";
 import ReportsMap from "../components/ReportsMap";
 import { Level } from "../components/ReportDetail";
 import usePhotoUrls from "../lib/usePhotoUrls";
+import FadeImg from "../components/FadeImg";
 import LiveOcean from "../components/LiveOcean";
 import Journey from "../components/Journey";
 import { Reveal } from "../components/Motion";
@@ -12,6 +13,7 @@ import { Audiences, FinalCta, Gap, IccItems, Prepare, Problem, Sdg14, TaiwanNumb
 import { CATEGORIES, TONE_COLORS, formatTime } from "../lib/labels";
 import usePublishedReports from "../lib/usePublishedReports";
 import { useBeaches, useReportsByBeach } from "../lib/beaches";
+import useSectionMotion from "../lib/useSectionMotion";
 import "./Home.css";
 
 function WorldMap({ reports }) {
@@ -26,7 +28,7 @@ function WorldMap({ reports }) {
             <h2>Beaches around the world, right now</h2>
             <p>Over 15,000 beaches, colored by what people have reported. Click one for live water conditions, reports, and reviews on Google Maps.</p>
           </Reveal>
-          <Link to="/map" className="btn">
+          <Link to="/map" className="btn" viewTransition>
             Open the full map
           </Link>
         </div>
@@ -126,8 +128,8 @@ function DebrisStats({ reports }) {
 function LatestCard({ report }) {
   const [cover] = usePhotoUrls(report.photos?.slice(0, 1) ?? []);
   return (
-    <Link to={`/map?r=${report.id}`} className="latest-card">
-      {cover ? <img src={cover} alt="" loading="lazy" /> : <div className="latest-card-placeholder" />}
+    <Link to={`/map?r=${report.id}`} className="latest-card" viewTransition>
+      {cover ? <FadeImg src={cover} alt="" loading="lazy" /> : <div className="latest-card-placeholder" />}
       <Level category={report.aiAnalysis?.category} />
       <span className="report-meta">{formatTime(report.createdAt)}</span>
       {report.aiAnalysis?.items?.length > 0 && (
@@ -151,7 +153,7 @@ function HowItWorks({ reports }) {
             <h2>Report a beach in three steps</h2>
             <p>No sign-up and no forms. Shoot it however you like, wide or close up, with up to four photos.</p>
           </Reveal>
-          <Link to="/report" className="btn btn-primary">
+          <Link to="/report" className="btn btn-primary" viewTransition>
             Start reporting
           </Link>
         </div>
@@ -233,8 +235,10 @@ function CleanupPreview() {
 
 export default function HomePage() {
   const { reports } = usePublishedReports();
+  const rootRef = useRef(null);
+  useSectionMotion(rootRef);
   return (
-    <>
+    <div ref={rootRef}>
       <Hero />
       <Problem />
       <Journey />
@@ -249,6 +253,6 @@ export default function HomePage() {
       <Audiences />
       <Prepare />
       <FinalCta />
-    </>
+    </div>
   );
 }

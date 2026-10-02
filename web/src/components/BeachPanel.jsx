@@ -13,6 +13,7 @@ import {
   Wind,
 } from "lucide-react";
 import ReportDetail, { Level } from "./ReportDetail";
+import FadeImg from "./FadeImg";
 import useWikiSummary from "../lib/useWikiSummary";
 import { BEACH_KINDS, BEACH_RADIUS_KM, googleMapsLinks, isCommunityBeach } from "../lib/beaches";
 import {
@@ -297,7 +298,7 @@ function About({ beach }) {
       {loading && <p className="report-meta">Loading description…</p>}
       {summary && (
         <>
-          {summary.image && <img src={summary.image} alt="" loading="lazy" />}
+          {summary.image && <FadeImg src={summary.image} alt="" loading="lazy" />}
           <p>{summary.extract}</p>
           {summary.url && (
             <a href={summary.url} target="_blank" rel="noreferrer">

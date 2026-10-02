@@ -1,4 +1,5 @@
 import usePhotoUrls from "../lib/usePhotoUrls";
+import FadeImg from "./FadeImg";
 import { CATEGORIES, STATUS, TYPES, formatTime } from "../lib/labels";
 
 export function Level({ category }) {
@@ -28,7 +29,7 @@ export default function ReportDetail({ report, showStatus = false }) {
       {photoUrls.length > 0 && (
         <div className="report-photos">
           {photoUrls.map((url, i) => (
-            <img key={url} src={url} alt={`Report photo ${i + 1}`} loading="lazy" />
+            <FadeImg key={url} src={url} alt={`Report photo ${i + 1}`} loading="lazy" />
           ))}
         </div>
       )}

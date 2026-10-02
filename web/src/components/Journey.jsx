@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { prefersReducedMotion } from "../lib/motion";
+import { gsap } from "../lib/gsap";
+import FadeImg from "./FadeImg";
 
 const wiki = (path) => `https://upload.wikimedia.org/wikipedia/commons/thumb/${path}`;
 
@@ -50,12 +52,12 @@ const STOPS = [
   },
 ];
 
-// Pinned horizontal scroll on wide screens: the section is as tall as the track
-// is wide, and vertical scroll progress drives translateX. Narrow screens and
-// reduced-motion users get a native swipeable row instead.
-function usePinnedTrack(sectionRef, trackRef) {
+// Pinned horizontal scroll on wide screens, driven by GSAP ScrollTrigger: the
+// section pins while vertical scroll moves the track sideways, and each photo
+// drifts against its card for depth. Narrow screens and reduced-motion users
+// get a native swipeable row instead.
+function usePinnedTrack(sectionRef, trackRef, progressRef) {
   const [pinned, setPinned] = useState(false);
-  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const query = window.matchMedia("(min-width: 900px)");
@@ -65,49 +67,58 @@ function usePinnedTrack(sectionRef, trackRef) {
     return () => query.removeEventListener("change", update);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (!pinned) return undefined;
     const section = sectionRef.current;
     const track = trackRef.current;
-    if (!pinned) {
-      section.style.height = "";
-      track.style.transform = "";
-      return undefined;
-    }
-    let raf = 0;
-    let distance = 0;
+    const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
 
-    const measure = () => {
-      distance = Math.max(0, track.scrollWidth - window.innerWidth);
-      section.style.height = `${window.innerHeight + distance}px`;
-    };
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const top = section.getBoundingClientRect().top;
-        const p = distance ? Math.min(1, Math.max(0, -top / distance)) : 0;
-        track.style.transform = `translate3d(${-p * distance}px, 0, 0)`;
-        setProgress(p);
+    const ctx = gsap.context(() => {
+      const slide = gsap.to(track, {
+        x: () => -distance(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          pin: true,
+          scrub: 1,
+          end: () => `+=${distance()}`,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            if (progressRef.current) progressRef.current.style.transform = `scaleX(${self.progress})`;
+          },
+        },
       });
-    };
 
-    measure();
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", measure);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", measure);
-    };
-  }, [pinned, sectionRef, trackRef]);
+      gsap.utils.toArray(".journey-stop img", section).forEach((img) => {
+        gsap.fromTo(
+          img,
+          { xPercent: -5 },
+          {
+            xPercent: 5,
+            ease: "none",
+            scrollTrigger: {
+              trigger: img.parentElement,
+              containerAnimation: slide,
+              start: "left right",
+              end: "right left",
+              scrub: true,
+            },
+          },
+        );
+      });
+    }, section);
 
-  return { pinned, progress };
+    return () => ctx.revert();
+  }, [pinned, sectionRef, trackRef, progressRef]);
+
+  return pinned;
 }
 
 export default function Journey() {
   const sectionRef = useRef(null);
   const trackRef = useRef(null);
-  const { pinned, progress } = usePinnedTrack(sectionRef, trackRef);
+  const progressRef = useRef(null);
+  const pinned = usePinnedTrack(sectionRef, trackRef, progressRef);
 
   return (
     <section ref={sectionRef} className="journey" data-pinned={pinned} aria-label="Where plastic washes up">
@@ -123,7 +134,7 @@ export default function Journey() {
 
           {STOPS.map((stop) => (
             <article key={stop.title} className="journey-stop">
-              <img src={stop.image} alt="" loading="lazy" />
+              <FadeImg src={stop.image} alt="" loading="lazy" />
               <div className="journey-copy">
                 <span className="journey-region">{stop.region}</span>
                 <h3 className="serif-italic">{stop.title}</h3>
@@ -137,7 +148,7 @@ export default function Journey() {
             <h3>
               Every coast is connected. <span className="serif-italic">Start with yours.</span>
             </h3>
-            <Link to="/report" className="btn btn-primary">
+            <Link to="/report" className="btn btn-primary" viewTransition>
               Report a beach
             </Link>
           </div>
@@ -145,7 +156,7 @@ export default function Journey() {
 
         {pinned && (
           <div className="journey-progress" aria-hidden="true">
-            <span style={{ transform: `scaleX(${progress})` }} />
+            <span ref={progressRef} />
           </div>
         )}
       </div>

@@ -6,6 +6,7 @@ import ReportDetail from "../components/ReportDetail";
 import OceanConditions from "../components/OceanConditions";
 import BeachPanel from "../components/BeachPanel";
 import AddBeachForm from "../components/AddBeachForm";
+import MapSearch from "../components/MapSearch";
 import usePublishedReports from "../lib/usePublishedReports";
 import { useAllBeaches, useReportsByBeach } from "../lib/beaches";
 import { CATEGORIES } from "../lib/labels";
@@ -21,6 +22,7 @@ export default function MapPage() {
   // Adding a beach: `placing` turns map clicks into a location pick for the form.
   const [placing, setPlacing] = useState(false);
   const [draft, setDraft] = useState(null);
+  const [flyTo, setFlyTo] = useState(null);
 
   const reportParam = params.get("r");
   const beachId = params.get("b") ?? (reportParam ? beachOfReport.get(reportParam) : null);
@@ -62,6 +64,17 @@ export default function MapPage() {
   return (
     <div className="map-page">
       <header className="map-header">
+        <MapSearch
+          beaches={beaches}
+          onBeach={(b) => {
+            setFlyTo({ lat: b.lat, lng: b.lng, zoom: 13 });
+            selectBeach(b.id);
+          }}
+          onPlace={(p) => {
+            setFlyTo({ lat: p.lat, lng: p.lng, zoom: 12 });
+            if (!placing) close();
+          }}
+        />
         <h1>World beach map</h1>
         <p className="report-meta">{status}</p>
         <ul className="map-legend" aria-label="Legend">
@@ -98,6 +111,7 @@ export default function MapPage() {
           selectedReportId={loneReport?.id}
           onSelectReport={(id) => setParams({ r: id })}
           focus={focus}
+          flyTo={flyTo}
           placing={placing}
           onPlace={setDraft}
           draft={draft}

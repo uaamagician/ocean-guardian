@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router";
 import { Camera, Menu, X } from "lucide-react";
 
@@ -32,11 +32,31 @@ function useSolid(isHome) {
   return !isHome || pastHero;
 }
 
+// Slides the pill's highlight to whichever link is active.
+function usePillIndicator(pillRef, pathname) {
+  useLayoutEffect(() => {
+    const pill = pillRef.current;
+    if (!pill) return undefined;
+    const place = () => {
+      const active = pill.querySelector(".nav-link.active");
+      pill.style.setProperty("--ind-opacity", active ? "1" : "0");
+      if (!active) return;
+      pill.style.setProperty("--ind-x", `${active.offsetLeft}px`);
+      pill.style.setProperty("--ind-w", `${active.offsetWidth}px`);
+    };
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [pillRef, pathname]);
+}
+
 export default function Nav() {
   const { pathname } = useLocation();
   const solid = useSolid(pathname === "/");
   const [open, setOpen] = useState(false);
   const [openedAt, setOpenedAt] = useState(pathname);
+  const pillRef = useRef(null);
+  usePillIndicator(pillRef, pathname);
 
   // Close the mobile drawer whenever the route changes.
   if (open && openedAt !== pathname) setOpen(false);
@@ -46,21 +66,21 @@ export default function Nav() {
   return (
     <>
       <nav className="nav" data-solid={solid || open} aria-label="Main">
-        <Link to="/" className="nav-logo">
+        <Link to="/" className="nav-logo" viewTransition>
           <Logo />
           <span className="nav-wordmark">Ocean Guardian</span>
         </Link>
 
-        <div className="nav-pill">
+        <div className="nav-pill" ref={pillRef}>
           {LINKS.map((l) => (
-            <NavLink key={l.to} to={l.to} className={linkClass}>
+            <NavLink key={l.to} to={l.to} className={linkClass} viewTransition>
               {l.label}
             </NavLink>
           ))}
         </div>
 
         <div className="nav-actions">
-          <Link to="/report" className="nav-cta">
+          <Link to="/report" className="nav-cta" viewTransition>
             <Camera aria-hidden="true" />
             <span>
               Report<span className="nav-cta-long"> a beach</span>
@@ -84,7 +104,7 @@ export default function Nav() {
       {open && (
         <div className="nav-drawer">
           {LINKS.map((l) => (
-            <Link key={l.to} to={l.to}>
+            <Link key={l.to} to={l.to} viewTransition>
               {l.label}
             </Link>
           ))}

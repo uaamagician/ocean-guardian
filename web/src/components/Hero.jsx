@@ -1,5 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { Link } from "react-router";
+import { gsap } from "../lib/gsap";
+import { prefersReducedMotion } from "../lib/motion";
 
 // Placeholder pair (public domain, USFWS via Wikimedia Commons): two different
 // beaches, so the coastline shifts at the spotlight's edge. For the final design,
@@ -33,7 +35,8 @@ function useSpotlight(sectionRef, layerRef) {
     };
 
     const setFromClient = (clientX, clientY) => {
-      const rect = section.getBoundingClientRect();
+      // Relative to the layer itself: it shifts with the scroll parallax.
+      const rect = layer.getBoundingClientRect();
       target.x = clientX - rect.left;
       target.y = clientY - rect.top;
       userMoved = true;
@@ -83,20 +86,38 @@ function useSpotlight(sectionRef, layerRef) {
   }, [sectionRef, layerRef]);
 }
 
+// As the hero scrolls away, the photo lags behind and the heading lifts and fades.
+function useScrollAway(sectionRef) {
+  useLayoutEffect(() => {
+    if (prefersReducedMotion()) return undefined;
+    const ctx = gsap.context(() => {
+      const scrub = { trigger: sectionRef.current, start: "top top", end: "bottom top", scrub: true };
+      gsap.to(".hero-media", { yPercent: 18, ease: "none", scrollTrigger: scrub });
+      gsap.to(".hero-heading", { yPercent: -35, opacity: 0, ease: "none", scrollTrigger: { ...scrub, end: "60% top" } });
+      // The bottom copy has its own CSS entrance animation, so GSAP moves its wrapper.
+      gsap.to(".hero-bottom", { y: -60, opacity: 0, ease: "none", scrollTrigger: { ...scrub, end: "45% top" } });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, [sectionRef]);
+}
+
 export default function Hero() {
   const sectionRef = useRef(null);
   const layerRef = useRef(null);
   useSpotlight(sectionRef, layerRef);
+  useScrollAway(sectionRef);
 
   return (
     <section ref={sectionRef} className="hero">
-      <div className="hero-base hero-zoom" style={{ backgroundImage: `url("${BG_CLEAN}")` }} />
-      <div
-        ref={layerRef}
-        className="hero-trash"
-        style={{ backgroundImage: `url("${BG_TRASH}")` }}
-        aria-hidden="true"
-      />
+      <div className="hero-media">
+        <div className="hero-base hero-zoom" style={{ backgroundImage: `url("${BG_CLEAN}")` }} />
+        <div
+          ref={layerRef}
+          className="hero-trash"
+          style={{ backgroundImage: `url("${BG_TRASH}")` }}
+          aria-hidden="true"
+        />
+      </div>
       <div className="hero-shade" aria-hidden="true" />
 
       <div className="hero-heading">
@@ -113,15 +134,17 @@ export default function Hero() {
         </p>
       </div>
 
-      <div className="hero-left hero-anim hero-fade" style={{ animationDelay: "0.7s" }}>
-        <p>More than 11 million tonnes of plastic enter the ocean every year. Some of it washes back, onto beaches we think are clean.</p>
-      </div>
+      <div className="hero-bottom">
+        <div className="hero-left hero-anim hero-fade" style={{ animationDelay: "0.7s" }}>
+          <p>More than 11 million tonnes of plastic enter the ocean every year. Some of it washes back, onto beaches we think are clean.</p>
+        </div>
 
-      <div className="hero-right hero-anim hero-fade" style={{ animationDelay: "0.85s" }}>
-        <p>Snap a photo as you walk by. AI identifies the debris and how much there is, and the beach map updates for everyone.</p>
-        <Link to="/report" className="btn btn-primary">
-          Start reporting
-        </Link>
+        <div className="hero-right hero-anim hero-fade" style={{ animationDelay: "0.85s" }}>
+          <p>Snap a photo as you walk by. AI identifies the debris and how much there is, and the beach map updates for everyone.</p>
+          <Link to="/report" className="btn btn-primary" viewTransition>
+            Start reporting
+          </Link>
+        </div>
       </div>
     </section>
   );

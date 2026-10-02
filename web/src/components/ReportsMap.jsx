@@ -25,6 +25,17 @@ function FocusOn({ lat, lng }) {
   return null;
 }
 
+// Smooth flight for search results; `key` lets the same spot be flown to twice.
+function FlyTo({ target }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!target) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    map.flyTo([target.lat, target.lng], target.zoom, { duration: reduce ? 0 : 1.2 });
+  }, [map, target]);
+  return null;
+}
+
 function radiusFor(zoom, reported, selected) {
   const base = zoom < 5 ? 2.5 : zoom < 8 ? 4 : 6;
   return base + (reported ? 3 : 0) + (selected ? 4 : 0);
@@ -102,6 +113,7 @@ export default function ReportsMap({
   selectedReportId,
   onSelectReport,
   focus,
+  flyTo,
   placing = false,
   onPlace,
   draft,
@@ -128,6 +140,7 @@ export default function ReportsMap({
         maxZoom={19}
       />
       <FocusOn lat={focus?.lat} lng={focus?.lng} />
+      <FlyTo target={flyTo} />
       <PlaceHandler active={placing} onPlace={onPlace} />
       {draft && (
         <CircleMarker

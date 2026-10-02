@@ -1,6 +1,8 @@
+import { useRef } from "react";
 import { Link } from "react-router";
 import LiveOcean from "../components/LiveOcean";
 import { BLEACHING_LEVELS } from "../lib/ocean";
+import useSectionMotion from "../lib/useSectionMotion";
 import "./Home.css";
 
 const LEVEL_MEANING = [
@@ -12,8 +14,10 @@ const LEVEL_MEANING = [
 ];
 
 export default function InfoPage() {
+  const rootRef = useRef(null);
+  useSectionMotion(rootRef);
   return (
-    <>
+    <div ref={rootRef}>
       <div className="info-top" />
       <LiveOcean title="Live ocean conditions" />
 
@@ -63,6 +67,6 @@ export default function InfoPage() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

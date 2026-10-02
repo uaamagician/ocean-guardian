@@ -45,6 +45,12 @@
   --radius-md: 16px;
   --radius-pill: 999px;
   --nav-height: 72px;
+
+  /* One set of curves for the whole site: ease-out for things arriving or
+     answering a press, ease-in-out for things moving across the screen. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --content-width: 1200px;
 
   color-scheme: light;
@@ -58,6 +64,26 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+button {
+  touch-action: manipulation;
+}
+
+/* Lenis smooth scrolling (see SmoothScroll in App.jsx). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
 }
 
 body {
@@ -205,7 +231,6 @@ img {
 
 .nav-link.active {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.14);
 }
 
 .nav-actions {
@@ -229,8 +254,18 @@ img {
   transition: background-color 0.2s;
 }
 
-.nav-cta:hover {
-  background: #f3f4f6;
+.nav-cta {
+  transition: background-color 0.2s var(--ease-out), transform 0.16s var(--ease-out);
+}
+
+.nav-cta:active {
+  transform: scale(0.96);
+}
+
+@media (hover: hover) {
+  .nav-cta:hover {
+    background: #f3f4f6;
+  }
 }
 
 .nav-cta svg {
@@ -283,6 +318,7 @@ img {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    isolation: isolate;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -291,6 +327,25 @@ img {
     border: 1px solid rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(12px);
+  }
+
+  /* The active highlight is one element that slides between links. */
+  .nav-pill::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 6px;
+    bottom: 6px;
+    left: 0;
+    width: var(--ind-w, 0);
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.18);
+    opacity: var(--ind-opacity, 0);
+    transform: translateX(var(--ind-x, 0));
+    transition:
+      transform 0.45s var(--ease-out),
+      width 0.45s var(--ease-out),
+      opacity 0.3s var(--ease-out);
   }
 
   .nav-menu-button,
@@ -358,7 +413,21 @@ img {
   text-decoration: none;
   color: var(--ink);
   cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.16s var(--ease-out),
+    background-color 0.2s var(--ease-out),
+    border-color 0.2s var(--ease-out),
+    box-shadow 0.25s var(--ease-out);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) {
+  .btn:not(.btn-primary):not(:disabled):hover {
+    background: rgba(15, 46, 61, 0.06);
+  }
 }
 
 .btn-primary {
@@ -368,15 +437,18 @@ img {
   padding: 0 28px;
 }
 
-.btn-primary:hover {
-  background: var(--buoy-hover);
-  border-color: var(--buoy-hover);
-  transform: scale(1.03);
-  box-shadow: 0 10px 24px rgba(232, 112, 42, 0.3);
+@media (hover: hover) {
+  .btn-primary:not(:disabled):hover {
+    background: var(--buoy-hover);
+    border-color: var(--buoy-hover);
+    transform: scale(1.03);
+    box-shadow: 0 10px 24px rgba(232, 112, 42, 0.3);
+  }
 }
 
-.btn-primary:active {
-  transform: scale(0.95);
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.96);
+  box-shadow: none;
 }
 
 .btn:disabled {
@@ -577,5 +649,83 @@ img {
   .hero-zoom {
     animation: none;
     opacity: 1;
+  }
+}
+
+/* ---------- Motion details ---------- */
+
+/* Images fade in once decoded instead of popping in (see FadeImg). */
+.fade-img {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out);
+}
+
+.fade-img.is-loaded {
+  opacity: 1;
+}
+
+/* Reading progress along the top edge, driven purely by scroll position. */
+.scroll-progress {
+  position: fixed;
+  z-index: 1001;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--buoy);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: progress-grow linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+@keyframes progress-grow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Page changes cross-fade with a short rise; the nav stays put. */
+.nav {
+  view-transition-name: site-nav;
+}
+
+::view-transition-group(site-nav) {
+  animation: none;
+}
+
+::view-transition-old(root) {
+  animation: vt-out 0.22s var(--ease-in) both;
+}
+
+::view-transition-new(root) {
+  animation: vt-in 0.5s var(--ease-out) both;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

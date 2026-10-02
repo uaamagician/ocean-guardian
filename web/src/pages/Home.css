@@ -698,9 +698,8 @@
   overflow: hidden;
 }
 
+/* GSAP pins the whole section while the track slides. */
 .journey[data-pinned="true"] .journey-sticky {
-  position: sticky;
-  top: 0;
   height: 100vh;
   height: 100dvh;
   display: flex;
@@ -780,6 +779,14 @@
   width: min(62vw, 880px);
   height: 72vh;
   max-height: none;
+}
+
+/* Wider than the card so the ±5% parallax never shows an edge. */
+.journey[data-pinned="true"] .journey-stop img {
+  left: -6%;
+  width: 112%;
+  /* The global img reset caps width at 100%, which would expose the edge. */
+  max-width: none;
 }
 
 .journey-stop img {
@@ -1189,4 +1196,22 @@
   bottom: var(--space-3);
   font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.55);
+}
+
+/* Holds both hero photos so the scroll parallax moves them together. */
+.hero-media {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.hero-bottom {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.hero-bottom > * {
+  pointer-events: auto;
 }
