@@ -67,6 +67,79 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Cleanup events. The work order is a copy of the AI plan at creation time.
+    match /events/{eventId} {
+      function isOpenEvent() {
+        let e = get(/databases/$(database)/documents/events/$(eventId)).data;
+        return e.status == "open" && e.startsAt > request.time;
+      }
+      function isOrganizer() {
+        return request.auth != null
+          && get(/databases/$(database)/documents/events/$(eventId)).data.createdBy == request.auth.uid;
+      }
+
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(["beachId", "beachName", "location", "title", "startsAt", "durationHours", "meetingPoint", "organizer", "description", "capacity", "workOrder", "createdBy", "createdAt", "status"])
+        && request.resource.data.keys().hasAll(["beachId", "beachName", "location", "title", "startsAt", "durationHours", "meetingPoint", "organizer", "description", "capacity", "workOrder", "createdBy", "createdAt", "status"])
+        && request.resource.data.beachId is string && request.resource.data.beachId.size() <= 100
+        && request.resource.data.beachName is string && request.resource.data.beachName.size() <= 120
+        && isValidLocation(request.resource.data.location)
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 3 && request.resource.data.title.size() <= 100
+        && request.resource.data.startsAt is timestamp && request.resource.data.startsAt > request.time
+        && request.resource.data.durationHours is number
+        && request.resource.data.durationHours >= 0.5 && request.resource.data.durationHours <= 12
+        && request.resource.data.meetingPoint is string && request.resource.data.meetingPoint.size() <= 200
+        && request.resource.data.organizer is map
+        && request.resource.data.organizer.keys().hasOnly(["name", "type"])
+        && request.resource.data.organizer.name is string
+        && request.resource.data.organizer.name.size() >= 2 && request.resource.data.organizer.name.size() <= 80
+        && request.resource.data.organizer.type in ["individual", "school", "ngo", "company"]
+        && request.resource.data.description is string && request.resource.data.description.size() <= 1000
+        && request.resource.data.capacity is int
+        && request.resource.data.capacity >= 1 && request.resource.data.capacity <= 500
+        && request.resource.data.workOrder is map
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.status == "open";
+      // The organizer can only cancel; everything else is fixed once people have signed up.
+      allow update: if request.auth != null
+        && resource.data.createdBy == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"])
+        && request.resource.data.status == "cancelled";
+      allow delete: if false;
+
+      // One sign-up per person, keyed by uid. Names and group sizes are public.
+      match /signups/{uid} {
+        allow read: if true;
+        allow create, update: if request.auth != null && request.auth.uid == uid
+          && isOpenEvent()
+          && request.resource.data.keys().hasOnly(["name", "groupSize", "bringing", "note", "createdAt"])
+          && request.resource.data.keys().hasAll(["name", "groupSize", "bringing", "note", "createdAt"])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 40
+          && request.resource.data.groupSize is int
+          && request.resource.data.groupSize >= 1 && request.resource.data.groupSize <= 10
+          && request.resource.data.bringing is list && request.resource.data.bringing.size() <= 13
+          && request.resource.data.note is string && request.resource.data.note.size() <= 200
+          && (resource == null
+            ? request.resource.data.createdAt == request.time
+            : request.resource.data.createdAt == resource.data.createdAt);
+        allow delete: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // Contact details are private: only the person and the organizer can read them.
+      match /contacts/{uid} {
+        allow read: if request.auth != null && (request.auth.uid == uid || isOrganizer());
+        allow create, update: if request.auth != null && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(["contact"])
+          && request.resource.data.contact is string
+          && request.resource.data.contact.size() >= 3 && request.resource.data.contact.size() <= 120;
+        allow delete: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

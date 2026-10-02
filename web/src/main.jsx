@@ -11,6 +11,8 @@ import MyReportsPage from "./pages/MyReportsPage.jsx";
 import InfoPage from "./pages/InfoPage.jsx";
 import ActionPage from "./pages/ActionPage.jsx";
 import GuidePage from "./pages/GuidePage.jsx";
+import CreateEventPage from "./pages/CreateEventPage.jsx";
+import EventPage from "./pages/EventPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +26,8 @@ const router = createBrowserRouter([
       { path: "info", element: <InfoPage /> },
       { path: "action", element: <ActionPage /> },
       { path: "guide", element: <GuidePage /> },
+      { path: "events/new", element: <CreateEventPage /> },
+      { path: "events/:eventId", element: <EventPage /> },
     ],
   },
 ]);

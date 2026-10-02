@@ -961,3 +961,34 @@
   height: 24px;
   color: var(--buoy);
 }
+
+.plan-events {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.plan-events h4 {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+/* Narrow panel: event cards drop the progress column. */
+.plan-events .event-card {
+  grid-template-columns: 48px 1fr;
+  padding: var(--space-3);
+  background: var(--paper);
+}
+
+.plan-events .event-card-count,
+.plan-events .cl-chevron {
+  display: none;
+}
+
+.plan-organize svg {
+  width: 18px;
+  height: 18px;
+}

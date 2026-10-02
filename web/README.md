@@ -89,3 +89,13 @@ AI 分析通常 5-10 秒，Gemini 塞車時會自動重試，最慢實測約 70 
 ## Field guide
 
 垃圾種類、清理工具和安全守則都集中在 `src/lib/guide.js`，`/guide` 頁、首頁簡介和淨灘規劃都從這裡讀，不要在其他地方另外寫一份。
+
+## 淨灘活動與工單
+
+`src/lib/events.js` 包含所有讀寫。資料結構：
+
+- `events/{id}`：活動本身。`workOrder` 是建立當下從 AI 規劃複製的快照（人數、時長、袋數、裝備、分組 `teams`、危險、建議），之後規劃更新也不會改到已經開放報名的活動。建立後只有主辦人能把 `status` 改成 `cancelled`，其他欄位都不能改
+- `events/{id}/signups/{uid}`：每人一筆，公開（暱稱、人數 `groupSize`、可以帶的工具 `bringing`、備註）。修改報名請用 `updateDoc`，不要重寫 `createdAt`
+- `events/{id}/contacts/{uid}`：聯絡方式，只有本人和主辦人讀得到
+
+主辦人身分綁在匿名登入的 uid 上，換瀏覽器或清除網站資料就會失去主辦人權限（之後接正式登入再解決）。活動頁的「On the day」天氣約 16 天內、潮汐約一週內才有預報。

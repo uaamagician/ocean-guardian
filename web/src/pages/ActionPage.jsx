@@ -1,8 +1,10 @@
 import { useMemo, useRef } from "react";
 import { Link } from "react-router";
-import { BookOpen, CalendarClock, ChevronRight, Sparkles } from "lucide-react";
+import { BookOpen, ChevronRight, Sparkles } from "lucide-react";
 import { Level } from "../components/ReportDetail";
 import { Reveal } from "../components/Motion";
+import EventCard from "../components/EventCard";
+import { useUpcomingEvents } from "../lib/events";
 import usePublishedReports from "../lib/usePublishedReports";
 import { useAllBeaches, useReportsByBeach } from "../lib/beaches";
 import { MIN_REPORTS_FOR_PLAN, planInputs, useStoredPlan } from "../lib/cleanup";
@@ -10,6 +12,7 @@ import { formatTime } from "../lib/labels";
 import useSectionMotion from "../lib/useSectionMotion";
 import "./Home.css";
 import "./ActionPage.css";
+import "./Events.css";
 
 const SEVERITY_RANK = { heavy: 4, moderate: 3, light: 2, clean: 1 };
 const MAX_ROWS = 20;
@@ -47,6 +50,7 @@ export default function ActionPage() {
   const { reports } = usePublishedReports();
   const { beaches } = useAllBeaches();
   const { byBeach } = useReportsByBeach(beaches, reports);
+  const upcoming = useUpcomingEvents();
 
   // Dirtiest first, then the beaches with the most evidence.
   const rows = useMemo(() => {
@@ -71,14 +75,38 @@ export default function ActionPage() {
           <Reveal className="band-head">
             <h2>Beach cleanups</h2>
             <p>
-              Once a beach has {MIN_REPORTS_FOR_PLAN} or more reports, AI reads them, looks at the latest photos and
-              estimates the crew, the time and the gear a cleanup needs. Organizers can skip the site visit.
+              Join a cleanup near you, or organize one. Once a beach has {MIN_REPORTS_FOR_PLAN} or more reports, AI
+              plans the crew, time and gear, and turns it into a work order volunteers sign up to.
             </p>
           </Reveal>
         </div>
       </section>
 
       <section className="band">
+        <div className="band-inner">
+          <Reveal className="band-head">
+            <h2>Upcoming cleanups</h2>
+            <p>Sign up with a nickname, say how many you're bringing and which gear you can carry.</p>
+          </Reveal>
+          {upcoming === undefined && <p className="report-meta">Loading cleanups…</p>}
+          {upcoming?.length === 0 && (
+            <p className="report-meta">
+              Nothing scheduled yet. Pick a beach below that has a plan, and organize the first one.
+            </p>
+          )}
+          {upcoming?.length > 0 && (
+            <ul className="event-list">
+              {upcoming.map((e, i) => (
+                <Reveal as="li" key={e.id} delay={Math.min(i, 6) * 50}>
+                  <EventCard event={e} />
+                </Reveal>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
+
+      <section className="band band-paper">
         <div className="band-inner">
           <Reveal className="band-head">
             <h2>Beaches that need attention</h2>
@@ -122,14 +150,14 @@ export default function ActionPage() {
         </div>
       </section>
 
-      <section className="band band-paper">
+      <section className="band">
         <div className="band-inner cl-extra">
           <Reveal className="notice">
-            <CalendarClock aria-hidden="true" className="cl-icon" />
-            <h3>Organize and join cleanups</h3>
+            <Sparkles aria-hidden="true" className="cl-icon" />
+            <h3>Organize a cleanup</h3>
             <p>
-              Hosting a cleanup and signing up online is the next feature on the way. Until then, a beach's plan gives
-              organizers everything they need to brief a crew.
+              Open a beach with a plan, then choose “Organize a cleanup from this plan”. You set the time and meeting
+              point; the AI plan becomes the work order: crew size, teams and a gear checklist volunteers fill in.
             </p>
           </Reveal>
           <Reveal className="notice" delay={80}>

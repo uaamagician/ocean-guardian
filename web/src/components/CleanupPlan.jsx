@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { Clock, RefreshCw, Sparkles, Trash2, Truck, Users } from "lucide-react";
-import { MIN_REPORTS_FOR_PLAN, planInputs, requestPlan, useStoredPlan } from "../lib/cleanup";
+import { CalendarPlus, Clock, RefreshCw, Sparkles, Trash2, Truck, Users } from "lucide-react";
+import { MIN_REPORTS_FOR_PLAN, PLAN_VERSION, planInputs, requestPlan, useStoredPlan } from "../lib/cleanup";
 import { TOOL_BY_ID } from "../lib/guide";
 import { Level } from "./ReportDetail";
+import EventCard from "./EventCard";
+import { useBeachEvents } from "../lib/events";
+import "../pages/Events.css";
 
 const range = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
 
@@ -96,6 +99,31 @@ function PlanBody({ record }) {
   );
 }
 
+// Cleanups already scheduled here, and the way to organize one from this plan.
+function BeachEvents({ beach }) {
+  const events = useBeachEvents(beach.id);
+  return (
+    <section className="plan-events">
+      <h4>Cleanups at this beach</h4>
+      {events?.length > 0 ? (
+        <ul className="event-list">
+          {events.map((e) => (
+            <li key={e.id}>
+              <EventCard event={e} showBeach={false} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="report-meta">{events === undefined ? "Loading…" : "None scheduled yet."}</p>
+      )}
+      <Link to={`/events/new?b=${encodeURIComponent(beach.id)}`} className="btn plan-organize" viewTransition>
+        <CalendarPlus aria-hidden="true" />
+        Organize a cleanup from this plan
+      </Link>
+    </section>
+  );
+}
+
 export default function CleanupPlan({ beach, allReports }) {
   const reports = planInputs(allReports, beach);
   const stored = useStoredPlan(beach.id);
@@ -136,8 +164,11 @@ export default function CleanupPlan({ beach, allReports }) {
 
   // A fresh result wins; otherwise show the stored plan.
   const record = mine.result?.status === "ok" ? mine.result : stored;
-  const stale = record && (record.reportCount !== reports.length || (record.latestReportId && record.latestReportId !== reports[0].id));
-  const newReports = record ? Math.max(1, reports.length - record.reportCount) : 0;
+  const outdated = record && record.version !== PLAN_VERSION;
+  const stale =
+    record &&
+    (outdated || record.reportCount !== reports.length || (record.latestReportId && record.latestReportId !== reports[0].id));
+  const newReports = record ? Math.max(0, reports.length - record.reportCount) : 0;
   const generated = record?.generatedAt?.toDate?.() ?? (record?.generatedAt ? new Date(record.generatedAt) : null);
 
   return (
@@ -156,14 +187,18 @@ export default function CleanupPlan({ beach, allReports }) {
 
       {mine.error && <p className="error-text">{mine.error}</p>}
 
+      {record && !stale && <BeachEvents beach={beach} />}
+
       {stored !== undefined && (!record || stale) && (
         <button type="button" className="btn btn-primary plan-run" onClick={run} disabled={mine.loading}>
           {record ? <RefreshCw aria-hidden="true" /> : <Sparkles aria-hidden="true" />}
           {mine.loading
             ? "Planning… this can take up to a minute"
-            : record
-              ? `Update plan with ${newReports} new report${newReports > 1 ? "s" : ""}`
-              : "Plan a cleanup with AI"}
+            : !record
+              ? "Plan a cleanup with AI"
+              : newReports > 0
+                ? `Update plan with ${newReports} new report${newReports > 1 ? "s" : ""}`
+                : "Update plan with team splits"}
         </button>
       )}
     </div>

@@ -21,6 +21,8 @@ const TOOLS = [
 ];
 const SEVERITIES = ["clean", "light", "moderate", "heavy"];
 
+// Bump when the plan's shape changes so stored plans are regenerated once.
+const PLAN_VERSION = 2;
 const MIN_REPORTS = 2;
 const RADIUS_KM = 3;
 const PHOTO_REPORTS = 3;
@@ -86,7 +88,10 @@ recent photos, estimate what a one-session cleanup of this beach needs.
   for glass, needles or sharp metal, carts or shovels only when loads are heavy or items are buried.
 - heavyMachinery: needed only for items people can't safely carry (tires, drums, large nets, furniture).
 - hazards: concrete risks from the reports (sharp glass, tangled nets, slippery rocks), at most 4.
-- tips: at most 3 short practical tips (timing, splitting into teams, sorting for recycling).
+- teams: split the crew into 1 to 4 teams for the work order. Each has a short name, a number of people,
+  and one sentence describing its task (e.g. tideline sweep, net removal, sorting and weighing). The people
+  in all teams should add up to roughly volunteers.max.
+- tips: at most 3 short practical tips (timing, sorting for recycling, where to start).
 - summary: one or two plain sentences for organizers.
 - confidence: 0 to 1, lower when reports are few, old or disagree.
 If the beach is clean, say so: few volunteers, short time, no heavy machinery.
@@ -125,11 +130,31 @@ const SCHEMA = {
       required: ["needed", "reason"],
     },
     hazards: { type: "array", items: { type: "string" } },
+    teams: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: { name: { type: "string" }, people: { type: "integer" }, task: { type: "string" } },
+        required: ["name", "people", "task"],
+      },
+    },
     tips: { type: "array", items: { type: "string" } },
     summary: { type: "string" },
     confidence: { type: "number" },
   },
-  required: ["severity", "volunteers", "hours", "bags", "gear", "heavyMachinery", "hazards", "tips", "summary", "confidence"],
+  required: [
+    "severity",
+    "volunteers",
+    "hours",
+    "bags",
+    "gear",
+    "heavyMachinery",
+    "hazards",
+    "teams",
+    "tips",
+    "summary",
+    "confidence",
+  ],
 };
 
 const clampInt = (n, lo, hi) => Math.min(hi, Math.max(lo, Math.round(Number(n) || 0)));
@@ -154,6 +179,11 @@ function clean(plan) {
       reason: plan.heavyMachinery?.reason ? String(plan.heavyMachinery.reason) : null,
     },
     hazards: (plan.hazards ?? []).slice(0, 4).map(String),
+    teams: (plan.teams ?? []).slice(0, 4).map((t) => ({
+      name: String(t.name ?? "Team"),
+      people: clampInt(t.people, 1, 200),
+      task: String(t.task ?? ""),
+    })),
     tips: (plan.tips ?? []).slice(0, 3).map(String),
     summary: String(plan.summary ?? ""),
     confidence: Math.min(1, Math.max(0, Number(plan.confidence) || 0)),
@@ -187,7 +217,12 @@ exports.planCleanup = onCall(
     // Reuse the stored plan until a new report arrives near this beach.
     const planRef = db.collection("cleanupPlans").doc(beachId);
     const cached = await planRef.get();
-    if (cached.exists && cached.get("latestReportId") === reports[0].id && cached.get("reportCount") === reports.length) {
+    if (
+      cached.exists &&
+      cached.get("version") === PLAN_VERSION &&
+      cached.get("latestReportId") === reports[0].id &&
+      cached.get("reportCount") === reports.length
+    ) {
       return { status: "ok", cached: true, ...serialize(cached.data()) };
     }
 
@@ -217,6 +252,7 @@ exports.planCleanup = onCall(
       plan,
       reportCount: reports.length,
       latestReportId: reports[0].id,
+      version: PLAN_VERSION,
       model,
       generatedAt: FieldValue.serverTimestamp(),
     };
@@ -230,6 +266,8 @@ function serialize(doc) {
   return {
     plan: doc.plan,
     reportCount: doc.reportCount,
+    latestReportId: doc.latestReportId,
+    version: doc.version,
     model: doc.model,
     generatedAt: doc.generatedAt?.toDate?.().toISOString() ?? new Date().toISOString(),
   };

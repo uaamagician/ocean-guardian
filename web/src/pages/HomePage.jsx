@@ -242,7 +242,7 @@ function CleanupPreview() {
           <li>
             <Users aria-hidden="true" />
             <h3>Team up and sign up</h3>
-            <p>Coming next: companies, NGOs and school clubs host a cleanup, and anyone signs up online.</p>
+            <p>Companies, NGOs and school clubs host a cleanup; anyone signs up and says what gear they'll bring.</p>
           </li>
           <li>
             <Package aria-hidden="true" />

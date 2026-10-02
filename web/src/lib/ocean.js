@@ -200,3 +200,49 @@ export function fetchTides(lat, lng) {
     return { high, low };
   });
 }
+
+// Weather and tides for one calendar day (YYYY-MM-DD, the beach's local date).
+// Weather reaches about 16 days out and tides about a week: outOfRange means no
+// weather yet, and tides is null when only the tide forecast is out of reach.
+export function fetchDayOutlook(lat, lng, date) {
+  return cached(`day:${round(lat)},${round(lng)},${date}`, async () => {
+    const day = { latitude: lat, longitude: lng, start_date: date, end_date: date, timezone: "auto" };
+    const [wxRes, seaRes] = await Promise.all([
+      fetch(
+        `${FORECAST}?${new URLSearchParams({
+          ...day,
+          daily:
+            "temperature_2m_max,precipitation_probability_max,wind_speed_10m_max,uv_index_max,sunrise,sunset,weather_code",
+        })}`,
+      ),
+      fetch(`${OPEN_METEO}?${new URLSearchParams({ ...day, hourly: "sea_level_height_msl" })}`),
+    ]);
+    // Open-Meteo answers 400 for dates outside its forecast window.
+    if (wxRes.status === 400) return { outOfRange: true };
+    if (!wxRes.ok) throw new Error(`Open-Meteo forecast ${wxRes.status}`);
+    const wx = await wxRes.json();
+    const sea = seaRes.ok ? await seaRes.json() : null;
+
+    const d = wx.daily;
+    const times = sea?.hourly?.time ?? [];
+    const levels = sea?.hourly?.sea_level_height_msl ?? [];
+    const tides = sea ? [] : null;
+    for (let i = 1; i < levels.length - 1; i++) {
+      const [prev, cur, next] = [levels[i - 1], levels[i], levels[i + 1]];
+      if (prev == null || cur == null || next == null) continue;
+      if (cur > prev && cur >= next) tides?.push({ type: "high", time: times[i], height: cur });
+      if (cur < prev && cur <= next) tides?.push({ type: "low", time: times[i], height: cur });
+    }
+    return {
+      outOfRange: false,
+      tempMax: d.temperature_2m_max?.[0],
+      rainChance: d.precipitation_probability_max?.[0],
+      windMax: d.wind_speed_10m_max?.[0],
+      uvMax: d.uv_index_max?.[0],
+      code: d.weather_code?.[0],
+      sunrise: d.sunrise?.[0],
+      sunset: d.sunset?.[0],
+      tides,
+    };
+  });
+}

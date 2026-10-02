@@ -4,6 +4,8 @@ import Footer from "./components/Footer";
 import SmoothScroll from "./components/SmoothScroll";
 
 const LONG_PAGES = new Set(["/", "/info", "/guide", "/action"]);
+// Event pages are long too, but their paths carry an id.
+const isLongPage = (path) => LONG_PAGES.has(path) || path.startsWith("/events/");
 
 export default function App() {
   const { pathname } = useLocation();
@@ -13,7 +15,7 @@ export default function App() {
     <>
       <SmoothScroll enabled={!isMap} />
       <ScrollRestoration />
-      {LONG_PAGES.has(pathname) && <div className="scroll-progress" aria-hidden="true" />}
+      {isLongPage(pathname) && <div className="scroll-progress" aria-hidden="true" />}
       <Nav />
       <main className="app-main">
         <Outlet />

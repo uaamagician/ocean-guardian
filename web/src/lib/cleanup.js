@@ -10,6 +10,8 @@ import { BEACH_RADIUS_KM } from "./beaches";
 const planCleanupFn = httpsCallable(functions, "planCleanup", { timeout: 300_000 });
 
 export const MIN_REPORTS_FOR_PLAN = 2;
+// Matches PLAN_VERSION in functions/planCleanup.js; older plans lack team splits.
+export const PLAN_VERSION = 2;
 
 // Same selection the planCleanup function makes, so "is this plan out of date?"
 // is answered the same way on both sides.

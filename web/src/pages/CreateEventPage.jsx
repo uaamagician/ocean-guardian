@@ -1,0 +1,215 @@
+import { useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router";
+import { Clock, Trash2, Users } from "lucide-react";
+import { useAllBeaches } from "../lib/beaches";
+import { useStoredPlan } from "../lib/cleanup";
+import { ORGANIZER_TYPES, createEvent } from "../lib/events";
+import { TOOL_BY_ID } from "../lib/guide";
+import "./Events.css";
+
+const span = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
+
+// Next Saturday at 8:00, before the midday sun.
+function defaultStart() {
+  const d = new Date();
+  d.setDate(d.getDate() + ((6 - d.getDay() + 7) % 7 || 7));
+  return { date: d.toLocaleDateString("en-CA"), time: "08:00" };
+}
+
+function EventForm({ beach, record }) {
+  const navigate = useNavigate();
+  const plan = record.plan;
+  const [now] = useState(() => Date.now());
+  const [form, setForm] = useState(() => ({
+    title: `Cleanup at ${beach.name}`.slice(0, 100),
+    ...defaultStart(),
+    durationHours: Math.max(0.5, Math.ceil(plan.hours * 2) / 2),
+    meetingPoint: "",
+    organizerName: "",
+    organizerType: "individual",
+    capacity: Math.min(500, Math.max(plan.volunteers.max, 1)),
+    description: "",
+    contact: "",
+  }));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+
+  const startsAt = new Date(`${form.date}T${form.time}`);
+  const inFuture = startsAt.getTime() > now + 60_000;
+  const valid =
+    form.title.trim().length >= 3 && form.organizerName.trim().length >= 2 && inFuture && form.capacity >= 1;
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!valid) return;
+    setSaving(true);
+    setError("");
+    try {
+      const id = await createEvent({
+        beach,
+        planRecord: record,
+        form: { ...form, startsAt, durationHours: Number(form.durationHours), capacity: Math.round(Number(form.capacity)) },
+      });
+      navigate(`/events/${id}`, { viewTransition: true });
+    } catch (err) {
+      console.error(err);
+      setError("Couldn't create the cleanup. Check your connection and try again.");
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form className="create-form" onSubmit={submit}>
+      <label className="field">
+        <span>Title</span>
+        <input value={form.title} maxLength={100} onChange={set("title")} required />
+      </label>
+
+      <div className="field-row">
+        <label className="field">
+          <span>Date</span>
+          <input type="date" value={form.date} min={new Date(now).toLocaleDateString("en-CA")} onChange={set("date")} required />
+        </label>
+        <label className="field">
+          <span>Start time</span>
+          <input type="time" value={form.time} onChange={set("time")} required />
+        </label>
+        <label className="field">
+          <span>Hours</span>
+          <input type="number" min={0.5} max={12} step={0.5} value={form.durationHours} onChange={set("durationHours")} />
+        </label>
+      </div>
+      {!inFuture && <p className="error-text">Pick a date and time in the future.</p>}
+
+      <label className="field">
+        <span>
+          Meeting point <span className="report-meta">(optional)</span>
+        </span>
+        <input
+          value={form.meetingPoint}
+          maxLength={200}
+          placeholder="For example: car park at the north end, by the lifeguard tower"
+          onChange={set("meetingPoint")}
+        />
+      </label>
+
+      <div className="field-row">
+        <label className="field">
+          <span>Organizer name</span>
+          <input value={form.organizerName} maxLength={80} placeholder="You, your club or company" onChange={set("organizerName")} required />
+        </label>
+        <label className="field">
+          <span>Spots</span>
+          <input type="number" min={1} max={500} value={form.capacity} onChange={set("capacity")} />
+        </label>
+      </div>
+
+      <fieldset className="field">
+        <legend>Organized by</legend>
+        <div className="kind-options">
+          {Object.entries(ORGANIZER_TYPES).map(([value, label]) => (
+            <label key={value} className="kind-option">
+              <input type="radio" name="orgType" checked={form.organizerType === value} onChange={() => setForm((f) => ({ ...f, organizerType: value }))} />
+              <span>{label}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <label className="field">
+        <span>
+          Message to volunteers <span className="report-meta">(optional)</span>
+        </span>
+        <textarea rows={3} maxLength={1000} value={form.description} onChange={set("description")} />
+      </label>
+
+      <label className="field">
+        <span>
+          Your phone or email <span className="report-meta">(optional, only you see it)</span>
+        </span>
+        <input value={form.contact} maxLength={120} onChange={set("contact")} />
+      </label>
+
+      {error && <p className="error-text">{error}</p>}
+      <p className="bp-note">
+        The work order is copied from the AI plan now, so later updates to the plan won't change this cleanup. The event
+        and the names people sign up with are public.
+      </p>
+      <button type="submit" className="btn btn-primary" disabled={!valid || saving}>
+        {saving ? "Creating…" : "Create cleanup and work order"}
+      </button>
+    </form>
+  );
+}
+
+export default function CreateEventPage() {
+  const [params] = useSearchParams();
+  const beachId = params.get("b") ?? "";
+  const { beaches } = useAllBeaches();
+  const beach = beaches?.find((b) => b.id === beachId);
+  const record = useStoredPlan(beachId || "none");
+
+  if (!beaches || record === undefined) {
+    return (
+      <div className="page">
+        <p className="report-meta">Loading…</p>
+      </div>
+    );
+  }
+  if (!beach || !record) {
+    return (
+      <div className="page">
+        <h1>Plan the cleanup first</h1>
+        <p className="page-intro">
+          A cleanup starts from the beach's AI plan, which sets the crew size and gear for the work order.
+        </p>
+        <Link to={beach ? `/map?b=${encodeURIComponent(beach.id)}&t=cleanup` : "/action"} className="btn btn-primary" viewTransition>
+          {beach ? "Open the beach's cleanup plan" : "See beaches that need a cleanup"}
+        </Link>
+      </div>
+    );
+  }
+
+  const plan = record.plan;
+  return (
+    <div className="page page-wide create-page">
+      <div className="section">
+        <span className="report-label">Organize a cleanup</span>
+        <h1>{beach.name}</h1>
+        <p className="page-intro">Set a time and place. Volunteers sign up on the cleanup's page and say what gear they can bring.</p>
+      </div>
+
+      <div className="create-layout">
+        <EventForm beach={beach} record={record} />
+
+        <aside className="create-plan">
+          <span className="report-label">From the AI plan</span>
+          <div className="plan-stats">
+            <div>
+              <Users aria-hidden="true" />
+              <strong>{span(plan.volunteers)}</strong>
+              <span>volunteers</span>
+            </div>
+            <div>
+              <Clock aria-hidden="true" />
+              <strong>{plan.hours} h</strong>
+              <span>estimated</span>
+            </div>
+            <div>
+              <Trash2 aria-hidden="true" />
+              <strong>{span(plan.bags)}</strong>
+              <span>full bags</span>
+            </div>
+          </div>
+          <p className="report-meta">{plan.summary}</p>
+          <ul className="report-items">
+            {plan.gear.map((g) => (
+              <li key={g.tool}>{TOOL_BY_ID[g.tool]?.name}</li>
+            ))}
+          </ul>
+        </aside>
+      </div>
+    </div>
+  );
+}
