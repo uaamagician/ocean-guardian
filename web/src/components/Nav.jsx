@@ -1,13 +1,14 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router";
 import { Camera, Menu, X } from "lucide-react";
+import UserMenu from "./UserMenu";
+import { isGoogleUser, useUser } from "../lib/auth";
 
 const LINKS = [
   { to: "/map", label: "Beach Map" },
   { to: "/action", label: "Cleanups" },
   { to: "/guide", label: "Field Guide" },
   { to: "/info", label: "Ocean Data" },
-  { to: "/mine", label: "My Reports" },
 ];
 
 function Logo() {
@@ -58,6 +59,7 @@ export default function Nav() {
   const [openedAt, setOpenedAt] = useState(pathname);
   const pillRef = useRef(null);
   usePillIndicator(pillRef, pathname);
+  const { user } = useUser();
 
   // Close the mobile drawer whenever the route changes.
   if (open && openedAt !== pathname) setOpen(false);
@@ -67,7 +69,7 @@ export default function Nav() {
   return (
     <>
       <nav className="nav" data-solid={solid || open} aria-label="Main">
-        <Link to="/" className="nav-logo" viewTransition>
+        <Link to="/" className="nav-logo" aria-label="Ocean Guardian home" viewTransition>
           <Logo />
           <span className="nav-wordmark">Ocean Guardian</span>
         </Link>
@@ -81,12 +83,13 @@ export default function Nav() {
         </div>
 
         <div className="nav-actions">
-          <Link to="/report" className="nav-cta" viewTransition>
+          <Link to="/report" className="nav-cta" aria-label="Report a beach" viewTransition>
             <Camera aria-hidden="true" />
-            <span>
+            <span className="nav-cta-text">
               Report<span className="nav-cta-long"> a beach</span>
             </span>
           </Link>
+          <UserMenu />
           <button
             type="button"
             className="nav-menu-button"
@@ -109,6 +112,12 @@ export default function Nav() {
               {l.label}
             </Link>
           ))}
+          <Link to="/me" viewTransition>
+            {isGoogleUser(user) ? "Profile and my cleanups" : "My cleanups"}
+          </Link>
+          <Link to="/mine" viewTransition>
+            My reports
+          </Link>
         </div>
       )}
     </>

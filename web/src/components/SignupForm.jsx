@@ -3,12 +3,13 @@ import { Minus, Plus, UserCheck } from "lucide-react";
 import { TOOL_BY_ID } from "../lib/guide";
 import { saveSignup, withdraw } from "../lib/events";
 
-export default function SignupForm({ event, mySignup, myContact, full }) {
+export default function SignupForm({ event, user, mySignup, myContact, full }) {
   const [editing, setEditing] = useState(!mySignup);
-  const [name, setName] = useState(mySignup?.name ?? "");
+  // New sign-ups start from the Google profile; people can change both.
+  const [name, setName] = useState(mySignup?.name ?? (user.displayName ?? "").slice(0, 40));
   const [groupSize, setGroupSize] = useState(mySignup?.groupSize ?? 1);
   const [bringing, setBringing] = useState(mySignup?.bringing ?? []);
-  const [contact, setContact] = useState(myContact ?? "");
+  const [contact, setContact] = useState(mySignup ? (myContact ?? "") : (myContact || user.email || ""));
   const [note, setNote] = useState(mySignup?.note ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");

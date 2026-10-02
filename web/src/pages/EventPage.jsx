@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router";
 import { Ban, CalendarDays, MapPin } from "lucide-react";
 import WorkOrder from "../components/WorkOrder";
 import SignupForm from "../components/SignupForm";
+import SignInGate from "../components/SignInGate";
+import { isGoogleUser, useUser } from "../lib/auth";
 import { TOOL_BY_ID } from "../lib/guide";
 import {
   ORGANIZER_TYPES,
@@ -12,7 +14,6 @@ import {
   useEvent,
   useMyContact,
   useSignups,
-  useUid,
 } from "../lib/events";
 import "./Events.css";
 
@@ -41,7 +42,9 @@ export default function EventPage() {
   const { eventId } = useParams();
   const event = useEvent(eventId);
   const signups = useSignups(eventId);
-  const uid = useUid();
+  const { ready, user } = useUser();
+  const uid = user?.uid ?? null;
+  const signedIn = isGoogleUser(user);
   const isOrganizer = Boolean(event && uid && event.createdBy === uid);
   const contacts = useContacts(eventId, isOrganizer);
   const myContact = useMyContact(eventId, uid);
@@ -145,12 +148,20 @@ export default function EventPage() {
             </div>
             {cancelled || started ? (
               <p className="report-meta">{cancelled ? "Sign-ups are closed." : "This cleanup has already started."}</p>
+            ) : !ready ? (
+              <p className="report-meta">Loading…</p>
+            ) : !signedIn ? (
+              <SignInGate
+                title="Sign in to join"
+                reason="So the organizer knows who's coming, and you can change or cancel your sign-up from any device."
+              />
             ) : signups === undefined || myContact === undefined ? (
               <p className="report-meta">Loading…</p>
             ) : (
               <SignupForm
-                key={mySignup ? `edit-${uid}` : "new"}
+                key={mySignup ? `edit-${uid}` : `new-${uid}`}
                 event={event}
+                user={user}
                 mySignup={mySignup}
                 myContact={myContact}
                 full={full}

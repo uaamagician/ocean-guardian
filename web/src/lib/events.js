@@ -3,6 +3,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import {
   Timestamp,
   collection,
+  collectionGroup,
   deleteDoc,
   doc,
   getDoc,
@@ -16,7 +17,14 @@ import {
   where,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { ensureSignedIn } from "./reports";
+import { isGoogleUser } from "./auth";
+
+// Organizing and joining need a Google account (enforced by the rules too).
+function requireGoogleUser() {
+  const user = auth.currentUser;
+  if (!isGoogleUser(user)) throw new Error("Sign in with Google first.");
+  return user;
+}
 
 export const ORGANIZER_TYPES = {
   individual: "Individual",
@@ -45,7 +53,7 @@ function workOrderFrom(record) {
 }
 
 export async function createEvent({ beach, planRecord, form }) {
-  const user = await ensureSignedIn();
+  const user = requireGoogleUser();
   const ref = doc(collection(db, "events"));
   await setDoc(ref, {
     beachId: beach.id,
@@ -151,9 +159,10 @@ export function useBeachEvents(beachId) {
 }
 
 export async function saveSignup(eventId, { name, groupSize, bringing, note, contact }) {
-  const user = await ensureSignedIn();
+  const user = requireGoogleUser();
   const ref = doc(db, "events", eventId, "signups", user.uid);
-  const fields = { name: name.trim(), groupSize, bringing, note: note.trim() };
+  // uid is stored too, so the profile page can find sign-ups across events.
+  const fields = { uid: user.uid, name: name.trim(), groupSize, bringing, note: note.trim() };
   const existing = await getDoc(ref);
   // Edits leave createdAt untouched; the rules require it to stay as stored.
   if (existing.exists()) await updateDoc(ref, fields);
@@ -171,6 +180,46 @@ export async function withdraw(eventId) {
     deleteDoc(doc(db, "events", eventId, "signups", uid)),
     deleteDoc(doc(db, "events", eventId, "contacts", uid)),
   ]);
+}
+
+// Every cleanup this person signed up for, newest event first.
+export function useMySignups(uid) {
+  const signups = useSnapshot(
+    () => (uid ? query(collectionGroup(db, "signups"), where("uid", "==", uid)) : null),
+    ["mine", uid],
+    (snap) => snap.docs.map((d) => ({ id: d.id, eventId: d.ref.parent.parent.id, ...d.data() })),
+  );
+  // Which events to load, as a string so equal lists don't refetch.
+  const ids = signups ? signups.map((s) => s.eventId).join(",") : undefined;
+  const [events, setEvents] = useState({ ids: null, byId: {} });
+  useEffect(() => {
+    if (ids === undefined) return undefined;
+    let cancelled = false;
+    const list = ids ? ids.split(",") : [];
+    Promise.all(list.map((id) => getDoc(doc(db, "events", id)))).then((snaps) => {
+      if (cancelled) return;
+      const byId = Object.fromEntries(snaps.filter((d) => d.exists()).map((d) => [d.id, { id: d.id, ...d.data() }]));
+      setEvents({ ids, byId });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [ids]);
+
+  if (signups === null) return [];
+  if (signups === undefined || events.ids !== ids) return undefined;
+  return signups
+    .filter((s) => events.byId[s.eventId])
+    .map((s) => ({ ...events.byId[s.eventId], mySignup: s }))
+    .sort((a, b) => b.startsAt.toMillis() - a.startsAt.toMillis());
+}
+
+export function useMyEvents(uid) {
+  return useSnapshot(
+    () => (uid ? query(collection(db, "events"), where("createdBy", "==", uid), orderBy("startsAt", "desc")) : null),
+    ["organized", uid],
+    toList,
+  );
 }
 
 export function cancelEvent(eventId) {

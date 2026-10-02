@@ -366,6 +366,266 @@ img {
   }
 }
 
+/* ---------- Account ---------- */
+
+.user-menu {
+  position: relative;
+  display: flex;
+}
+
+.user-placeholder {
+  width: 36px;
+  height: 36px;
+}
+
+.nav-signin {
+  padding: 9px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: #ffffff;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.16s var(--ease-out);
+}
+
+.nav-signin:active {
+  transform: scale(0.96);
+}
+
+@media (hover: hover) {
+  .nav-signin:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+}
+
+.user-menu-error {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--danger);
+  font-size: var(--text-xs);
+  box-shadow: 0 12px 32px rgba(5, 20, 28, 0.2);
+}
+
+.avatar {
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-initial {
+  display: grid;
+  place-items: center;
+  background: var(--tide);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.avatar-button {
+  display: grid;
+  place-items: center;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.16s var(--ease-out);
+}
+
+.avatar-button:active {
+  transform: scale(0.95);
+}
+
+.avatar-button[aria-expanded="true"],
+.avatar-button:hover {
+  border-color: #ffffff;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(280px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 16px 48px rgba(5, 20, 28, 0.28);
+  transform-origin: top right;
+  animation: dropdown-in 0.18s var(--ease-out);
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+}
+
+.user-dropdown-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  margin-bottom: var(--space-1);
+  border-bottom: 1px solid var(--line);
+}
+
+.user-dropdown-head > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-dropdown-head strong,
+.user-dropdown-head span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-dropdown-head span {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.user-dropdown a,
+.user-dropdown button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  font-size: var(--text-sm);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.user-dropdown a:hover,
+.user-dropdown button:hover,
+.user-dropdown a:focus-visible,
+.user-dropdown button:focus-visible {
+  background: var(--paper);
+}
+
+.user-dropdown svg {
+  width: 16px;
+  height: 16px;
+  color: var(--ink-soft);
+}
+
+.signin-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.signin-gate > strong {
+  font-size: var(--text-lg);
+}
+
+.signin-fine {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.google-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 11px 20px;
+  border: 1px solid #dadce0;
+  border-radius: var(--radius-pill);
+  background: #ffffff;
+  color: #1f1f1f;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.16s var(--ease-out);
+}
+
+.google-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) {
+  .google-btn:hover:not(:disabled) {
+    background: #f8faff;
+    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.25);
+  }
+}
+
+.google-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.google-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Phones: the camera icon carries the Report button so the account and
+   menu buttons still fit. */
+@media (max-width: 480px) {
+  .nav-cta {
+    padding: 10px 12px;
+  }
+
+  .nav-cta-text {
+    display: none;
+  }
+
+  .nav-signin {
+    padding: 9px 12px;
+  }
+
+  .nav-wordmark {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav {
+    gap: var(--space-2);
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+  .nav-wordmark {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 340px) {
+  .nav-wordmark {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1150px) {
+  .nav-cta-long {
+    display: none;
+  }
+}
+
 /* ---------- Page layout ---------- */
 
 .app-main {

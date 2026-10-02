@@ -95,7 +95,15 @@ AI 分析通常 5-10 秒，Gemini 塞車時會自動重試，最慢實測約 70 
 `src/lib/events.js` 包含所有讀寫。資料結構：
 
 - `events/{id}`：活動本身。`workOrder` 是建立當下從 AI 規劃複製的快照（人數、時長、袋數、裝備、分組 `teams`、危險、建議），之後規劃更新也不會改到已經開放報名的活動。建立後只有主辦人能把 `status` 改成 `cancelled`，其他欄位都不能改
-- `events/{id}/signups/{uid}`：每人一筆，公開（暱稱、人數 `groupSize`、可以帶的工具 `bringing`、備註）。修改報名請用 `updateDoc`，不要重寫 `createdAt`
+- `events/{id}/signups/{uid}`：每人一筆，公開（`uid`、暱稱、人數 `groupSize`、可以帶的工具 `bringing`、備註）。`uid` 欄位必須等於文件 id，個人頁用它做 collection group 查詢。修改報名請用 `updateDoc`，不要重寫 `createdAt`
 - `events/{id}/contacts/{uid}`：聯絡方式，只有本人和主辦人讀得到
 
-主辦人身分綁在匿名登入的 uid 上，換瀏覽器或清除網站資料就會失去主辦人權限（之後接正式登入再解決）。活動頁的「On the day」天氣約 16 天內、潮汐約一週內才有預報。
+### 登入
+
+回報不需要帳號（匿名登入）。報名和發起活動必須用 Google 登入，規則用 `isGoogleUser()`（token 有 email 且 `email_verified`）檢查。
+
+- `src/lib/auth.js`：`useUser()`、`signInWithGoogle()`、`signOutUser()`。匿名使用者登入時會用 `linkWithPopup` 把 Google 綁到同一個 uid，原本的回報會跟著帳號走；如果那個 Google 帳號已經存在，就直接登入那個帳號，匿名回報留在舊的 uid
+- 右上角 `UserMenu`：未登入顯示 Sign in，登入後是頭像選單（Profile、My cleanups、My reports、Sign out）
+- `/me` 個人頁：報名過的活動（分即將到來和過去）、自己發起的活動
+
+活動頁的「On the day」天氣約 16 天內、潮汐約一週內才有預報。

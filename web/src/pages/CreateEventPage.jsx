@@ -5,6 +5,8 @@ import { useAllBeaches } from "../lib/beaches";
 import { useStoredPlan } from "../lib/cleanup";
 import { ORGANIZER_TYPES, createEvent } from "../lib/events";
 import { TOOL_BY_ID } from "../lib/guide";
+import { isGoogleUser, useUser } from "../lib/auth";
+import SignInGate from "../components/SignInGate";
 import "./Events.css";
 
 const span = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
@@ -16,7 +18,7 @@ function defaultStart() {
   return { date: d.toLocaleDateString("en-CA"), time: "08:00" };
 }
 
-function EventForm({ beach, record }) {
+function EventForm({ beach, record, user }) {
   const navigate = useNavigate();
   const plan = record.plan;
   const [now] = useState(() => Date.now());
@@ -25,11 +27,11 @@ function EventForm({ beach, record }) {
     ...defaultStart(),
     durationHours: Math.max(0.5, Math.ceil(plan.hours * 2) / 2),
     meetingPoint: "",
-    organizerName: "",
+    organizerName: (user.displayName ?? "").slice(0, 80),
     organizerType: "individual",
     capacity: Math.min(500, Math.max(plan.volunteers.max, 1)),
     description: "",
-    contact: "",
+    contact: user.email ?? "",
   }));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -149,6 +151,7 @@ export default function CreateEventPage() {
   const { beaches } = useAllBeaches();
   const beach = beaches?.find((b) => b.id === beachId);
   const record = useStoredPlan(beachId || "none");
+  const { ready, user } = useUser();
 
   if (!beaches || record === undefined) {
     return (
@@ -181,7 +184,18 @@ export default function CreateEventPage() {
       </div>
 
       <div className="create-layout">
-        <EventForm beach={beach} record={record} />
+        {!ready ? (
+          <p className="report-meta">Loading…</p>
+        ) : isGoogleUser(user) ? (
+          <EventForm key={user.uid} beach={beach} record={record} user={user} />
+        ) : (
+          <div className="create-form">
+            <SignInGate
+              title="Sign in to organize"
+              reason="Volunteers need to know who is running the cleanup, and you'll manage sign-ups from any device with the same account."
+            />
+          </div>
+        )}
 
         <aside className="create-plan">
           <span className="report-label">From the AI plan</span>

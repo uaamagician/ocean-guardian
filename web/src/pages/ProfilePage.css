@@ -1,0 +1,64 @@
+.profile-page {
+  max-width: 820px;
+}
+
+.profile-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.profile-head h1 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.profile-signout {
+  margin-left: auto;
+}
+
+.profile-signout svg {
+  width: 16px;
+  height: 16px;
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+}
+
+.profile-section h2 {
+  font-size: var(--text-xl);
+}
+
+.profile-section > .btn {
+  align-self: flex-start;
+}
+
+.profile-sub {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.joined-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.joined-note {
+  padding: 0 var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.profile-past .event-card {
+  opacity: 0.7;
+}
