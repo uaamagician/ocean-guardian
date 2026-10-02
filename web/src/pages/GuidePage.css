@@ -1,0 +1,203 @@
+.guide-hero {
+  padding-bottom: var(--space-7);
+}
+
+.guide-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.guide-jump a {
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-pill);
+  color: #ffffff;
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition: background-color 0.2s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .guide-jump a:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+/* Anchored cards land below the fixed nav. */
+#debris,
+#tools,
+#safety,
+[id^="tool-"],
+[id^="debris-"] {
+  scroll-margin-top: calc(var(--nav-height) + var(--space-5));
+}
+
+.debris-grid,
+.tool-grid,
+.safety-grid {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 700px) {
+  .debris-grid,
+  .safety-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tool-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1050px) {
+  .debris-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .tool-grid,
+  .safety-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.debris-grid > li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.debris-grid > li.is-natural {
+  background: color-mix(in srgb, var(--lv-clean) 10%, white);
+}
+
+.debris-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--ink);
+}
+
+.debris-top svg {
+  width: 26px;
+  height: 26px;
+  color: var(--buoy);
+}
+
+.is-natural .debris-top svg {
+  color: var(--lv-clean);
+}
+
+.debris-top h3 {
+  font-size: var(--text-lg);
+}
+
+.debris-examples {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.debris-handle strong {
+  color: var(--ink);
+}
+
+.tool-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: auto 0 0;
+  padding: var(--space-2) 0 0;
+  list-style: none;
+}
+
+.tool-chips a {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: var(--text-xs);
+  text-decoration: none;
+  transition: background-color 0.2s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .tool-chips a:hover {
+    background: var(--sand);
+  }
+}
+
+.tool-grid > li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.tool-grid svg {
+  width: 26px;
+  height: 26px;
+  color: var(--tide);
+}
+
+.tool-grid h3 {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.tool-when {
+  margin-top: auto;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  font-size: var(--text-xs);
+}
+
+/* Arriving from a cleanup plan's tool link briefly highlights that tool. */
+.tool-grid > li[data-target="true"],
+.debris-grid > li[data-target="true"] {
+  animation: target-glow 2.4s var(--ease-out);
+}
+
+@keyframes target-glow {
+  0%,
+  35% {
+    box-shadow: 0 0 0 3px var(--buoy);
+  }
+  100% {
+    box-shadow: 0 0 0 3px transparent;
+  }
+}
+
+.safety-grid > li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.safety-grid svg {
+  width: 24px;
+  height: 24px;
+  color: var(--buoy);
+}
+
+.guide-cta {
+  align-self: flex-start;
+}

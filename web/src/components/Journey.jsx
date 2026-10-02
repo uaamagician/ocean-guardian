@@ -148,8 +148,8 @@ export default function Journey() {
             <h3>
               Every coast is connected. <span className="serif-italic">Start with yours.</span>
             </h3>
-            <Link to="/report" className="btn btn-primary" viewTransition>
-              Report a beach
+            <Link to="/map" className="btn btn-light" viewTransition>
+              Explore the beach map
             </Link>
           </div>
         </div>

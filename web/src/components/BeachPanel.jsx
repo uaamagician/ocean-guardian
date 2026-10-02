@@ -6,6 +6,7 @@ import {
   Droplets,
   ExternalLink,
   Navigation,
+  Sparkles,
   Sun,
   Sunset,
   Thermometer,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import ReportDetail, { Level } from "./ReportDetail";
 import FadeImg from "./FadeImg";
+import CleanupPlan from "./CleanupPlan";
 import useWikiSummary from "../lib/useWikiSummary";
 import { BEACH_KINDS, BEACH_RADIUS_KM, googleMapsLinks, isCommunityBeach } from "../lib/beaches";
 import {
@@ -211,7 +213,7 @@ function Conditions({ beach }) {
   );
 }
 
-function DebrisSummary({ reports }) {
+function DebrisSummary({ reports, onOpenPlan }) {
   const items = useMemo(() => {
     const counts = new Map();
     for (const r of reports) for (const item of new Set(r.aiAnalysis?.items ?? [])) counts.set(item, (counts.get(item) ?? 0) + 1);
@@ -259,6 +261,10 @@ function DebrisSummary({ reports }) {
           </ul>
         </>
       )}
+      <button type="button" className="chip-button bp-plan-link" onClick={onOpenPlan}>
+        <Sparkles aria-hidden="true" />
+        Crew, time and gear for a cleanup
+      </button>
     </section>
   );
 }
@@ -326,17 +332,21 @@ function About({ beach }) {
   );
 }
 
-export default function BeachPanel({ beach, reports, focusReportId, onSelectReport }) {
-  const [tab, setTab] = useState(focusReportId ? "reports" : "overview");
+const TAB_IDS = ["overview", "cleanup", "reports", "about"];
+
+export default function BeachPanel({ beach, reports, allReports, focusReportId, onSelectReport, initialTab }) {
+  const startTab = focusReportId ? "reports" : TAB_IDS.includes(initialTab) ? initialTab : "overview";
+  const [tab, setTab] = useState(startTab);
   const [shownFor, setShownFor] = useState(beach.id);
-  // A new beach starts on Overview, unless it was opened to show a specific report.
+  // A new beach starts on Overview, unless the link asked for a specific tab or report.
   if (shownFor !== beach.id) {
     setShownFor(beach.id);
-    setTab(focusReportId ? "reports" : "overview");
+    setTab(startTab);
   }
 
   const tabs = [
     ["overview", "Overview"],
+    ["cleanup", "Cleanup plan"],
     ["reports", `Reports (${reports.length})`],
     ["about", "About"],
   ];
@@ -361,10 +371,11 @@ export default function BeachPanel({ beach, reports, focusReportId, onSelectRepo
       <div className="bp-body" role="tabpanel">
         {tab === "overview" && (
           <>
-            <DebrisSummary reports={reports} />
+            <DebrisSummary reports={reports} onOpenPlan={() => setTab("cleanup")} />
             <Conditions beach={beach} />
           </>
         )}
+        {tab === "cleanup" && <CleanupPlan beach={beach} allReports={allReports} />}
         {tab === "reports" && <Reports reports={reports} focusReportId={focusReportId} onSelectReport={onSelectReport} />}
         {tab === "about" && <About beach={beach} />}
       </div>

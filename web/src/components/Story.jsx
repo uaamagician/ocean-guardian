@@ -1,29 +1,6 @@
 import { Link } from "react-router";
-import {
-  BriefcaseMedical,
-  Building2,
-  CalendarX,
-  Cigarette,
-  CircleDot,
-  CupSoda,
-  FileText,
-  Fish,
-  Footprints,
-  Grab,
-  HandHeart,
-  LifeBuoy,
-  Megaphone,
-  Milk,
-  Package,
-  Shell,
-  ShoppingBag,
-  ShoppingBasket,
-  Sun,
-  TriangleAlert,
-  Utensils,
-  Waves,
-  Wine,
-} from "lucide-react";
+import { Building2, CalendarX, FileText, Footprints, HandHeart, Megaphone, Waves } from "lucide-react";
+import { DEBRIS_TYPES, TOOL_BY_ID } from "../lib/guide";
 import { CountUp, Reveal } from "./Motion";
 
 export function Problem() {
@@ -204,37 +181,6 @@ export function TaiwanNumbers() {
   );
 }
 
-// The ICC (International Coastal Cleanup) data card categories Taiwan reports on.
-const ICC_ITEMS = [
-  { icon: Milk, label: "Plastic bottles" },
-  { icon: CircleDot, label: "Bottle caps" },
-  { icon: LifeBuoy, label: "Buoys and floats" },
-  { icon: CupSoda, label: "Straws" },
-  { icon: Wine, label: "Glass bottles" },
-  { icon: Utensils, label: "Disposable cutlery" },
-  { icon: Cigarette, label: "Cigarette butts" },
-  { icon: Fish, label: "Fishing gear" },
-  { icon: Package, label: "Food containers" },
-  { icon: ShoppingBag, label: "Plastic bags" },
-];
-
-export function IccItems() {
-  return (
-    <div className="icc">
-      <h3>What turns up most</h3>
-      <p className="data-note">The ten categories volunteers count on International Coastal Cleanup data cards.</p>
-      <ul className="icc-grid">
-        {ICC_ITEMS.map(({ icon: Icon, label }, i) => (
-          <Reveal as="li" key={label} delay={i * 50}>
-            <Icon aria-hidden="true" />
-            {label}
-          </Reveal>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 const AUDIENCES = [
   { icon: Footprints, title: "Beachgoers", body: "Check a beach before you go, and report what you find when you get there." },
   { icon: HandHeart, title: "Volunteers", body: "See which beaches need help most, and join a cleanup near you." },
@@ -271,50 +217,56 @@ export function Audiences() {
   );
 }
 
-const GEAR = [
-  { icon: Grab, label: "Litter pickers or tongs" },
-  { icon: HandHeart, label: "Reusable work gloves" },
-  { icon: Footprints, label: "Sturdy closed-toe shoes" },
-  { icon: ShoppingBasket, label: "Reusable bags or buckets" },
-  { icon: Sun, label: "Water, a hat and sunscreen" },
-  { icon: BriefcaseMedical, label: "A small first-aid kit" },
-];
+const TEASER_DEBRIS = ["fishing", "microplastics", "styrofoam", "glass", "hazardous", "natural"];
+const TEASER_TOOLS = ["gloves", "pickers", "sieves", "netCutters", "buckets", "firstAid"];
 
-const SAFETY = [
-  { icon: TriangleAlert, text: "Don't touch needles, syringes or unknown chemicals. Note the spot and report it." },
-  { icon: Waves, text: "Check the tide forecast, and stay off rocks and jetties when the tide comes in." },
-  { icon: Shell, text: "Leave shells, driftwood and seaweed where they are. They belong to the beach." },
-];
-
-export function Prepare() {
+export function GuideTeaser() {
   return (
     <section className="band band-paper">
-      <div className="band-inner prepare">
-        <Reveal className="band-head">
-          <h2>Before you head out</h2>
-          <p>What to bring to a beach cleanup, and how to stay safe while you're there.</p>
-        </Reveal>
-        <div className="prepare-cols">
+      <div className="band-inner">
+        <div className="band-split">
+          <Reveal className="band-head">
+            <h2>Know what you're picking up</h2>
+            <p>
+              Nets need cutters, styrofoam needs a sieve, needles need a professional, and driftwood should stay put.
+              The field guide covers each kind of debris and every tool a cleanup plan may ask for.
+            </p>
+          </Reveal>
+          <Link to="/guide" className="btn" viewTransition>
+            Open the field guide
+          </Link>
+        </div>
+        <div className="teaser-cols">
           <div>
-            <h3>Bring</h3>
-            <ul className="gear-list">
-              {GEAR.map(({ icon: Icon, label }, i) => (
-                <Reveal as="li" key={label} delay={i * 60}>
-                  <Icon aria-hidden="true" />
-                  {label}
-                </Reveal>
-              ))}
+            <h3>What washes up</h3>
+            <ul className="teaser-chips">
+              {TEASER_DEBRIS.map((id, i) => {
+                const { icon: Icon, name } = DEBRIS_TYPES.find((d) => d.id === id);
+                return (
+                  <Reveal as="li" key={id} delay={i * 50}>
+                    <Link to={`/guide#debris-${id}`} viewTransition>
+                      <Icon aria-hidden="true" />
+                      {name}
+                    </Link>
+                  </Reveal>
+                );
+              })}
             </ul>
           </div>
           <div>
-            <h3>Stay safe</h3>
-            <ul className="safety-list">
-              {SAFETY.map(({ icon: Icon, text }, i) => (
-                <Reveal as="li" key={text} delay={i * 80}>
-                  <Icon aria-hidden="true" />
-                  <p>{text}</p>
-                </Reveal>
-              ))}
+            <h3>What to bring</h3>
+            <ul className="teaser-chips">
+              {TEASER_TOOLS.map((id, i) => {
+                const { icon: Icon, name } = TOOL_BY_ID[id];
+                return (
+                  <Reveal as="li" key={id} delay={i * 50}>
+                    <Link to={`/guide#tool-${id}`} viewTransition>
+                      <Icon aria-hidden="true" />
+                      {name}
+                    </Link>
+                  </Reveal>
+                );
+              })}
             </ul>
           </div>
         </div>

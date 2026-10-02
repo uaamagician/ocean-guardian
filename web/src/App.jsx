@@ -3,7 +3,7 @@ import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import SmoothScroll from "./components/SmoothScroll";
 
-const LONG_PAGES = new Set(["/", "/info"]);
+const LONG_PAGES = new Set(["/", "/info", "/guide", "/action"]);
 
 export default function App() {
   const { pathname } = useLocation();

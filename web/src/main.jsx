@@ -10,6 +10,7 @@ import ReportPage from "./pages/ReportPage.jsx";
 import MyReportsPage from "./pages/MyReportsPage.jsx";
 import InfoPage from "./pages/InfoPage.jsx";
 import ActionPage from "./pages/ActionPage.jsx";
+import GuidePage from "./pages/GuidePage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
       { path: "mine", element: <MyReportsPage /> },
       { path: "info", element: <InfoPage /> },
       { path: "action", element: <ActionPage /> },
+      { path: "guide", element: <GuidePage /> },
     ],
   },
 ]);

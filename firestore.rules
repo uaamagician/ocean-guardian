@@ -61,6 +61,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Written only by the planCleanup function (Admin SDK); anyone can read a plan.
+    match /cleanupPlans/{beachId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

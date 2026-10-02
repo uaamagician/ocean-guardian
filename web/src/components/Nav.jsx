@@ -4,8 +4,9 @@ import { Camera, Menu, X } from "lucide-react";
 
 const LINKS = [
   { to: "/map", label: "Beach Map" },
-  { to: "/info", label: "Ocean Data" },
   { to: "/action", label: "Cleanups" },
+  { to: "/guide", label: "Field Guide" },
+  { to: "/info", label: "Ocean Data" },
   { to: "/mine", label: "My Reports" },
 ];
 

@@ -774,3 +774,190 @@
     background: var(--paper);
   }
 }
+
+.bp-tabs {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.bp-tab {
+  flex: none;
+}
+
+.bp-plan-link {
+  align-self: flex-start;
+  margin-top: var(--space-1);
+}
+
+/* ---------- Cleanup plan ---------- */
+
+.plan-wrap,
+.plan {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.plan-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.plan-confidence {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.plan-summary {
+  font-size: var(--text-sm);
+}
+
+.plan-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+.plan-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--night);
+  color: #ffffff;
+}
+
+.plan-stats svg {
+  width: 16px;
+  height: 16px;
+  color: var(--buoy);
+}
+
+.plan-stats strong {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  font-variant-numeric: lining-nums;
+}
+
+.plan-stats span {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.plan-machinery {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  font-size: var(--text-sm);
+}
+
+.plan-machinery.is-needed {
+  border-color: var(--lv-moderate);
+  background: color-mix(in srgb, var(--lv-moderate) 10%, white);
+}
+
+.plan-machinery svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--ink-soft);
+}
+
+.plan-machinery p {
+  color: var(--ink-soft);
+}
+
+.plan h4 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.plan-gear {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-gear li {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-sm);
+}
+
+.plan-gear svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  margin-top: 2px;
+  color: var(--tide);
+}
+
+.plan-gear a {
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+}
+
+.plan-qty {
+  margin-left: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.plan-gear p {
+  color: var(--ink-soft);
+}
+
+.plan-list {
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: var(--text-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.plan-hazards li::marker {
+  color: var(--danger);
+}
+
+.plan-run {
+  width: 100%;
+}
+
+.plan-run svg {
+  width: 18px;
+  height: 18px;
+}
+
+.plan-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+.plan-empty svg {
+  width: 24px;
+  height: 24px;
+  color: var(--buoy);
+}

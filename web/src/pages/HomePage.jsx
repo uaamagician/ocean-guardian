@@ -9,7 +9,9 @@ import FadeImg from "../components/FadeImg";
 import LiveOcean from "../components/LiveOcean";
 import Journey from "../components/Journey";
 import { Reveal } from "../components/Motion";
-import { Audiences, FinalCta, Gap, IccItems, Prepare, Problem, Sdg14, TaiwanNumbers } from "../components/Story";
+import { Audiences, FinalCta, Gap, GuideTeaser, Problem, Sdg14, TaiwanNumbers } from "../components/Story";
+import { useLatestPlan } from "../lib/cleanup";
+import { TOOL_BY_ID } from "../lib/guide";
 import { CATEGORIES, TONE_COLORS, formatTime } from "../lib/labels";
 import usePublishedReports from "../lib/usePublishedReports";
 import { useBeaches, useReportsByBeach } from "../lib/beaches";
@@ -119,7 +121,6 @@ function DebrisStats({ reports }) {
             )}
           </div>
         </div>
-        <IccItems />
       </div>
     </section>
   );
@@ -186,46 +187,67 @@ function HowItWorks({ reports }) {
   );
 }
 
+const span = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
+
+function LatestPlan({ record }) {
+  const { plan } = record;
+  return (
+    <Link to={`/map?b=${encodeURIComponent(record.beachId)}&t=cleanup`} className="plan-example" viewTransition>
+      <span className="plan-tag">Latest AI plan: {record.name}</span>
+      <dl>
+        <dt>Volunteers</dt>
+        <dd>{span(plan.volunteers)} people</dd>
+        <dt>Estimated time</dt>
+        <dd>
+          {plan.hours} hour{plan.hours === 1 ? "" : "s"}
+        </dd>
+        <dt>Gear</dt>
+        <dd>
+          {plan.gear
+            .map((g) => TOOL_BY_ID[g.tool]?.name)
+            .filter(Boolean)
+            .join(", ")}
+        </dd>
+        <dt>Heavy machinery</dt>
+        <dd>{plan.heavyMachinery.needed ? "Needed" : "Not needed"}</dd>
+      </dl>
+    </Link>
+  );
+}
+
 function CleanupPreview() {
+  const latest = useLatestPlan();
   return (
     <section className="band band-dark">
       <div className="band-inner">
         <div className="band-split">
           <Reveal className="band-head">
-            <h2>Join a beach cleanup</h2>
+            <h2>Plan a cleanup from the reports</h2>
             <p>
-              Once a beach has enough reports, AI estimates how many people, how much time, and which tools a cleanup needs. Organizers can skip the site visit, and a small club can team up with a company volunteer group to fill a crew.
+              Once a beach has two or more reports, AI reads them, looks at the latest photos and estimates the crew,
+              the time and the gear a cleanup needs. Organizers can skip the site visit.
             </p>
+            <Link to="/action" className="btn btn-light" viewTransition>
+              See beaches that need a cleanup
+            </Link>
           </Reveal>
-          <div className="plan-example">
-            <span className="plan-tag">Preview, in development</span>
-            <dl>
-              <dt>Volunteers</dt>
-              <dd>20 to 25 people</dd>
-              <dt>Estimated time</dt>
-              <dd>1.5 hours</dd>
-              <dt>Gear</dt>
-              <dd>Net cutters, carts, puncture-proof gloves</dd>
-              <dt>Heavy machinery</dt>
-              <dd>Not needed</dd>
-            </dl>
-          </div>
+          {latest && <LatestPlan record={latest} />}
         </div>
         <ul className="features">
           <li>
             <Sparkles aria-hidden="true" />
             <h3>AI cleanup planning</h3>
-            <p>From the reported debris and how far it spreads, estimate the crew, the hours, and what to bring.</p>
+            <p>Crew size, hours, bags and gear, worked out from what people actually reported.</p>
           </li>
           <li>
             <Users aria-hidden="true" />
             <h3>Team up and sign up</h3>
-            <p>Companies, NGOs, and school clubs can host a cleanup, and anyone can sign up online.</p>
+            <p>Coming next: companies, NGOs and school clubs host a cleanup, and anyone signs up online.</p>
           </li>
           <li>
             <Package aria-hidden="true" />
             <h3>Cleanup impact</h3>
-            <p>Take another photo afterward. The before-and-after comparison becomes data you can put in an ESG report.</p>
+            <p>Coming next: a photo afterward, compared with before, becomes data for an ESG report.</p>
           </li>
         </ul>
       </div>
@@ -250,8 +272,8 @@ export default function HomePage() {
       <DebrisStats reports={reports} />
       <HowItWorks reports={reports} />
       <CleanupPreview />
+      <GuideTeaser />
       <Audiences />
-      <Prepare />
       <FinalCta />
     </div>
   );

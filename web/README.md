@@ -76,3 +76,16 @@ AI 分析通常 5-10 秒，Gemini 塞車時會自動重試，最慢實測約 70 
 - 任何人都能讀 `status == "published"` 的回報。查詢時一定要加 `where("status", "==", "published")`，不然整個查詢會被擋
 - 回報者能讀自己的所有回報（包含分析中、待複核）
 - 回報建立後不能修改或刪除
+
+## 淨灘規劃（AI）
+
+`planCleanup` 是 callable function，前端用 `src/lib/cleanup.js` 的 `requestPlan(beach)` 呼叫：
+
+- 方圓 3 公里內至少要有 2 筆已公開的垃圾回報，否則回傳 `{ status: "needs_reports" }`
+- 結果存在 Firestore `cleanupPlans/{beachId}`（任何人可讀，只有 function 能寫）。沒有新回報時直接回傳存好的，不會重複呼叫 Gemini
+- `useStoredPlan(beachId)` 即時讀取存好的規劃；`planInputs(reports, beach)` 用和 function 相同的條件判斷規劃是否過期
+- `plan.gear[].tool` 只會是 `src/lib/guide.js` 裡 `TOOLS` 的 id，連到 `/guide#tool-{id}` 的說明。新增工具時兩邊（這裡和 `functions/planCleanup.js`）都要加
+
+## Field guide
+
+垃圾種類、清理工具和安全守則都集中在 `src/lib/guide.js`，`/guide` 頁、首頁簡介和淨灘規劃都從這裡讀，不要在其他地方另外寫一份。

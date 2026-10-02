@@ -138,6 +138,8 @@ export default function MapPage() {
           <BeachPanel
             beach={beach}
             reports={byBeach.get(beach.id) ?? []}
+            allReports={reports}
+            initialTab={params.get("t")}
             focusReportId={reportParam}
             onSelectReport={(id) => setParams(id ? { b: beach.id, r: id } : { b: beach.id })}
           />

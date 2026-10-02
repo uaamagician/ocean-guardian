@@ -1,15 +1,12 @@
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
-const { defineSecret } = require("firebase-functions/params");
 const logger = require("firebase-functions/logger");
 const { initializeApp } = require("firebase-admin/app");
-const { getFirestore, FieldValue } = require("firebase-admin/firestore");
-const { getStorage } = require("firebase-admin/storage");
-const { GoogleGenAI } = require("@google/genai");
+const { FieldValue } = require("firebase-admin/firestore");
 
 initializeApp();
 
-const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
-const GEMINI_MODELS = ["gemini-flash-latest", "gemini-flash-lite-latest"];
+const { GEMINI_API_KEY, makeAi, generateWithFallback, downloadPhoto, inlinePhoto } = require("./gemini");
+
 const CONFIDENCE_THRESHOLD = 0.5;
 
 const SHARED_RULES =
@@ -48,36 +45,12 @@ const PROMPTS = {
 
 const IRRELEVANT = new Set(["not_beach", "not_coral"]);
 
-// Retries alone weren't enough: Flash stayed at 503 through a full minute of
-// backoff, so fall back to Flash-Lite, which has separate capacity.
-async function generateWithFallback(ai, request) {
-  for (const [i, model] of GEMINI_MODELS.entries()) {
-    try {
-      return await ai.models.generateContent({ ...request, model });
-    } catch (err) {
-      const overloaded = err.status === 429 || err.status === 503;
-      if (!overloaded || i === GEMINI_MODELS.length - 1) throw err;
-      logger.warn("Gemini model overloaded, falling back", { model, status: err.status });
-    }
-  }
-}
-
-async function analyzePhotos(apiKey, type, photos) {
+async function analyzePhotos(type, photos) {
   const { categories, instruction } = PROMPTS[type];
-  // Gemini returns transient 429/503 under load; the SDK only retries when
-  // retryOptions is set explicitly.
-  const ai = new GoogleGenAI({
-    apiKey,
-    httpOptions: { retryOptions: { attempts: 4, initialDelay: 2, maxDelay: 10 } },
-  });
-
-  const parts = photos.flatMap((photo, i) => [
-    { text: `Photo ${i + 1}:` },
-    { inlineData: { mimeType: photo.mimeType, data: photo.bytes.toString("base64") } },
-  ]);
+  const parts = photos.flatMap((photo, i) => [{ text: `Photo ${i + 1}:` }, inlinePhoto(photo)]);
   parts.push({ text: instruction });
 
-  const response = await generateWithFallback(ai, {
+  const { response } = await generateWithFallback(makeAi(), {
     contents: [{ role: "user", parts }],
     config: {
       responseMimeType: "application/json",
@@ -130,16 +103,8 @@ exports.analyzeReport = onDocumentCreated(
       if (!PROMPTS[report.type]) {
         throw new Error(`Unknown report type: ${report.type}`);
       }
-      const bucket = getStorage().bucket();
-      const photos = await Promise.all(
-        report.photos.map(async (path) => {
-          const file = bucket.file(path);
-          const [[metadata], [bytes]] = await Promise.all([file.getMetadata(), file.download()]);
-          return { mimeType: metadata.contentType, bytes };
-        }),
-      );
-
-      const analysis = await analyzePhotos(GEMINI_API_KEY.value(), report.type, photos);
+      const photos = await Promise.all(report.photos.map(downloadPhoto));
+      const analysis = await analyzePhotos(report.type, photos);
 
       const publishable =
         analysis.confidence >= CONFIDENCE_THRESHOLD && !IRRELEVANT.has(analysis.category);
@@ -155,3 +120,5 @@ exports.analyzeReport = onDocumentCreated(
     }
   },
 );
+
+exports.planCleanup = require("./planCleanup").planCleanup;
