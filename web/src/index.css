@@ -977,6 +977,13 @@ img {
   padding: 0 28px;
 }
 
+.btn-small {
+  min-height: 38px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
 .btn:disabled {
   cursor: not-allowed;
   background: var(--sand);

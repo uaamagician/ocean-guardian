@@ -1,6 +1,6 @@
-import { useMemo, useRef } from "react";
-import { Link } from "react-router";
-import { BookOpen, ChevronRight, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useRef } from "react";
+import { Link, useLocation } from "react-router";
+import { BookOpen, CalendarCheck, Megaphone, Sparkles } from "lucide-react";
 import { Level } from "../components/ReportDetail";
 import { Reveal } from "../components/Motion";
 import EventCard from "../components/EventCard";
@@ -19,9 +19,15 @@ const MAX_ROWS = 20;
 
 const range = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
 
-function PlanStatus({ beach, allReports }) {
-  const stored = useStoredPlan(beach.id);
-  const count = planInputs(allReports, beach).length;
+// Scrolls to a section on this page, below the fixed nav.
+function jumpTo(id, behavior = "smooth") {
+  let el = document.getElementById(id);
+  let top = 0;
+  for (let node = el; node; node = node.offsetParent) top += node.offsetTop;
+  if (el) window.scrollTo({ top: top - 72, behavior });
+}
+
+function PlanStatus({ stored, count }) {
   if (stored === undefined) return <span className="report-meta">Checking plan…</span>;
   if (stored) {
     const { plan } = stored;
@@ -44,6 +50,40 @@ function PlanStatus({ beach, allReports }) {
   return <span className="report-meta">Needs {missing} more report{missing > 1 ? "s" : ""} for a plan</span>;
 }
 
+// A beach on the organize list: details on the left, and what you can do now
+// on the right (organize right away if the AI plan exists).
+function BeachRow({ beach, list, allReports }) {
+  const stored = useStoredPlan(beach.id);
+  const count = planInputs(allReports, beach).length;
+  const beachLink = `/map?b=${encodeURIComponent(beach.id)}&t=cleanup`;
+  return (
+    <div className="cl-row">
+      <Link to={beachLink} className="cl-main" viewTransition>
+        <strong className="cl-name">{beach.name}</strong>
+        <span className="report-meta">{[beach.local, beach.country].filter(Boolean).join(", ") || "Added by users"}</span>
+      </Link>
+      <div className="cl-level">
+        <Level category={list[0].aiAnalysis?.category} />
+        <span className="report-meta">
+          {list.length} report{list.length > 1 ? "s" : ""}, latest {formatTime(list[0].createdAt)}
+        </span>
+      </div>
+      <PlanStatus stored={stored} count={count} />
+      <div className="cl-action">
+        {stored ? (
+          <Link to={`/events/new?b=${encodeURIComponent(beach.id)}`} className="btn btn-primary btn-small" viewTransition>
+            Organize here
+          </Link>
+        ) : (
+          <Link to={beachLink} className="btn btn-small" viewTransition>
+            {count >= MIN_REPORTS_FOR_PLAN && stored === null ? "Get the AI plan" : "View beach"}
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function ActionPage() {
   const rootRef = useRef(null);
   useSectionMotion(rootRef);
@@ -51,6 +91,12 @@ export default function ActionPage() {
   const { beaches } = useAllBeaches();
   const { byBeach } = useReportsByBeach(beaches, reports);
   const upcoming = useUpcomingEvents();
+  const { hash } = useLocation();
+
+  // The account menu links straight to #organize.
+  useEffect(() => {
+    if (hash === "#organize" || hash === "#upcoming") jumpTo(hash.slice(1), "auto");
+  }, [hash, beaches]);
 
   // Dirtiest first, then the beaches with the most evidence.
   const rows = useMemo(() => {
@@ -79,10 +125,26 @@ export default function ActionPage() {
               plans the crew, time and gear, and turns it into a work order volunteers sign up to.
             </p>
           </Reveal>
+          <Reveal className="cl-choices" delay={120}>
+            <button type="button" className="cl-choice" onClick={() => jumpTo("upcoming")}>
+              <CalendarCheck aria-hidden="true" />
+              <strong>Join a cleanup</strong>
+              <span>
+                {upcoming?.length
+                  ? `${upcoming.length} coming up. Sign up and say what gear you'll bring.`
+                  : "See what's scheduled and sign up."}
+              </span>
+            </button>
+            <button type="button" className="cl-choice" onClick={() => jumpTo("organize")}>
+              <Megaphone aria-hidden="true" />
+              <strong>Organize a cleanup</strong>
+              <span>Pick a beach with an AI plan, set a time and a meeting point.</span>
+            </button>
+          </Reveal>
         </div>
       </section>
 
-      <section className="band">
+      <section className="band" id="upcoming">
         <div className="band-inner">
           <Reveal className="band-head">
             <h2>Upcoming cleanups</h2>
@@ -90,9 +152,12 @@ export default function ActionPage() {
           </Reveal>
           {upcoming === undefined && <p className="report-meta">Loading cleanups…</p>}
           {upcoming?.length === 0 && (
-            <p className="report-meta">
-              Nothing scheduled yet. Pick a beach below that has a plan, and organize the first one.
-            </p>
+            <div className="notice">
+              <p>Nothing scheduled yet. Pick a beach with an AI plan and organize the first one.</p>
+              <button type="button" className="btn btn-primary" onClick={() => jumpTo("organize")}>
+                Organize a cleanup
+              </button>
+            </div>
           )}
           {upcoming?.length > 0 && (
             <ul className="event-list">
@@ -106,11 +171,14 @@ export default function ActionPage() {
         </div>
       </section>
 
-      <section className="band band-paper">
+      <section className="band band-paper" id="organize">
         <div className="band-inner">
           <Reveal className="band-head">
-            <h2>Beaches that need attention</h2>
-            <p>Sorted by the latest debris level, then by how many people have reported them.</p>
+            <h2>Organize a cleanup</h2>
+            <p>
+              Pick a beach. The ones with an AI plan can host a cleanup right away; the plan becomes the work order with
+              the crew size, teams and a gear checklist. Dirtiest beaches first.
+            </p>
           </Reveal>
 
           {rows === null && <p className="report-meta">Loading beaches…</p>}
@@ -127,22 +195,7 @@ export default function ActionPage() {
             <ol className="cl-list">
               {rows.map(({ beach, reports: list }, i) => (
                 <Reveal as="li" key={beach.id} delay={Math.min(i, 6) * 50}>
-                  <Link to={`/map?b=${encodeURIComponent(beach.id)}&t=cleanup`} className="cl-row" viewTransition>
-                    <div className="cl-main">
-                      <strong className="cl-name">{beach.name}</strong>
-                      <span className="report-meta">
-                        {[beach.local, beach.country].filter(Boolean).join(", ") || "Added by users"}
-                      </span>
-                    </div>
-                    <div className="cl-level">
-                      <Level category={list[0].aiAnalysis?.category} />
-                      <span className="report-meta">
-                        {list.length} report{list.length > 1 ? "s" : ""}, latest {formatTime(list[0].createdAt)}
-                      </span>
-                    </div>
-                    <PlanStatus beach={beach} allReports={reports} />
-                    <ChevronRight className="cl-chevron" aria-hidden="true" />
-                  </Link>
+                  <BeachRow beach={beach} list={list} allReports={reports} />
                 </Reveal>
               ))}
             </ol>
@@ -154,11 +207,12 @@ export default function ActionPage() {
         <div className="band-inner cl-extra">
           <Reveal className="notice">
             <Sparkles aria-hidden="true" className="cl-icon" />
-            <h3>Organize a cleanup</h3>
-            <p>
-              Open a beach with a plan, then choose “Organize a cleanup from this plan”. You set the time and meeting
-              point; the AI plan becomes the work order: crew size, teams and a gear checklist volunteers fill in.
-            </p>
+            <h3>How organizing works</h3>
+            <ol className="cl-steps">
+              <li>Press “Organize here” on a beach with an AI plan, and sign in with Google.</li>
+              <li>Set the date, the meeting point and how many people can join.</li>
+              <li>Share the event link. Volunteers sign up and tick the gear they'll bring.</li>
+            </ol>
           </Reveal>
           <Reveal className="notice" delay={80}>
             <BookOpen aria-hidden="true" className="cl-icon" />

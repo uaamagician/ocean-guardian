@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-import { CalendarCheck, Camera, LogOut, UserRound } from "lucide-react";
+import { CalendarCheck, Camera, LogOut, Megaphone, UserRound } from "lucide-react";
 import { isGoogleUser, signInErrorMessage, signInWithGoogle, signOutUser, useUser } from "../lib/auth";
 
 export function Avatar({ user, size = 34 }) {
@@ -102,6 +102,9 @@ export default function UserMenu() {
           </Link>
           <Link to="/me#cleanups" role="menuitem" viewTransition>
             <CalendarCheck aria-hidden="true" /> My cleanups
+          </Link>
+          <Link to="/action#organize" role="menuitem" viewTransition>
+            <Megaphone aria-hidden="true" /> Organize a cleanup
           </Link>
           <Link to="/mine" role="menuitem" viewTransition>
             <Camera aria-hidden="true" /> My reports
