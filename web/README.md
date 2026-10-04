@@ -18,6 +18,20 @@ import { auth, db, storage } from "./firebase";
 
 `src/firebase-config.json` 是 Web App「Ocean Guardian Web」的公開設定，可以 commit，不是密碼。
 
+## 本機測試（模擬器）
+
+想測試登入、報名又不想動到正式資料庫時，用 Firebase 模擬器：
+
+```bash
+firebase emulators:start --only auth,firestore
+```
+
+```bash
+npm --prefix web run dev:emulators
+```
+
+`dev:emulators` 會讓網站連到本機的 Auth 與 Firestore 模擬器（見 `src/firebase.js`），資料關掉模擬器就清空。模擬器的 Google 登入不需要真的帳號，在跳出的視窗按 Add new account 填假的 email 即可。
+
 ## 送出一筆回報
 
 使用者不用註冊，用匿名登入拿 uid：
