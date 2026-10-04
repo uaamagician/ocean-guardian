@@ -2,15 +2,21 @@ import { Link } from "react-router";
 import { Building2, CalendarX, FileText, Footprints, HandHeart, Megaphone, Waves } from "lucide-react";
 import { DEBRIS_TYPES, TOOL_BY_ID } from "../lib/guide";
 import { CountUp, Reveal } from "./Motion";
+import { Doodle, Marked, Note } from "./Sketch";
 
 export function Problem() {
   return (
-    <section className="band band-dark problem">
+    <section className="band band-dark problem wave-edge">
       <div className="band-inner">
         <Reveal className="problem-figure">
           <CountUp value={11000000} className="mega-number" />
           <p className="problem-lead">tonnes of plastic enter the ocean every year.</p>
+          <Note arrow="before" className="problem-note">
+            that's about 21 tonnes every minute
+          </Note>
         </Reveal>
+        <Doodle name="bottle" className="band-doodle problem-bottle bob" />
+        <Doodle name="bag" className="band-doodle problem-bag bob" delay={300} />
         <div className="problem-body">
           <Reveal as="p" delay={100}>
             Ocean currents carry plastic fragments, abandoned fishing nets and industrial packaging thousands of
@@ -56,7 +62,10 @@ export function Gap() {
       <div className="band-inner">
         <Reveal className="band-head">
           <h2>
-            <span className="serif-italic">People want to help.</span> The tools hold them back.
+            <span className="serif-italic">People want to help.</span> The tools{" "}
+            <Marked kind="circle" delay={900}>
+              hold them back.
+            </Marked>
           </h2>
         </Reveal>
         <ul className="gap-list">
@@ -101,8 +110,10 @@ const OCEAN_FACTS = [
 
 export function Sdg14() {
   return (
-    <section className="band band-deep sdg">
+    <section className="band band-deep sdg wave-edge">
       <div className="band-inner">
+        <Doodle name="fish" className="band-doodle sdg-fish bob" />
+        <Doodle name="wave" className="band-doodle sdg-wave" delay={200} />
         <div className="sdg-top">
           <Reveal className="sdg-figure">
             <CountUp value={70} suffix="%" className="mega-number" />
@@ -157,12 +168,16 @@ export function TaiwanNumbers() {
     <section className="band">
       <div className="band-inner">
         <Reveal className="band-head">
-          <h2>Taiwan's coastal cleanups, in numbers</h2>
+          <h2>
+            Taiwan's coastal cleanups, <Marked delay={800}>in numbers</Marked>
+          </h2>
           <p>
             Since 2020, according to Taiwan's Ministry of Environment. That's a huge effort, and it all happens on
             cleanup days. Ocean Guardian adds what happens in between.
           </p>
         </Reveal>
+        <Doodle name="shell" className="band-doodle tw-shell bob" />
+        <Doodle name="starfish" className="band-doodle tw-star bob" delay={250} />
         <ul className="number-grid">
           {TAIWAN_STATS.map((s, i) => (
             <Reveal as="li" key={s.label} delay={i * 100}>
@@ -201,7 +216,9 @@ export function Audiences() {
     <section className="band">
       <div className="band-inner">
         <Reveal className="band-head">
-          <h2>One map, four ways to help</h2>
+          <h2>
+            One map, <Marked kind="underline" delay={800}>four ways</Marked> to help
+          </h2>
         </Reveal>
         <ul className="audience-grid">
           {AUDIENCES.map(({ icon: Icon, title, body }, i) => (
@@ -226,7 +243,9 @@ export function GuideTeaser() {
       <div className="band-inner">
         <div className="band-split">
           <Reveal className="band-head">
-            <h2>Know what you're picking up</h2>
+            <h2>
+              Know what you're <Marked delay={800}>picking up</Marked>
+            </h2>
             <p>
               Nets need cutters, styrofoam needs a sieve, needles need a professional, and driftwood should stay put.
               The field guide covers each kind of debris and every tool a cleanup plan may ask for.
@@ -284,7 +303,9 @@ export function FinalCta() {
       <Reveal className="final-cta-inner">
         <h2>
           <span className="serif-italic">Every report</span>
-          <span>makes the map more true.</span>
+          <span>
+            makes the map <Marked delay={900}>more true.</Marked>
+          </span>
         </h2>
         <p>Start with the beach nearest you. It takes one photo.</p>
         <div className="final-cta-actions">

@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { Link } from "react-router";
 import { gsap } from "../lib/gsap";
 import { prefersReducedMotion } from "../lib/motion";
+import { Marked, Note } from "./Sketch";
 
 // Placeholder pair (public domain, USFWS via Wikimedia Commons): two different
 // beaches, so the coastline shifts at the spotlight's edge. For the final design,
@@ -126,20 +127,23 @@ export default function Hero() {
             Beautiful shores
           </span>
           <span className="hero-line-2 hero-anim hero-reveal" style={{ animationDelay: "0.42s" }}>
-            hide what we leave
+            hide what{" "}
+            <Marked kind="underline" delay={1300}>
+              we leave
+            </Marked>
           </span>
         </h1>
         <p className="hero-hint hero-anim hero-fade" style={{ animationDelay: "1.1s" }}>
-          Move your cursor, or drag a finger, to see what the tide brought in
+          <Note arrow="down">Move your cursor, or drag a finger, to see what the tide brought in</Note>
         </p>
       </div>
 
       <div className="hero-bottom">
-        <div className="hero-left hero-anim hero-fade" style={{ animationDelay: "0.7s" }}>
+        <div className="hero-left taped hero-anim hero-fade" style={{ animationDelay: "0.7s" }}>
           <p>More than 11 million tonnes of plastic enter the ocean every year. Some of it washes back, onto beaches we think are clean.</p>
         </div>
 
-        <div className="hero-right hero-anim hero-fade" style={{ animationDelay: "0.85s" }}>
+        <div className="hero-right taped hero-anim hero-fade" style={{ animationDelay: "0.85s" }}>
           <p>Snap a photo as you walk by. AI identifies the debris and how much there is, and the beach map updates for everyone.</p>
           <Link to="/report" className="btn btn-primary" viewTransition>
             Start reporting

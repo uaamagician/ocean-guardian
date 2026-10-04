@@ -1,30 +1,30 @@
 import { useLayoutEffect } from "react";
-import { gsap, SplitText } from "./gsap";
+import { gsap } from "./gsap";
 import { prefersReducedMotion } from "./motion";
+import { splitWords } from "./splitWords";
 
 const HEADINGS = ".band-head h2, .journey-intro h2, .final-cta h2";
 
-// Section headings rise line by line from behind a mask as they scroll in, and
-// the closing photo drifts with the scroll. Everything is scoped to `rootRef`
-// and reverted on unmount, so leaving the page leaves nothing behind.
+// Section headings land word by word, each at a slight angle, like stickers
+// or handwriting, as they scroll in; the closing photo drifts with the scroll.
+// Everything is scoped to `rootRef` and reverted on unmount, so leaving the
+// page leaves nothing behind.
 export default function useSectionMotion(rootRef) {
   useLayoutEffect(() => {
     if (prefersReducedMotion()) return undefined;
+    const splits = [];
     const ctx = gsap.context(() => {
       gsap.utils.toArray(HEADINGS).forEach((heading) => {
-        SplitText.create(heading, {
-          type: "lines",
-          mask: "lines",
-          // Re-split after web fonts load or the width changes, so lines stay true.
-          autoSplit: true,
-          onSplit: (self) =>
-            gsap.from(self.lines, {
-              yPercent: 110,
-              duration: 1.1,
-              ease: "expo.out",
-              stagger: 0.09,
-              scrollTrigger: { trigger: heading, start: "top 88%", once: true },
-            }),
+        const split = splitWords(heading);
+        splits.push(split);
+        gsap.from(split.pieces, {
+          y: 26,
+          opacity: 0,
+          rotation: () => gsap.utils.random(-9, 9),
+          duration: 0.7,
+          ease: "back.out(2.2)",
+          stagger: 0.06,
+          scrollTrigger: { trigger: heading, start: "top 88%", once: true },
         });
       });
 
@@ -40,6 +40,9 @@ export default function useSectionMotion(rootRef) {
         ),
       );
     }, rootRef);
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      splits.forEach((s) => s.revert());
+    };
   }, [rootRef]);
 }

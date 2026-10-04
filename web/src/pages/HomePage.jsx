@@ -9,6 +9,7 @@ import FadeImg from "../components/FadeImg";
 import LiveOcean from "../components/LiveOcean";
 import Journey from "../components/Journey";
 import { Reveal } from "../components/Motion";
+import { Doodle, Marked } from "../components/Sketch";
 import { Audiences, FinalCta, Gap, GuideTeaser, Problem, Sdg14, TaiwanNumbers } from "../components/Story";
 import { useLatestPlan } from "../lib/cleanup";
 import { TOOL_BY_ID } from "../lib/guide";
@@ -27,14 +28,18 @@ function WorldMap({ reports }) {
       <div className="band-inner">
         <div className="band-split">
           <Reveal className="band-head">
-            <h2>Beaches around the world, right now</h2>
+            <h2>
+              Beaches around the world, <Marked kind="underline" delay={800}>right now</Marked>
+            </h2>
             <p>Over 15,000 beaches, colored by what people have reported. Click one for live water conditions, reports, and reviews on Google Maps.</p>
           </Reveal>
           <Link to="/map" className="btn" viewTransition>
             Open the full map
           </Link>
         </div>
-        <Reveal className="map-preview">
+        <Doodle name="gull" className="band-doodle map-gull" />
+        <Doodle name="gull" className="band-doodle map-gull map-gull-2" delay={250} />
+        <Reveal className="map-preview taped">
           <ReportsMap
             beaches={beaches}
             beachTones={tones}
@@ -67,7 +72,7 @@ function DebrisStats({ reports }) {
   const maxItem = stats.topItems[0]?.[1] ?? 1;
 
   return (
-    <section className="band band-deep">
+    <section className="band band-deep wave-edge">
       <div className="band-inner">
         <Reveal className="band-head">
           <h2>Marine debris at a glance</h2>
@@ -151,7 +156,9 @@ function HowItWorks({ reports }) {
       <div className="band-inner">
         <div className="band-split">
           <Reveal className="band-head">
-            <h2>Report a beach in three steps</h2>
+            <h2>
+              Report a beach in <Marked kind="circle" delay={800}>three steps</Marked>
+            </h2>
             <p>No sign-up and no forms. Shoot it however you like, wide or close up, with up to four photos.</p>
           </Reveal>
           <Link to="/report" className="btn btn-primary" viewTransition>
@@ -164,10 +171,12 @@ function HowItWorks({ reports }) {
             <p>Photograph the beach in front of you. Your location is added automatically.</p>
           </li>
           <li>
+            <Doodle name="arrow" className="step-arrow" boil={false} delay={400} />
             <h3>AI analysis</h3>
             <p>Gemini identifies the debris and how bad it is, and asks for another photo when something is unclear.</p>
           </li>
           <li>
+            <Doodle name="arrow" className="step-arrow" boil={false} delay={700} />
             <h3>Map update</h3>
             <p>Reports the AI is confident about appear on the world beach map right away.</p>
           </li>
@@ -192,7 +201,7 @@ const span = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
 function LatestPlan({ record }) {
   const { plan } = record;
   return (
-    <Link to={`/map?b=${encodeURIComponent(record.beachId)}&t=cleanup`} className="plan-example" viewTransition>
+    <Link to={`/map?b=${encodeURIComponent(record.beachId)}&t=cleanup`} className="plan-example taped" viewTransition>
       <span className="plan-tag">Latest AI plan: {record.name}</span>
       <dl>
         <dt>Volunteers</dt>
@@ -218,7 +227,7 @@ function LatestPlan({ record }) {
 function CleanupPreview() {
   const latest = useLatestPlan();
   return (
-    <section className="band band-dark">
+    <section className="band band-dark wave-edge">
       <div className="band-inner">
         <div className="band-split">
           <Reveal className="band-head">

@@ -23,12 +23,13 @@
 .reports-map {
   width: 100%;
   height: 100%;
-  background: #c7d5d6;
+  background: #cfd8cf;
 }
 
-/* Mute the busy OSM palette so the condition markers carry the color. */
+/* Mute the busy OSM palette so the condition markers carry the color, and
+   warm it toward an old paper sea chart to sit with the notebook pages. */
 .reports-map .leaflet-tile-pane {
-  filter: saturate(0.35) brightness(1.04) contrast(0.92);
+  filter: saturate(0.4) sepia(0.22) brightness(1.03) contrast(0.92);
 }
 
 .map-header {
@@ -39,9 +40,10 @@
   z-index: 500;
   max-width: 420px;
   padding: var(--space-4) var(--space-5);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-md);
-  background: rgba(244, 246, 245, 0.95);
-  box-shadow: 0 4px 20px rgba(5, 20, 28, 0.18);
+  background: rgba(255, 253, 247, 0.96);
+  box-shadow: 4px 4px 0 var(--ink);
 }
 
 .map-header h1 {
@@ -78,9 +80,11 @@
   max-height: 65%;
   overflow-y: auto;
   padding: var(--space-6) var(--space-5) var(--space-5);
+  border: 2px solid var(--ink);
+  border-bottom: 0;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
   background: var(--surface);
-  box-shadow: 0 -6px 24px rgba(5, 20, 28, 0.2);
+  box-shadow: 0 -4px 0 rgba(30, 42, 51, 0.12);
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
@@ -607,15 +611,14 @@
   gap: var(--space-2);
   height: 44px;
   padding: 0 var(--space-3);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sketch);
   background: var(--surface);
   transition: border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
 }
 
 .map-search-box:focus-within {
-  border-color: var(--tide);
-  box-shadow: 0 0 0 3px rgba(35, 114, 122, 0.15);
+  box-shadow: 3px 3px 0 var(--marker);
 }
 
 .map-search-box > svg {
@@ -666,9 +669,10 @@
   margin: 0;
   padding: 6px;
   list-style: none;
+  border: 2px solid var(--ink);
   border-radius: var(--radius-md);
   background: var(--surface);
-  box-shadow: 0 12px 32px rgba(5, 20, 28, 0.18);
+  box-shadow: 4px 4px 0 var(--ink);
   animation: pop-in 0.18s var(--ease-out);
 }
 

@@ -2,6 +2,7 @@ import { Outlet, ScrollRestoration, useLocation } from "react-router";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import SmoothScroll from "./components/SmoothScroll";
+import { SketchDefs } from "./components/Sketch";
 
 const LONG_PAGES = new Set(["/", "/info", "/guide", "/action"]);
 // Event pages are long too, but their paths carry an id.
@@ -13,6 +14,7 @@ export default function App() {
   const isMap = pathname === "/map";
   return (
     <>
+      <SketchDefs />
       <SmoothScroll enabled={!isMap} />
       <ScrollRestoration />
       {isLongPage(pathname) && <div className="scroll-progress" aria-hidden="true" />}

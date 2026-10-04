@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { prefersReducedMotion } from "../lib/motion";
 import { gsap } from "../lib/gsap";
 import FadeImg from "./FadeImg";
+import { Note } from "./Sketch";
 
 const wiki = (path) => `https://upload.wikimedia.org/wikipedia/commons/thumb/${path}`;
 
@@ -52,6 +53,9 @@ const STOPS = [
   },
 ];
 
+// Snapshots pinned to the page at slightly different angles.
+const TILTS = [-1.6, 1.2, -0.8, 1.6, -1.2];
+
 // Pinned horizontal scroll on wide screens, driven by GSAP ScrollTrigger: the
 // section pins while vertical scroll moves the track sideways, and each photo
 // drifts against its card for depth. Narrow screens and reduced-motion users
@@ -89,7 +93,7 @@ function usePinnedTrack(sectionRef, trackRef, progressRef) {
         },
       });
 
-      gsap.utils.toArray(".journey-stop img", section).forEach((img) => {
+      gsap.utils.toArray(".journey-photo img", section).forEach((img) => {
         gsap.fromTo(
           img,
           { xPercent: -5 },
@@ -129,18 +133,24 @@ export default function Journey() {
               <span className="serif-italic">Where it</span> washes up
             </h2>
             <p>The same currents connect every coast. Follow the plastic from the tropics to the open Pacific, and back to Taiwan.</p>
-            {pinned && <p className="journey-hint">Keep scrolling</p>}
+            {pinned && (
+              <p className="journey-hint">
+                <Note arrow="before">keep scrolling</Note>
+              </p>
+            )}
           </div>
 
-          {STOPS.map((stop) => (
-            <article key={stop.title} className="journey-stop">
-              <FadeImg src={stop.image} alt="" loading="lazy" />
+          {STOPS.map((stop, i) => (
+            <article key={stop.title} className="journey-stop taped" style={{ "--tilt": `${TILTS[i % TILTS.length]}deg` }}>
+              <div className="journey-photo">
+                <FadeImg src={stop.image} alt="" loading="lazy" />
+              </div>
               <div className="journey-copy">
                 <span className="journey-region">{stop.region}</span>
-                <h3 className="serif-italic">{stop.title}</h3>
+                <h3>{stop.title}</h3>
                 <p>{stop.body}</p>
+                <small className="journey-credit">{stop.credit}</small>
               </div>
-              <small className="journey-credit">{stop.credit}</small>
             </article>
           ))}
 
@@ -148,7 +158,7 @@ export default function Journey() {
             <h3>
               Every coast is connected. <span className="serif-italic">Start with yours.</span>
             </h3>
-            <Link to="/map" className="btn btn-light" viewTransition>
+            <Link to="/map" className="btn btn-primary" viewTransition>
               Explore the beach map
             </Link>
           </div>
