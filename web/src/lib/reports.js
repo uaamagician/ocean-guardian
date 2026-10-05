@@ -2,9 +2,27 @@ import { signInAnonymously } from "firebase/auth";
 import { collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "../firebase";
+import { isEnglish } from "./english";
 
 // Must match firestore.rules / storage.rules.
 export const MAX_PHOTOS = 4;
+
+// A few early reports were analyzed before the AI was asked to answer in
+// English; their Chinese text is left out rather than shown.
+export function fromReportDoc(snap) {
+  const report = { id: snap.id, ...snap.data() };
+  const a = report.aiAnalysis;
+  if (!a) return report;
+  return {
+    ...report,
+    aiAnalysis: {
+      ...a,
+      items: (a.items ?? []).filter(isEnglish),
+      uncertainItems: (a.uncertainItems ?? []).filter(isEnglish),
+      retakeSuggestion: isEnglish(a.retakeSuggestion) ? a.retakeSuggestion : null,
+    },
+  };
+}
 const MAX_BYTES = 3 * 1024 * 1024;
 const MAX_EDGE = 2048;
 

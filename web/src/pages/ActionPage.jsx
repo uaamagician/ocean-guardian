@@ -25,7 +25,7 @@ function Steps({ items }) {
     <ol className="cl-steps">
       {items.map((text, i) => (
         <li key={text}>
-          {i > 0 && <Doodle name="arrow" className="cl-step-arrow" boil={false} delay={i * 200} />}
+          {i > 0 && <Doodle name="arrow" className="cl-step-arrow" boil={false} delay={i * 120} />}
           <span className="cl-step-num">{i + 1}</span>
           <span>{text}</span>
         </li>
@@ -93,7 +93,7 @@ function JoinPanel({ upcoming, reports, onOrganize }) {
       {upcoming?.length > 0 && (
         <ul className="join-grid">
           {upcoming.map((e, i) => (
-            <Reveal as="li" key={e.id} delay={Math.min(i, 6) * 60}>
+            <Reveal as="li" key={e.id} delay={Math.min(i, 6) * 30}>
               <JoinCard event={e} reports={reports} />
             </Reveal>
           ))}
@@ -126,7 +126,7 @@ function BeachCard({ beach, list, allReports }) {
           <Level category={list[0].aiAnalysis?.category} />
         </div>
         <span className="report-meta">
-          {[beach.local, beach.country].filter(Boolean).join(", ") || "Added by users"}, {list.length} report
+          {beach.country || "Added by users"}, {list.length} report
           {list.length > 1 ? "s" : ""}
         </span>
 
@@ -223,7 +223,7 @@ function OrganizePanel({ reports }) {
       {rows?.length > 0 && (
         <ul className="beach-grid">
           {rows.map(({ beach, list }, i) => (
-            <Reveal as="li" key={beach.id} delay={Math.min(i, 6) * 60}>
+            <Reveal as="li" key={beach.id} delay={Math.min(i, 6) * 30}>
               <BeachCard beach={beach} list={list} allReports={reports} />
             </Reveal>
           ))}

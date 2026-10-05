@@ -91,7 +91,6 @@ function Header({ beach }) {
         {beach.kind && beach.kind !== "unknown" && <span className="bp-tag">{BEACH_KINDS[beach.kind]}</span>}
       </div>
       <h2 className="beach-name">{beach.name}</h2>
-      {beach.local && beach.local !== beach.name && <p className="bp-local">{beach.local}</p>}
       <p className="bp-coords">{formatCoords(beach)}</p>
       <div className="bp-actions">
         <a className="chip-button" href={links.place} target="_blank" rel="noreferrer">

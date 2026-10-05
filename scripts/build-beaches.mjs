@@ -104,7 +104,8 @@ for (const r of wd.results.bindings) {
   if (!m) continue;
   byItem.set(id, {
     id,
-    name: r.label.value,
+    // Some labels use a full-width space (U+3000); keep names plain English.
+    name: r.label.value.split(/\s+/).join(" "),
     local: null,
     lat: round(Number(m[2])),
     lng: round(Number(m[1])),

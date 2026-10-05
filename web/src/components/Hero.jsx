@@ -1,8 +1,8 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { Link } from "react-router";
 import { gsap } from "../lib/gsap";
 import { prefersReducedMotion } from "../lib/motion";
 import { Marked, Note } from "./Sketch";
+import ActionFan from "./ActionFan";
 
 // Placeholder pair (public domain, USFWS via Wikimedia Commons): two different
 // beaches, so the coastline shifts at the spotlight's edge. For the final design,
@@ -123,31 +123,29 @@ export default function Hero() {
 
       <div className="hero-heading">
         <h1>
-          <span className="hero-line-1 serif-italic hero-anim hero-reveal" style={{ animationDelay: "0.25s" }}>
+          <span className="hero-line-1 serif-italic hero-anim hero-reveal" style={{ animationDelay: "0.1s" }}>
             Beautiful shores
           </span>
-          <span className="hero-line-2 hero-anim hero-reveal" style={{ animationDelay: "0.42s" }}>
+          <span className="hero-line-2 hero-anim hero-reveal" style={{ animationDelay: "0.22s" }}>
             hide what{" "}
-            <Marked kind="underline" delay={1300}>
+            <Marked kind="underline" delay={800}>
               we leave
             </Marked>
           </span>
         </h1>
-        <p className="hero-hint hero-anim hero-fade" style={{ animationDelay: "1.1s" }}>
+        <p className="hero-hint hero-anim hero-fade" style={{ animationDelay: "0.55s" }}>
           <Note arrow="down">Move your cursor, or drag a finger, to see what the tide brought in</Note>
         </p>
       </div>
 
       <div className="hero-bottom">
-        <div className="hero-left taped hero-anim hero-fade" style={{ animationDelay: "0.7s" }}>
+        <div className="hero-left taped hero-anim hero-fade" style={{ animationDelay: "0.35s" }}>
           <p>More than 11 million tonnes of plastic enter the ocean every year. Some of it washes back, onto beaches we think are clean.</p>
         </div>
 
-        <div className="hero-right taped hero-anim hero-fade" style={{ animationDelay: "0.85s" }}>
+        <div className="hero-right taped hero-anim hero-fade" style={{ animationDelay: "0.45s" }}>
           <p>Snap a photo as you walk by. AI identifies the debris and how much there is, and the beach map updates for everyone.</p>
-          <Link to="/report" className="btn btn-primary" viewTransition>
-            Start reporting
-          </Link>
+          <ActionFan className="hero-fan" />
         </div>
       </div>
     </section>

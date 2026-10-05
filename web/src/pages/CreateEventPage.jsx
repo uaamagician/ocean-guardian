@@ -9,6 +9,7 @@ import { AiSaw, Snapshots } from "../components/Snapshots";
 import { ORGANIZER_TYPES, createEvent } from "../lib/events";
 import { TOOL_BY_ID } from "../lib/guide";
 import { isGoogleUser, useUser } from "../lib/auth";
+import { ENGLISH_ONLY, englishName, hasCjk } from "../lib/english";
 import SignInGate from "../components/SignInGate";
 import "./Events.css";
 
@@ -41,7 +42,7 @@ function EventForm({ beach, record, user }) {
     ...defaultStart(),
     durationHours: Math.max(0.5, Math.ceil(plan.hours * 2) / 2),
     meetingPoint: "",
-    organizerName: (user.displayName ?? "").slice(0, 80),
+    organizerName: englishName(user).slice(0, 80),
     organizerType: "individual",
     capacity: Math.min(500, Math.max(plan.volunteers.max, 1)),
     description: "",
@@ -53,8 +54,13 @@ function EventForm({ beach, record, user }) {
 
   const startsAt = new Date(`${form.date}T${form.time}`);
   const inFuture = startsAt.getTime() > now + 60_000;
+  const notEnglish = [form.title, form.meetingPoint, form.organizerName, form.description].some(hasCjk);
   const valid =
-    form.title.trim().length >= 3 && form.organizerName.trim().length >= 2 && inFuture && form.capacity >= 1;
+    form.title.trim().length >= 3 &&
+    form.organizerName.trim().length >= 2 &&
+    inFuture &&
+    form.capacity >= 1 &&
+    !notEnglish;
 
   const submit = async (e) => {
     e.preventDefault();
@@ -158,6 +164,7 @@ function EventForm({ beach, record, user }) {
         </label>
       </fieldset>
 
+      {notEnglish && <p className="error-text">{ENGLISH_ONLY}</p>}
       {error && <p className="error-text">{error}</p>}
       <p className="bp-note">
         The work order is copied from the AI plan now, so later updates to the plan won't change this cleanup. The event

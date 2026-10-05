@@ -100,7 +100,7 @@ const SCRIBBLES = {
 };
 
 // Underlines, circles or highlights a few words once they scroll into view.
-export function Marked({ kind = "highlight", delay = 500, className = "", children }) {
+export function Marked({ kind = "highlight", delay = 200, className = "", children }) {
   const [ref, inView] = useInView({ threshold: 0.8 });
   const scribble = SCRIBBLES[kind];
   return (

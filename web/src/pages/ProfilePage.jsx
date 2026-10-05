@@ -5,6 +5,7 @@ import EventCard from "../components/EventCard";
 import SignInGate from "../components/SignInGate";
 import { Avatar } from "../components/UserMenu";
 import { isGoogleUser, signOutUser, useUser } from "../lib/auth";
+import { englishName } from "../lib/english";
 import { useMyEvents, useMySignups } from "../lib/events";
 import { TOOL_BY_ID } from "../lib/guide";
 import "./Events.css";
@@ -72,7 +73,7 @@ function SignedIn({ user }) {
       <header className="profile-head">
         <Avatar user={user} size={72} />
         <div>
-          <h1>{user.displayName}</h1>
+          <h1>{englishName(user) || "Your cleanups"}</h1>
           <p className="report-meta">{user.email}</p>
         </div>
         <button type="button" className="btn profile-signout" onClick={() => signOutUser()}>

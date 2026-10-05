@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { collection, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { db } from "../firebase";
+import { fromReportDoc } from "./reports";
 
 // The status filter is required: rules only allow reading published reports.
 const publishedReports = query(
@@ -16,7 +17,7 @@ export default function usePublishedReports() {
     () =>
       onSnapshot(
         publishedReports,
-        (snap) => setState({ reports: snap.docs.map((d) => ({ id: d.id, ...d.data() })), error: false }),
+        (snap) => setState({ reports: snap.docs.map(fromReportDoc), error: false }),
         (err) => {
           console.error(err);
           setState((prev) => ({ ...prev, error: true }));

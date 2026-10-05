@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BEACH_KINDS, addBeach, findNearby } from "../lib/beaches";
+import { ENGLISH_ONLY, hasCjk } from "../lib/english";
 
 const NAME_MAX = 80;
 const NOTES_MAX = 280;
@@ -12,7 +13,8 @@ export default function AddBeachForm({ point, beaches, onAdded, onOpenBeach, onC
   const [error, setError] = useState("");
 
   const nearby = point ? findNearby(beaches, point) : null;
-  const canSave = point && name.trim().length >= 2 && !saving;
+  const notEnglish = hasCjk(name) || hasCjk(notes);
+  const canSave = point && name.trim().length >= 2 && !notEnglish && !saving;
 
   const submit = async (e) => {
     e.preventDefault();
@@ -103,6 +105,7 @@ export default function AddBeachForm({ point, beaches, onAdded, onOpenBeach, onC
           </span>
         </label>
 
+        {notEnglish && <p className="error-text">{ENGLISH_ONLY}</p>}
         {error && <p className="error-text">{error}</p>}
         <p className="bp-note">Beaches you add are public and can't be edited afterward.</p>
       </div>

@@ -71,7 +71,7 @@ export default function GuidePage() {
           </Reveal>
           <ul className="debris-grid">
             {DEBRIS_TYPES.map(({ id, icon: Icon, name, examples, why, handle, tools }, i) => (
-              <Reveal as="li" key={id} id={`debris-${id}`} className={id === "natural" ? "is-natural" : ""} delay={(i % 3) * 80}>
+              <Reveal as="li" key={id} id={`debris-${id}`} className={id === "natural" ? "is-natural" : ""} delay={(i % 3) * 40}>
                 <div className="debris-top">
                   <Icon aria-hidden="true" />
                   <h3>{name}</h3>
@@ -104,7 +104,7 @@ export default function GuidePage() {
           </Reveal>
           <ul className="tool-grid">
             {TOOLS.map(({ id, icon: Icon, name, use, when }, i) => (
-              <Reveal as="li" key={id} id={`tool-${id}`} delay={(i % 4) * 60}>
+              <Reveal as="li" key={id} id={`tool-${id}`} delay={(i % 4) * 30}>
                 <Icon aria-hidden="true" />
                 <h3>{name}</h3>
                 <p>{use}</p>
@@ -122,7 +122,7 @@ export default function GuidePage() {
           </Reveal>
           <ul className="safety-grid">
             {SAFETY.map((rule, i) => (
-              <Reveal as="li" key={rule} delay={i * 80}>
+              <Reveal as="li" key={rule} delay={i * 40}>
                 <ShieldAlert aria-hidden="true" />
                 <p>{rule}</p>
               </Reveal>

@@ -29,7 +29,7 @@ function WorldMap({ reports }) {
         <div className="band-split">
           <Reveal className="band-head">
             <h2>
-              Beaches around the world, <Marked kind="underline" delay={800}>right now</Marked>
+              Beaches around the world, <Marked kind="underline" delay={300}>right now</Marked>
             </h2>
             <p>Over 15,000 beaches, colored by what people have reported. Click one for live water conditions, reports, and reviews on Google Maps.</p>
           </Reveal>
@@ -157,7 +157,7 @@ function HowItWorks({ reports }) {
         <div className="band-split">
           <Reveal className="band-head">
             <h2>
-              Report a beach in <Marked kind="circle" delay={800}>three steps</Marked>
+              Report a beach in <Marked kind="circle" delay={300}>three steps</Marked>
             </h2>
             <p>No sign-up and no forms. Shoot it however you like, wide or close up, with up to four photos.</p>
           </Reveal>
@@ -171,12 +171,12 @@ function HowItWorks({ reports }) {
             <p>Photograph the beach in front of you. Your location is added automatically.</p>
           </li>
           <li>
-            <Doodle name="arrow" className="step-arrow" boil={false} delay={400} />
+            <Doodle name="arrow" className="step-arrow" boil={false} delay={200} />
             <h3>AI analysis</h3>
             <p>Gemini identifies the debris and how bad it is, and asks for another photo when something is unclear.</p>
           </li>
           <li>
-            <Doodle name="arrow" className="step-arrow" boil={false} delay={700} />
+            <Doodle name="arrow" className="step-arrow" boil={false} delay={350} />
             <h3>Map update</h3>
             <p>Reports the AI is confident about appear on the world beach map right away.</p>
           </li>

@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { CalendarCheck, Camera, LogOut, Megaphone, UserRound } from "lucide-react";
 import { isGoogleUser, signInErrorMessage, signInWithGoogle, signOutUser, useUser } from "../lib/auth";
+import { englishName, shownName } from "../lib/english";
 
 export function Avatar({ user, size = 34 }) {
   const [broken, setBroken] = useState(false);
-  const initial = (user.displayName || user.email || "?").trim().charAt(0).toUpperCase();
+  const initial = (shownName(user) || "?").trim().charAt(0).toUpperCase();
   if (user.photoURL && !broken) {
     return (
       <img
@@ -80,7 +81,7 @@ export default function UserMenu() {
         className="avatar-button"
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label={`Account: ${user.displayName ?? user.email}`}
+        aria-label={`Account: ${shownName(user)}`}
         onClick={() => {
           setOpenedAt(pathname);
           setOpen((v) => !v);
@@ -93,7 +94,7 @@ export default function UserMenu() {
           <div className="user-dropdown-head">
             <Avatar user={user} size={40} />
             <div>
-              <strong>{user.displayName}</strong>
+              <strong>{englishName(user) || "Signed in"}</strong>
               <span>{user.email}</span>
             </div>
           </div>

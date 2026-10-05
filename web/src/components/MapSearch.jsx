@@ -1,5 +1,6 @@
 import { useDeferredValue, useId, useMemo, useState } from "react";
 import { MapPin, Search, Waves, X } from "lucide-react";
+import { isEnglish } from "../lib/english";
 
 const fold = (s) =>
   s
@@ -34,13 +35,21 @@ async function searchPlaces(term) {
   const params = new URLSearchParams({ q: term, format: "jsonv2", limit: "5", "accept-language": "en" });
   const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
   if (!res.ok) throw new Error(`Nominatim ${res.status}`);
-  return (await res.json()).map((p) => ({
-    id: `place-${p.place_id}`,
-    name: p.name || p.display_name.split(",")[0],
-    detail: p.display_name,
-    lat: Number(p.lat),
-    lng: Number(p.lon),
-  }));
+  // Places without an English name still come back in the local script;
+  // keep only the parts of the address written in English.
+  return (await res.json())
+    .map((p) => {
+      const parts = p.display_name.split(",").map((x) => x.trim()).filter(isEnglish);
+      const name = isEnglish(p.name) && p.name ? p.name : parts[0];
+      return {
+        id: `place-${p.place_id}`,
+        name,
+        detail: parts.join(", "),
+        lat: Number(p.lat),
+        lng: Number(p.lon),
+      };
+    })
+    .filter((p) => p.name);
 }
 
 export default function MapSearch({ beaches, onBeach, onPlace }) {
@@ -158,7 +167,7 @@ export default function MapSearch({ beaches, onBeach, onPlace }) {
                   <Waves aria-hidden="true" />
                   <span>
                     <strong>{row.item.name}</strong>
-                    <small>{[row.item.local, row.item.country].filter(Boolean).join(", ") || "Added by users"}</small>
+                    <small>{row.item.country || "Added by users"}</small>
                   </span>
                 </>
               )}

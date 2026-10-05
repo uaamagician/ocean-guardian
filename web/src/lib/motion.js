@@ -4,7 +4,7 @@ export const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // Becomes true once the element scrolls into view, then stays true.
-export function useInView({ threshold = 0.2, rootMargin = "0px 0px -8% 0px" } = {}) {
+export function useInView({ threshold = 0.1, rootMargin = "0px 0px -2% 0px" } = {}) {
   const ref = useRef(null);
   const [inView, setInView] = useState(prefersReducedMotion);
   useEffect(() => {

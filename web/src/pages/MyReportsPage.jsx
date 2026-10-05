@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { db } from "../firebase";
-import { currentUser } from "../lib/reports";
+import { currentUser, fromReportDoc } from "../lib/reports";
 import ReportDetail from "../components/ReportDetail";
 
 export default function MyReportsPage() {
@@ -21,7 +21,7 @@ export default function MyReportsPage() {
       }
       unsubscribe = onSnapshot(
         query(collection(db, "reports"), where("reporterId", "==", user.uid), orderBy("createdAt", "desc")),
-        (snap) => setReports(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+        (snap) => setReports(snap.docs.map(fromReportDoc)),
         (err) => {
           console.error(err);
           setLoadError(true);

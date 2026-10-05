@@ -347,12 +347,6 @@
   animation: spin 40s linear infinite;
 }
 
-@keyframes spin {
-  to {
-    rotate: 360deg;
-  }
-}
-
 .map-gull {
   top: 6px;
   right: 30%;
@@ -881,10 +875,10 @@
    that settles with a little overshoot. */
 .reveal {
   opacity: 0;
-  transform: translateY(28px) rotate(-1.2deg);
+  transform: translateY(16px) rotate(-0.8deg);
   transition:
-    opacity 0.6s var(--ease-out),
-    transform 0.8s var(--ease-spring);
+    opacity 0.35s var(--ease-out),
+    transform 0.5s var(--ease-spring);
   transition-delay: var(--delay, 0ms);
 }
 
@@ -1476,11 +1470,13 @@
   font-size: var(--text-lg);
 }
 
-.final-cta-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-4);
+.final-fan {
+  margin-bottom: var(--space-4);
+}
+
+.hero-fan {
+  align-self: center;
+  margin-bottom: var(--space-3);
 }
 
 .final-cta-credit {
@@ -1571,7 +1567,16 @@
   color: var(--buoy);
 }
 
+/* Each chip's icon turns over once on hover. */
+.teaser-chips svg {
+  transition: rotate 0.5s var(--ease-spring);
+}
+
 @media (hover: hover) {
+  .teaser-chips a:hover svg {
+    rotate: 360deg;
+  }
+
   .teaser-chips a:hover {
     transform: translate(-1px, -2px) rotate(-3deg);
     box-shadow: 4px 4px 0 var(--ink);

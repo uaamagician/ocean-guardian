@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
-import { MAX_PHOTOS, getPosition, resizePhoto, submitReport } from "../lib/reports";
+import { MAX_PHOTOS, fromReportDoc, getPosition, resizePhoto, submitReport } from "../lib/reports";
 import { TYPES } from "../lib/labels";
 import ReportDetail from "../components/ReportDetail";
 import "./ReportPage.css";
@@ -99,7 +99,7 @@ function LocationStatus({ state, onRetry }) {
 function Submitted({ reportId, onAgain }) {
   const [report, setReport] = useState(null);
   useEffect(
-    () => onSnapshot(doc(db, "reports", reportId), (snap) => setReport(snap.data() ?? null)),
+    () => onSnapshot(doc(db, "reports", reportId), (snap) => setReport(snap.exists() ? fromReportDoc(snap) : null)),
     [reportId],
   );
 

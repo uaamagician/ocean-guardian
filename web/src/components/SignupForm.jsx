@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Minus, Plus, UserCheck } from "lucide-react";
 import { TOOL_BY_ID } from "../lib/guide";
 import { saveSignup, withdraw } from "../lib/events";
+import { ENGLISH_ONLY, englishName, hasCjk } from "../lib/english";
 
 export default function SignupForm({ event, user, mySignup, myContact, full }) {
   const [editing, setEditing] = useState(!mySignup);
   // New sign-ups start from the Google profile; people can change both.
-  const [name, setName] = useState(mySignup?.name ?? (user.displayName ?? "").slice(0, 40));
+  const [name, setName] = useState(mySignup?.name ?? englishName(user).slice(0, 40));
   const [groupSize, setGroupSize] = useState(mySignup?.groupSize ?? 1);
   const [bringing, setBringing] = useState(mySignup?.bringing ?? []);
   const [contact, setContact] = useState(mySignup ? (myContact ?? "") : (myContact || user.email || ""));
@@ -14,12 +15,13 @@ export default function SignupForm({ event, user, mySignup, myContact, full }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
+  const notEnglish = hasCjk(name) || hasCjk(note);
   const tools = event.workOrder.gear.map((g) => TOOL_BY_ID[g.tool]).filter(Boolean);
   const toggle = (id) => setBringing((list) => (list.includes(id) ? list.filter((t) => t !== id) : [...list, id]));
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || notEnglish) return;
     setBusy(true);
     setError("");
     try {
@@ -124,8 +126,9 @@ export default function SignupForm({ event, user, mySignup, myContact, full }) {
         <input value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} />
       </label>
 
+      {notEnglish && <p className="error-text">{ENGLISH_ONLY}</p>}
       {error && <p className="error-text">{error}</p>}
-      <button type="submit" className="btn btn-primary" disabled={busy || !name.trim()}>
+      <button type="submit" className="btn btn-primary" disabled={busy || !name.trim() || notEnglish}>
         {busy ? "Saving…" : mySignup ? "Save changes" : "Join this cleanup"}
       </button>
       {mySignup && (

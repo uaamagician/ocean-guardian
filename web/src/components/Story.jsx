@@ -3,6 +3,7 @@ import { Building2, CalendarX, FileText, Footprints, HandHeart, Megaphone, Waves
 import { DEBRIS_TYPES, TOOL_BY_ID } from "../lib/guide";
 import { CountUp, Reveal } from "./Motion";
 import { Doodle, Marked, Note } from "./Sketch";
+import ActionFan from "./ActionFan";
 
 export function Problem() {
   return (
@@ -18,16 +19,16 @@ export function Problem() {
         <Doodle name="bottle" className="band-doodle problem-bottle bob" />
         <Doodle name="bag" className="band-doodle problem-bag bob" delay={300} />
         <div className="problem-body">
-          <Reveal as="p" delay={100}>
+          <Reveal as="p" delay={40}>
             Ocean currents carry plastic fragments, abandoned fishing nets and industrial packaging thousands of
             kilometers, then leave them on coastlines: crowded tourist beaches, holiday resorts, even atolls where
             nobody lives.
           </Reveal>
-          <Reveal as="p" delay={200}>
+          <Reveal as="p" delay={80}>
             Millions of people who love the sea want to change this. In practice it is hard to know where help is
             needed, what to bring, or whether any of it makes a difference.
           </Reveal>
-          <Reveal className="problem-forecast" delay={300}>
+          <Reveal className="problem-forecast" delay={120}>
             <CountUp value={29} suffix=" million" className="forecast-number" />
             <span>tonnes a year by 2040 if nothing changes.</span>
           </Reveal>
@@ -63,14 +64,14 @@ export function Gap() {
         <Reveal className="band-head">
           <h2>
             <span className="serif-italic">People want to help.</span> The tools{" "}
-            <Marked kind="circle" delay={900}>
+            <Marked kind="circle" delay={350}>
               hold them back.
             </Marked>
           </h2>
         </Reveal>
         <ul className="gap-list">
           {GAPS.map(({ icon: Icon, title, body }, i) => (
-            <Reveal as="li" key={title} delay={i * 120}>
+            <Reveal as="li" key={title} delay={i * 25}>
               <Icon aria-hidden="true" />
               <h3>{title}</h3>
               <p>{body}</p>
@@ -119,7 +120,7 @@ export function Sdg14() {
             <CountUp value={70} suffix="%" className="mega-number" />
             <p className="problem-lead">of Earth's surface is ocean.</p>
           </Reveal>
-          <Reveal className="band-head" delay={120}>
+          <Reveal className="band-head" delay={50}>
             <h2>Built for SDG 14, Life Below Water</h2>
             <p>
               The fourteenth UN Sustainable Development Goal is to conserve and sustainably use the oceans, seas and
@@ -131,7 +132,7 @@ export function Sdg14() {
 
         <ul className="fact-row">
           {OCEAN_FACTS.map((f, i) => (
-            <Reveal as="li" key={f.text} delay={i * 120}>
+            <Reveal as="li" key={f.text} delay={i * 25}>
               <strong>
                 {f.prefix}
                 <CountUp value={f.value} suffix={f.suffix} />
@@ -169,7 +170,7 @@ export function TaiwanNumbers() {
       <div className="band-inner">
         <Reveal className="band-head">
           <h2>
-            Taiwan's coastal cleanups, <Marked delay={800}>in numbers</Marked>
+            Taiwan's coastal cleanups, <Marked delay={300}>in numbers</Marked>
           </h2>
           <p>
             Since 2020, according to Taiwan's Ministry of Environment. That's a huge effort, and it all happens on
@@ -180,7 +181,7 @@ export function TaiwanNumbers() {
         <Doodle name="starfish" className="band-doodle tw-star bob" delay={250} />
         <ul className="number-grid">
           {TAIWAN_STATS.map((s, i) => (
-            <Reveal as="li" key={s.label} delay={i * 100}>
+            <Reveal as="li" key={s.label} delay={i * 40}>
               <CountUp value={s.value} decimals={s.decimals} suffix={s.suffix} className="number-grid-value" />
               <span>{s.label}</span>
             </Reveal>
@@ -217,12 +218,12 @@ export function Audiences() {
       <div className="band-inner">
         <Reveal className="band-head">
           <h2>
-            One map, <Marked kind="underline" delay={800}>four ways</Marked> to help
+            One map, <Marked kind="underline" delay={300}>four ways</Marked> to help
           </h2>
         </Reveal>
         <ul className="audience-grid">
           {AUDIENCES.map(({ icon: Icon, title, body }, i) => (
-            <Reveal as="li" key={title} delay={i * 100}>
+            <Reveal as="li" key={title} delay={i * 40}>
               <Icon aria-hidden="true" />
               <h3>{title}</h3>
               <p>{body}</p>
@@ -244,7 +245,7 @@ export function GuideTeaser() {
         <div className="band-split">
           <Reveal className="band-head">
             <h2>
-              Know what you're <Marked delay={800}>picking up</Marked>
+              Know what you're <Marked delay={300}>picking up</Marked>
             </h2>
             <p>
               Nets need cutters, styrofoam needs a sieve, needles need a professional, and driftwood should stay put.
@@ -262,7 +263,7 @@ export function GuideTeaser() {
               {TEASER_DEBRIS.map((id, i) => {
                 const { icon: Icon, name } = DEBRIS_TYPES.find((d) => d.id === id);
                 return (
-                  <Reveal as="li" key={id} delay={i * 50}>
+                  <Reveal as="li" key={id} delay={i * 25}>
                     <Link to={`/guide#debris-${id}`} viewTransition>
                       <Icon aria-hidden="true" />
                       {name}
@@ -278,7 +279,7 @@ export function GuideTeaser() {
               {TEASER_TOOLS.map((id, i) => {
                 const { icon: Icon, name } = TOOL_BY_ID[id];
                 return (
-                  <Reveal as="li" key={id} delay={i * 50}>
+                  <Reveal as="li" key={id} delay={i * 25}>
                     <Link to={`/guide#tool-${id}`} viewTransition>
                       <Icon aria-hidden="true" />
                       {name}
@@ -304,18 +305,11 @@ export function FinalCta() {
         <h2>
           <span className="serif-italic">Every report</span>
           <span>
-            makes the map <Marked delay={900}>more true.</Marked>
+            makes the map <Marked delay={350}>more true.</Marked>
           </span>
         </h2>
         <p>Start with the beach nearest you. It takes one photo.</p>
-        <div className="final-cta-actions">
-          <Link to="/report" className="btn btn-primary">
-            Report a beach
-          </Link>
-          <Link to="/map" className="btn btn-light">
-            Explore the map
-          </Link>
-        </div>
+        <ActionFan className="fan-light final-fan" />
       </Reveal>
       <small className="final-cta-credit">Long Fong Fishing Port, Miaoli. Photo: Taiwankengo, CC BY-SA 4.0</small>
     </section>

@@ -21,10 +21,10 @@ export default function useSectionMotion(rootRef) {
           y: 26,
           opacity: 0,
           rotation: () => gsap.utils.random(-9, 9),
-          duration: 0.7,
-          ease: "back.out(2.2)",
-          stagger: 0.06,
-          scrollTrigger: { trigger: heading, start: "top 88%", once: true },
+          duration: 0.45,
+          ease: "back.out(2)",
+          stagger: 0.03,
+          scrollTrigger: { trigger: heading, start: "top 95%", once: true },
         });
       });
 

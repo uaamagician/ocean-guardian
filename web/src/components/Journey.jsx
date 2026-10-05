@@ -84,7 +84,7 @@ function usePinnedTrack(sectionRef, trackRef, progressRef) {
         scrollTrigger: {
           trigger: section,
           pin: true,
-          scrub: 1,
+          scrub: 0.3,
           end: () => `+=${distance()}`,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
