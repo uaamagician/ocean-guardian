@@ -12,6 +12,7 @@ import { Reveal } from "../components/Motion";
 import { Doodle, Footprints, Marked, SeaGlass } from "../components/Sketch";
 import { Audiences, FinalCta, Gap, GuideTeaser, Problem, Sdg14, TaiwanNumbers } from "../components/Story";
 import { useLatestPlan } from "../lib/cleanup";
+import { HISTORY_PHOTOS } from "../lib/history";
 import { TOOL_BY_ID } from "../lib/guide";
 import { CATEGORIES, TONE_COLORS, formatTime } from "../lib/labels";
 import usePublishedReports from "../lib/usePublishedReports";
@@ -265,6 +266,47 @@ function CleanupPreview() {
   );
 }
 
+// Three of the most recent cleanups from the history page.
+function HistoryTeaser() {
+  const picks = HISTORY_PHOTOS.slice(-3).reverse();
+  return (
+    <section className="band band-deep">
+      <div className="band-inner">
+        <div className="band-split">
+          <Reveal className="band-head">
+            <h2>
+              Cleanups that <Marked kind="underline">came before</Marked>
+            </h2>
+            <p>
+              From a Texas beach in 1986 to Ishigaki in 2025: cleanups volunteers photographed and shared, and soon
+              the ones organized here.
+            </p>
+          </Reveal>
+          <Link to="/history" className="btn btn-light" viewTransition>
+            See the cleanup history
+          </Link>
+        </div>
+        <ul className="history-strip">
+          {picks.map((h, i) => (
+            <Reveal as="li" key={h.source} delay={i * 40}>
+              <Link to="/history" className="history-snap" viewTransition>
+                <FadeImg src={h.image} alt={`Beach cleanup, ${h.place}`} loading="lazy" />
+                <span className="history-snap-place">{h.place}</span>
+                <span className="history-snap-meta">
+                  {h.country}, {h.date.slice(0, 4)}
+                </span>
+              </Link>
+              <small className="history-snap-credit">
+                Photo: {h.credit}, {h.license}
+              </small>
+            </Reveal>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 export default function HomePage() {
   const { reports } = usePublishedReports();
   const rootRef = useRef(null);
@@ -283,6 +325,7 @@ export default function HomePage() {
       <HowItWorks reports={reports} />
       <CleanupPreview />
       <GuideTeaser />
+      <HistoryTeaser />
       <Audiences />
       <FinalCta />
     </div>

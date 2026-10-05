@@ -4,7 +4,7 @@ import Footer from "./components/Footer";
 import SmoothScroll from "./components/SmoothScroll";
 import { SketchDefs } from "./components/Sketch";
 
-const LONG_PAGES = new Set(["/", "/info", "/guide", "/action"]);
+const LONG_PAGES = new Set(["/", "/info", "/guide", "/action", "/history"]);
 // Event pages are long too, but their paths carry an id.
 const isLongPage = (path) => LONG_PAGES.has(path) || path.startsWith("/events/");
 

@@ -7,6 +7,7 @@ import { isGoogleUser, useUser } from "../lib/auth";
 const LINKS = [
   { to: "/map", label: "Beach Map" },
   { to: "/action", label: "Cleanups" },
+  { to: "/history", label: "History" },
   { to: "/guide", label: "Field Guide" },
   { to: "/info", label: "Ocean Data" },
 ];

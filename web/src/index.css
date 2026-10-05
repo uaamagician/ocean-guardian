@@ -659,7 +659,8 @@ img {
   text-decoration: none;
 }
 
-@media (min-width: 900px) {
+/* Five links need room; below this the menu button takes over. */
+@media (min-width: 1080px) {
   .nav {
     padding: 0 var(--space-5) 10px;
   }
@@ -979,7 +980,7 @@ img {
   }
 }
 
-@media (min-width: 900px) and (max-width: 1150px) {
+@media (min-width: 1080px) and (max-width: 1240px) {
   .nav-cta-long {
     display: none;
   }

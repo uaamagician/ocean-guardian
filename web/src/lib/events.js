@@ -8,6 +8,7 @@ import {
   doc,
   getDoc,
   limit,
+  limitToLast,
   onSnapshot,
   orderBy,
   query,
@@ -132,6 +133,22 @@ export function useMyContact(eventId, uid) {
     () => (uid ? doc(db, "events", eventId, "contacts", uid) : null),
     [eventId, uid],
     (snap) => (snap.exists() ? snap.data().contact : ""),
+  );
+}
+
+// Cleanups that have already happened, most recent last.
+export function usePastEvents(max = 12) {
+  return useSnapshot(
+    () =>
+      query(
+        collection(db, "events"),
+        where("status", "==", "open"),
+        where("startsAt", "<", Timestamp.now()),
+        orderBy("startsAt"),
+        limitToLast(max),
+      ),
+    ["past", max],
+    toList,
   );
 }
 

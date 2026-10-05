@@ -1606,6 +1606,80 @@
   box-shadow: 0 0 0 var(--ink);
 }
 
+/* ---------- History teaser: three snapshots on the dark water ---------- */
+
+.history-strip {
+  display: grid;
+  gap: var(--space-6);
+  margin: 0;
+  padding: var(--space-3) var(--space-2) 0;
+  list-style: none;
+}
+
+@media (min-width: 800px) {
+  .history-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.history-snap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 10px var(--space-4);
+  background: var(--surface);
+  box-shadow: 3px 8px 22px rgba(0, 0, 0, 0.35);
+  color: var(--ink);
+  text-decoration: none;
+  rotate: -1.5deg;
+  transition:
+    rotate 0.3s var(--ease-spring),
+    translate 0.3s var(--ease-spring);
+}
+
+.history-strip li:nth-child(2) .history-snap {
+  rotate: 1.2deg;
+}
+
+.history-strip li:nth-child(3) .history-snap {
+  rotate: -0.6deg;
+}
+
+@media (hover: hover) {
+  .history-snap:hover {
+    rotate: 0deg;
+    translate: 0 -6px;
+  }
+}
+
+.history-snap img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  margin-bottom: var(--space-2);
+  background: var(--sand);
+}
+
+.history-snap-place {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.history-snap-meta {
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--buoy);
+}
+
+.history-snap-credit {
+  display: block;
+  margin-top: var(--space-2);
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
 /* Buttons inside a heading block keep their natural width. */
 .band-head .btn {
   align-self: flex-start;

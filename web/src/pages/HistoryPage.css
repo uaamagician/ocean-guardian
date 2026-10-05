@@ -1,0 +1,218 @@
+.hist-shell {
+  top: -10px;
+  right: 6%;
+  width: 90px;
+  height: 90px;
+  color: var(--marker);
+}
+
+/* ---------- Timeline: a rope laid down the sand, snapshots on either side ---------- */
+
+.timeline {
+  --rope: 30px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin: 0;
+  padding: 0 0 0 var(--rope);
+  list-style: none;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 8px;
+  width: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 40'%3E%3Cpath d='M3 0 C 6 10, 0 10, 3 20 S 6 30, 3 40' fill='none' stroke='%238a6a3d' stroke-width='2.2'/%3E%3Cpath d='M1.5 6 L4.5 10 M1.5 26 L4.5 30' stroke='%238a6a3d' stroke-width='1' opacity='.6'/%3E%3C/svg%3E") repeat-y;
+  background-size: 6px 40px;
+}
+
+.tl-item {
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+}
+
+.tl-dot {
+  position: absolute;
+  top: 18px;
+  left: calc(-1 * var(--rope) + 2px);
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid var(--ink);
+  border-radius: 50% 45% 55% 48%;
+  background: var(--buoy);
+}
+
+.tl-milestone .tl-dot {
+  background: var(--marker);
+}
+
+.tl-photo {
+  margin: 0;
+  padding: 10px 10px var(--space-3);
+  background: var(--surface);
+  box-shadow: 3px 8px 22px rgba(60, 40, 10, 0.22);
+  rotate: -1.2deg;
+  transition: rotate 0.35s var(--ease-spring);
+}
+
+.tl-right .tl-photo {
+  rotate: 1.4deg;
+}
+
+@media (hover: hover) {
+  .tl-photo:hover {
+    rotate: 0deg;
+  }
+}
+
+.tl-photo img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  background: var(--sand);
+}
+
+.tl-credit {
+  margin-top: var(--space-2);
+  font-size: 0.6875rem;
+  color: var(--ink-soft);
+}
+
+.tl-credit a {
+  color: inherit;
+}
+
+.tl-note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-self: center;
+}
+
+.tl-date {
+  align-self: flex-start;
+  padding: 2px 10px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sketch);
+  background: var(--lemon);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  rotate: -2deg;
+}
+
+.tl-note h3 {
+  margin-top: var(--space-2);
+  font-size: var(--text-xl);
+  font-variation-settings: "INFM" 100;
+}
+
+.tl-country {
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--buoy);
+}
+
+.tl-note p {
+  margin-top: var(--space-2);
+  color: var(--ink-soft);
+}
+
+/* Milestones are sticky notes stuck straight onto the rope. */
+.tl-sticky {
+  max-width: 460px;
+  padding: var(--space-5);
+  background: var(--lemon);
+  border-radius: 2px 2px 20px 2px / 2px 2px 8px 2px;
+  box-shadow: 2px 8px 16px rgba(60, 40, 10, 0.16);
+  rotate: -1deg;
+}
+
+.tl-year {
+  font-family: var(--font-hand);
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--buoy);
+}
+
+.tl-sticky h3 {
+  font-size: var(--text-lg);
+}
+
+.tl-sticky p {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.hist-steps {
+  align-self: center;
+  width: 120px;
+  height: 40px;
+  rotate: 90deg;
+}
+
+/* Wide screens: the rope runs down the middle and the snapshots alternate. */
+@media (min-width: 900px) {
+  .timeline {
+    padding: 0;
+  }
+
+  .timeline::before {
+    left: calc(50% - 3px);
+  }
+
+  .tl-item {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  .tl-dot {
+    top: 50%;
+    left: calc(50% - 9px);
+    translate: 0 -50%;
+  }
+
+  .tl-right .tl-photo {
+    order: 2;
+  }
+
+  .tl-right .tl-note {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .tl-right .tl-date {
+    align-self: flex-end;
+  }
+
+  .tl-milestone {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .tl-milestone .tl-dot {
+    top: -22px;
+    translate: 0 0;
+  }
+
+  .tl-sticky {
+    text-align: center;
+  }
+}
+
+.hist-cta .band-inner {
+  align-items: flex-start;
+}
+
+.hist-cta .fan {
+  margin: var(--space-4) 0 var(--space-5) var(--space-6);
+}
