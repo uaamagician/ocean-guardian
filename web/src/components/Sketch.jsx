@@ -129,3 +129,46 @@ export function Note({ arrow, className = "", children }) {
     </span>
   );
 }
+
+// A short trail of footprints pressed into the sand, one after another,
+// walking left to right. Used between numbered steps.
+export function Footprints({ steps = 4, className = "" }) {
+  const [ref, inView] = useInView({ threshold: 0.5 });
+  return (
+    <svg
+      ref={ref}
+      viewBox={`0 0 ${steps * 15 + 6} 22`}
+      className={`footprints ${inView ? "is-drawn" : ""} ${className}`}
+      aria-hidden="true"
+      focusable="false"
+    >
+      {Array.from({ length: steps }, (_, i) => (
+        <g key={i} transform={`translate(${i * 15 + 2} ${i % 2 ? 11 : 2})`} style={{ "--i": i }}>
+          <ellipse cx="5" cy="4.5" rx="5" ry="3.3" />
+          <circle cx="11.6" cy="1.8" r="1.1" />
+          <circle cx="12.8" cy="3.8" r="0.95" />
+          <circle cx="12.6" cy="5.8" r="0.85" />
+          <circle cx="11.6" cy="7.5" r="0.75" />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+// A few pieces of sea glass scattered on the sand.
+const GLASS = [
+  { d: "M4 10 L14 3 L24 7 L21 18 L9 20 Z", fill: "rgba(143, 205, 187, 0.8)" },
+  { d: "M34 24 L44 20 L49 29 L40 35 Z", fill: "rgba(122, 176, 212, 0.65)" },
+  { d: "M10 34 L18 30 L22 38 L13 42 Z", fill: "rgba(255, 255, 255, 0.8)" },
+  { d: "M38 4 L46 6 L45 13 L37 12 Z", fill: "rgba(226, 163, 72, 0.6)" },
+];
+
+export function SeaGlass({ className = "" }) {
+  return (
+    <svg viewBox="0 0 52 46" className={`seaglass ${className}`} aria-hidden="true" focusable="false">
+      {GLASS.map((g) => (
+        <path key={g.d} d={g.d} fill={g.fill} />
+      ))}
+    </svg>
+  );
+}

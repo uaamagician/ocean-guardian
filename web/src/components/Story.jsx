@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { Building2, CalendarX, FileText, Footprints, HandHeart, Megaphone, Waves } from "lucide-react";
 import { DEBRIS_TYPES, TOOL_BY_ID } from "../lib/guide";
 import { CountUp, Reveal } from "./Motion";
-import { Doodle, Marked, Note } from "./Sketch";
+import { Doodle, Marked, Note, SeaGlass } from "./Sketch";
 import ActionFan from "./ActionFan";
 
 export function Problem() {
@@ -69,6 +69,7 @@ export function Gap() {
             </Marked>
           </h2>
         </Reveal>
+        <SeaGlass className="band-doodle gap-glass" />
         <ul className="gap-list">
           {GAPS.map(({ icon: Icon, title, body }, i) => (
             <Reveal as="li" key={title} delay={i * 25}>
@@ -178,6 +179,7 @@ export function TaiwanNumbers() {
           </p>
         </Reveal>
         <Doodle name="shell" className="band-doodle tw-shell bob" />
+        <SeaGlass className="band-doodle tw-glass" />
         <Doodle name="starfish" className="band-doodle tw-star bob" delay={250} />
         <ul className="number-grid">
           {TAIWAN_STATS.map((s, i) => (

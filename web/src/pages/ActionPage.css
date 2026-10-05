@@ -136,10 +136,14 @@
   position: absolute;
   left: calc(-1 * var(--space-7) + 2px);
   top: 50%;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 18px;
   translate: 0 -50%;
-  color: var(--ink-soft);
+}
+
+.cl-glass {
+  top: 10px;
+  right: 2%;
 }
 
 @media (min-width: 900px) {

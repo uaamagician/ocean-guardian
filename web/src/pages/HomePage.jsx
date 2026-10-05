@@ -9,7 +9,7 @@ import FadeImg from "../components/FadeImg";
 import LiveOcean from "../components/LiveOcean";
 import Journey from "../components/Journey";
 import { Reveal } from "../components/Motion";
-import { Doodle, Marked } from "../components/Sketch";
+import { Doodle, Footprints, Marked, SeaGlass } from "../components/Sketch";
 import { Audiences, FinalCta, Gap, GuideTeaser, Problem, Sdg14, TaiwanNumbers } from "../components/Story";
 import { useLatestPlan } from "../lib/cleanup";
 import { TOOL_BY_ID } from "../lib/guide";
@@ -165,18 +165,19 @@ function HowItWorks({ reports }) {
             Start reporting
           </Link>
         </div>
+        <SeaGlass className="band-doodle steps-glass" />
         <ol className="steps">
           <li>
             <h3>Snap and upload</h3>
             <p>Photograph the beach in front of you. Your location is added automatically.</p>
           </li>
           <li>
-            <Doodle name="arrow" className="step-arrow" boil={false} delay={200} />
+            <Footprints className="step-arrow" />
             <h3>AI analysis</h3>
             <p>Gemini identifies the debris and how bad it is, and asks for another photo when something is unclear.</p>
           </li>
           <li>
-            <Doodle name="arrow" className="step-arrow" boil={false} delay={350} />
+            <Footprints className="step-arrow" />
             <h3>Map update</h3>
             <p>Reports the AI is confident about appear on the world beach map right away.</p>
           </li>

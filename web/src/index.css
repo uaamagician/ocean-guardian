@@ -1,15 +1,17 @@
 :root {
-  /* A beach field notebook: warm paper, ballpoint ink, a yellow highlighter
-     and a coral marker. */
-  --night: #16242d;
-  --deep: #1d3542;
-  --ink: #1e2a33;
-  --ink-soft: #5a646b;
-  --paper: #f5efe2;
-  --surface: #fffdf7;
-  --sand: #ebe1cc;
-  --kraft: #e6d9bd;
-  --line: #d8cdb6;
+  /* A field notebook left on the beach: dry sand, wet sand and deep water,
+     with ballpoint ink, a yellow highlighter and a coral marker. */
+  --night: #11303a;
+  --deep: #164450;
+  --ink: #1d2a32;
+  --ink-soft: #5b6266;
+  --paper: #efe2c4;
+  --surface: #fffaf0;
+  --sand: #e5d3aa;
+  --kraft: #d9c296;
+  --line: #d3bf96;
+  --seaglass: #8fcdbb;
+  --driftwood: #8a6a3d;
   --tide: #2a6d8c;
   --buoy: #e85a30;
   --buoy-hover: #cf4a22;
@@ -60,7 +62,11 @@
   --rule-ink: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 8' preserveAspectRatio='none'%3E%3Cpath d='M1 4.5 C 40 2, 80 6, 130 3.8 C 180 2, 230 6, 299 3.5' fill='none' stroke='%231e2a33' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
   --rule-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 8' preserveAspectRatio='none'%3E%3Cpath d='M1 4.5 C 40 2, 80 6, 130 3.8 C 180 2, 230 6, 299 3.5' fill='none' stroke='%23ffffff' stroke-opacity='.35' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
   --squiggle-marker: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10' preserveAspectRatio='none'%3E%3Cpath d='M2 6 C 12 1, 18 9, 28 5 S 44 1, 54 5 S 70 9, 80 4 S 94 3, 98 5' fill='none' stroke='%23ffd84d' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E");
-  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .29 0 0 0 0 .18 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --paper-grain:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='d'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.3' numOctaves='1' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .31 0 0 0 0 .17 0 0 0 10 -7.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23d)' opacity='.85'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='190'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='1' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 .96 0 0 0 10 -7.4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23l)' opacity='.7'/%3E%3C/svg%3E");
+  /* White foam along the crest of each wave edge (same curve as --wave-edge). */
+  --foam-edge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24' preserveAspectRatio='none'%3E%3Cpath d='M0 15 C 18 5, 34 6, 50 12 C 66 18, 86 21, 104 12 C 120 4, 142 6, 160 15' fill='none' stroke='%23ffffff' stroke-opacity='.75' stroke-width='3.2' stroke-linecap='round'/%3E%3Cpath d='M22 13 C 30 10, 38 10, 44 12 M118 9 C 126 7, 134 8, 140 10' fill='none' stroke='%23ffffff' stroke-opacity='.45' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
   --wave-edge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24' preserveAspectRatio='none'%3E%3Cpath d='M0 15 C 18 5, 34 6, 50 12 C 66 18, 86 21, 104 12 C 120 4, 142 6, 160 15 V24 H0 Z'/%3E%3C/svg%3E");
   --nav-height: 72px;
 
@@ -107,7 +113,8 @@ html.lenis body {
 
 body {
   margin: 0;
-  background: var(--paper) var(--paper-grain);
+  background-color: var(--paper);
+  background-image: var(--paper-grain);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--text-base);
@@ -262,6 +269,44 @@ img {
   animation: bob 5s ease-in-out infinite;
 }
 
+/* Footprints sink into the sand one after another. */
+.footprints {
+  width: 66px;
+  height: 22px;
+  overflow: visible;
+  fill: rgba(122, 90, 50, 0.5);
+  pointer-events: none;
+}
+
+.footprints g {
+  opacity: 0;
+  scale: 0.6;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 0.3s var(--ease-out),
+    scale 0.3s var(--ease-spring);
+  transition-delay: calc(var(--i) * 0.14s);
+}
+
+.footprints.is-drawn g {
+  opacity: 1;
+  scale: 1;
+}
+
+.seaglass {
+  width: 96px;
+  height: 85px;
+  filter: url(#rough-still);
+  pointer-events: none;
+}
+
+.seaglass path {
+  stroke: rgba(29, 42, 50, 0.35);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
 .marked {
   position: relative;
   display: inline-block;
@@ -301,9 +346,9 @@ img {
 }
 
 .marked-circle .marked-svg {
-  left: -9%;
+  left: -6%;
   top: -18%;
-  width: 118%;
+  width: 112%;
   height: 136%;
   stroke-width: 2.6;
 }
@@ -386,7 +431,11 @@ img {
   left: 0;
   right: 0;
   height: 22px;
-  background: inherit;
+  /* The water's colour, with a line of foam riding the crest. */
+  background-color: inherit;
+  background-image: var(--foam-edge);
+  background-size: 160px 22px;
+  background-repeat: repeat-x;
   -webkit-mask: var(--wave-edge) 0 0 / 160px 22px repeat-x;
   mask: var(--wave-edge) 0 0 / 160px 22px repeat-x;
   animation: wave-slide 9s linear infinite;
@@ -409,12 +458,13 @@ img {
 
 @keyframes wave-slide {
   to {
+    background-position: 160px 0;
     -webkit-mask-position: 160px 0;
     mask-position: 160px 0;
   }
 }
 
-/* ---------- Navigation ---------- */
+/* ---------- Navigation: a strip of notebook paper torn along the bottom ---------- */
 
 .nav {
   position: fixed;
@@ -425,53 +475,55 @@ img {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: 0 var(--space-4);
-  transition: background-color 0.3s;
+  padding: 0 var(--space-4) 10px;
+  color: var(--ink);
 }
 
-.nav[data-solid="true"] {
-  background: var(--night);
-}
-
-/* A hand-drawn wave under the solid nav. */
-.nav[data-solid="true"]::after {
+/* The paper and its shadow are layers behind the links, so the torn edge
+   doesn't clip the hanging Report tab or the account menu. */
+.nav::before,
+.nav::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -11px;
-  height: 12px;
-  background: var(--night);
-  -webkit-mask: var(--wave-edge) 0 0 / 120px 12px repeat-x;
-  mask: var(--wave-edge) 0 0 / 120px 12px repeat-x;
-  scale: 1 -1;
+  inset: 0;
+  z-index: -1;
+  clip-path: polygon(0 0, 100% 0, 100% 86%, 97.5% 97%, 94% 88%, 90.5% 100%, 86% 89%, 82% 98%, 77.5% 87%, 73% 99%, 68% 88%, 63.5% 96%, 59% 86%, 54% 100%, 49.5% 88%, 45% 97%, 40% 86%, 35.5% 99%, 31% 88%, 26% 98%, 21.5% 87%, 17% 100%, 12.5% 88%, 8% 97%, 4% 86%, 0 95%);
   pointer-events: none;
+}
+
+.nav::before {
+  background-color: var(--surface);
+  background-image: var(--paper-grain);
+}
+
+.nav::after {
+  z-index: -2;
+  translate: 0 4px;
+  background: rgba(29, 42, 50, 0.22);
 }
 
 .nav-logo {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #ffffff;
+  color: var(--ink);
   text-decoration: none;
 }
 
 .nav-logo svg {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
+  color: var(--tide);
+  transition: rotate 0.5s var(--ease-spring);
 }
 
 .nav-wordmark {
   font-family: var(--font-hand);
   font-weight: 700;
-  font-size: 1.7rem;
+  font-size: 1.75rem;
   line-height: 1;
   white-space: nowrap;
   transition: rotate 0.3s var(--ease-spring);
-}
-
-.nav-logo svg {
-  transition: rotate 0.5s var(--ease-spring);
 }
 
 @media (hover: hover) {
@@ -493,76 +545,88 @@ img {
 }
 
 .nav-link {
+  position: relative;
   padding: 6px 14px;
-  color: rgba(255, 255, 255, 0.82);
+  color: var(--ink);
   font-family: var(--font-display);
   font-size: var(--text-sm);
   font-weight: 600;
   text-decoration: none;
-  transition: color 0.2s, rotate 0.25s var(--ease-spring);
+  transition: rotate 0.25s var(--ease-spring), color 0.2s;
 }
 
 .nav-link:hover {
-  color: #ffffff;
   rotate: -2deg;
-}
-
-.nav-link.active {
-  color: #ffffff;
+  color: var(--buoy);
 }
 
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  align-self: stretch;
 }
 
+/* Report hangs from the top edge like a sticky note, swaying a little. */
 .nav-cta {
+  align-self: flex-start;
   display: inline-flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 6px;
+  min-height: calc(var(--nav-height) + 6px);
+  padding: 0 16px 12px;
+  border: 2px solid var(--ink);
+  border-top: 0;
+  border-radius: 0 0 10px 16px / 0 0 14px 10px;
   background: var(--marker);
+  box-shadow: 3px 3px 0 var(--ink);
   color: var(--ink);
   font-family: var(--font-display);
   font-size: var(--text-sm);
   font-weight: 700;
-  padding: 9px 18px;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius-sketch);
-  box-shadow: 2px 2px 0 rgba(255, 255, 255, 0.85);
   text-decoration: none;
   white-space: nowrap;
-  transition:
-    transform 0.2s var(--ease-spring),
-    box-shadow 0.2s var(--ease-out);
+  transform-origin: 50% 0;
+  animation: hang 5s ease-in-out infinite;
+  transition: min-height 0.3s var(--ease-spring);
 }
 
-.nav-cta:active {
-  transform: translate(2px, 2px);
-  box-shadow: 0 0 0 rgba(255, 255, 255, 0.85);
+@keyframes hang {
+  0%,
+  100% {
+    rotate: 2deg;
+  }
+  50% {
+    rotate: -1.5deg;
+  }
 }
 
 @media (hover: hover) {
   .nav-cta:hover {
-    transform: translate(-1px, -1px) rotate(-2deg);
-    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.85);
+    min-height: calc(var(--nav-height) + 14px);
   }
+}
+
+.nav-cta:active {
+  min-height: calc(var(--nav-height) - 2px);
 }
 
 .nav-cta svg {
   width: 16px;
   height: 16px;
+  margin-bottom: 2px;
 }
 
 .nav-menu-button {
   display: grid;
   place-items: center;
+  align-self: center;
   width: 44px;
   height: 44px;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  border: 2px solid var(--ink);
   border-radius: 52% 48% 55% 45% / 48% 55% 45% 52%;
-  background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  background: transparent;
+  color: var(--ink);
   cursor: pointer;
 }
 
@@ -571,20 +635,24 @@ img {
   height: 20px;
 }
 
+/* The mobile menu: a second sheet of the same paper. */
 .nav-drawer {
   position: fixed;
-  inset: var(--nav-height) 0 auto 0;
+  inset: calc(var(--nav-height) - 8px) 0 auto 0;
   z-index: 999;
   display: flex;
   flex-direction: column;
-  padding: var(--space-4) var(--space-4) var(--space-5);
-  background: var(--night);
+  padding: var(--space-5) var(--space-4) var(--space-6);
+  background-color: var(--surface);
+  background-image: var(--paper-grain);
+  box-shadow: 0 10px 24px rgba(29, 42, 50, 0.2);
+  clip-path: polygon(0 0, 100% 0, 100% 96%, 92% 100%, 84% 97%, 75% 100%, 66% 96%, 57% 100%, 48% 97%, 39% 100%, 30% 96%, 21% 100%, 12% 97%, 0 100%);
 }
 
 .nav-drawer a {
   padding: var(--space-3) 0;
-  background: var(--rule-light) bottom left / 100% 6px no-repeat;
-  color: #ffffff;
+  background: var(--rule-ink) bottom left / 100% 6px no-repeat;
+  color: var(--ink);
   font-family: var(--font-display);
   font-size: var(--text-lg);
   font-weight: 600;
@@ -593,35 +661,36 @@ img {
 
 @media (min-width: 900px) {
   .nav {
-    padding: 0 var(--space-5);
+    padding: 0 var(--space-5) 10px;
   }
 
   .nav-pill {
     position: absolute;
     left: 50%;
-    transform: translateX(-50%);
+    top: calc(50% - 5px);
+    transform: translate(-50%, -50%);
     isolation: isolate;
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 6px;
+    gap: 6px;
   }
 
-  /* The active link gets a highlighter squiggle that slides between links. */
+  /* The current page is circled in coral marker; the circle slides when the
+     page changes. */
   .nav-pill::before {
     content: "";
     position: absolute;
     z-index: -1;
-    bottom: 0;
-    height: 10px;
-    left: 0;
-    width: var(--ind-w, 0);
-    background: var(--squiggle-marker) center / 100% 100% no-repeat;
+    top: -6px;
+    bottom: -6px;
+    left: -8px;
+    width: calc(var(--ind-w, 0px) + 16px);
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 44' preserveAspectRatio='none'%3E%3Cpath d='M86 5 C 54 1, 10 6, 5 21 C 1 37, 50 42, 88 39 C 116 36, 121 18, 104 9 C 94 4, 70 3, 58 6' fill='none' stroke='%23e85a30' stroke-width='2.6' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
     opacity: var(--ind-opacity, 0);
     transform: translateX(var(--ind-x, 0));
     transition:
-      transform 0.45s var(--ease-out),
-      width 0.45s var(--ease-out),
+      transform 0.45s var(--ease-spring),
+      width 0.45s var(--ease-spring),
       opacity 0.3s var(--ease-out);
   }
 
@@ -631,11 +700,11 @@ img {
   }
 
   .nav-wordmark {
-    font-size: 1.5rem;
+    font-size: 1.9rem;
   }
 
   .nav-cta {
-    padding: 10px 24px;
+    padding: 0 22px 12px;
   }
 
   .nav-cta-long {
@@ -648,6 +717,7 @@ img {
 .user-menu {
   position: relative;
   display: flex;
+  align-self: center;
 }
 
 .user-placeholder {
@@ -657,11 +727,11 @@ img {
 
 .nav-signin {
   padding: 8px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sketch);
   font-family: var(--font-display);
   background: transparent;
-  color: #ffffff;
+  color: var(--ink);
   font-size: var(--text-sm);
   font-weight: 600;
   white-space: nowrap;
@@ -675,7 +745,7 @@ img {
 
 @media (hover: hover) {
   .nav-signin:hover {
-    background: rgba(255, 255, 255, 0.14);
+    background: var(--lemon);
   }
 }
 
@@ -712,7 +782,7 @@ img {
   display: grid;
   place-items: center;
   padding: 2px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  border: 2px solid var(--ink);
   border-radius: 50%;
   background: transparent;
   cursor: pointer;
@@ -725,7 +795,7 @@ img {
 
 .avatar-button[aria-expanded="true"],
 .avatar-button:hover {
-  border-color: #ffffff;
+  border-color: var(--buoy);
 }
 
 .user-dropdown {
@@ -864,8 +934,16 @@ img {
 /* Phones: the camera icon carries the Report button so the account and
    menu buttons still fit. */
 @media (max-width: 480px) {
+  .nav {
+    gap: var(--space-2);
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
   .nav-cta {
-    padding: 10px 12px;
+    padding: 0 12px 12px;
   }
 
   .nav-cta-text {
@@ -907,7 +985,9 @@ img {
   }
 }
 
-/* ---------- Action fan (components/ActionFan.jsx) ---------- */
+/* ---------- Action fan (components/ActionFan.jsx) ----------
+   Three pieces of sea glass in a little pile; pointing at them spreads them
+   out on the sand. */
 
 .fan {
   --card: 3.6rem;
@@ -933,34 +1013,41 @@ img {
 
 /* Stacked: three cards dropped on top of each other at odd angles. */
 .fan-coral {
-  --tone: var(--buoy);
+  --tone: #e2774f;
+  --pebble: 46% 54% 42% 58% / 55% 44% 56% 45%;
   z-index: 1;
   rotate: 24deg;
 }
 
 .fan-sun {
-  --tone: var(--marker);
+  --tone: #e9b044;
+  --pebble: 58% 42% 55% 45% / 45% 58% 42% 55%;
   z-index: 2;
   rotate: -18deg;
 }
 
 .fan-sea {
-  --tone: var(--tide);
+  --tone: #3f9890;
+  --pebble: 50% 50% 44% 56% / 58% 46% 54% 42%;
   z-index: 3;
   rotate: -6deg;
 }
 
+/* Frosted glass: a soft shine top-left, darker edges, a shadow on the sand. */
 .fan-face {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
-  border: 2.5px solid var(--ink);
-  border-radius: 9px 13px 8px 14px / 13px 8px 14px 9px;
-  background: var(--tone);
+  border: 2px solid rgba(29, 42, 50, 0.85);
+  border-radius: var(--pebble);
+  background:
+    radial-gradient(ellipse 40% 28% at 32% 26%, rgba(255, 255, 255, 0.6), transparent 70%),
+    radial-gradient(circle at 50% 55%, transparent 55%, rgba(0, 0, 0, 0.18) 100%),
+    var(--tone);
   box-shadow:
-    3px 3px 0 var(--ink),
-    inset 0 0 6px rgba(0, 0, 0, 0.25);
+    3px 5px 0 rgba(29, 42, 50, 0.28),
+    inset 0 0 8px rgba(255, 255, 255, 0.35);
   transition:
     scale 0.2s var(--ease-spring),
     box-shadow 0.2s var(--ease-out);
@@ -974,8 +1061,8 @@ img {
   filter: url(#rough-still);
 }
 
-.fan-sun .fan-face svg {
-  color: var(--ink);
+.fan-face svg {
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.25));
 }
 
 /* The life buoy keeps turning, a little slower once the cards are dealt. */
@@ -1025,19 +1112,20 @@ img {
   animation-duration: 4s;
 }
 
+/* Picked up off the sand: bigger, with the shadow dropping further away. */
 .fan-card:hover .fan-face,
 .fan-card:focus-visible .fan-face {
-  scale: 1.1;
+  scale: 1.12;
   box-shadow:
-    5px 5px 0 var(--ink),
-    inset 0 0 6px rgba(0, 0, 0, 0.25);
+    5px 9px 0 rgba(29, 42, 50, 0.22),
+    inset 0 0 8px rgba(255, 255, 255, 0.35);
 }
 
 .fan-card:active .fan-face {
-  scale: 0.9;
+  scale: 0.92;
   box-shadow:
-    0 0 0 var(--ink),
-    inset 0 0 6px rgba(0, 0, 0, 0.25);
+    1px 2px 0 rgba(29, 42, 50, 0.3),
+    inset 0 0 8px rgba(255, 255, 255, 0.35);
 }
 
 .fan-card:focus-visible {
@@ -1180,8 +1268,12 @@ img {
 
 /* ---------- Page layout ---------- */
 
+/* Scribbles and doodles may poke past the edge; never let them widen the
+   page. clip, unlike hidden, keeps position: sticky and GSAP pinning working.
+   (On body it would pass to the viewport instead of clipping.) */
 .app-main {
   min-height: 100dvh;
+  overflow-x: clip;
 }
 
 .page {
@@ -1543,6 +1635,12 @@ img {
   .doodle path,
   .marked-svg path {
     stroke-dashoffset: 0;
+    transition: none;
+  }
+
+  .footprints g {
+    opacity: 1;
+    scale: 1;
     transition: none;
   }
 

@@ -3,7 +3,7 @@ import { Link, useLocation, useSearchParams } from "react-router";
 import { CalendarCheck, Clock, Megaphone, Package, Users } from "lucide-react";
 import { Level } from "../components/ReportDetail";
 import { Reveal } from "../components/Motion";
-import { Doodle } from "../components/Sketch";
+import { Doodle, Footprints, SeaGlass } from "../components/Sketch";
 import { AiSaw, Snapshots } from "../components/Snapshots";
 import { ORGANIZER_TYPES, headcount, useSignups, useUpcomingEvents } from "../lib/events";
 import usePublishedReports from "../lib/usePublishedReports";
@@ -25,7 +25,7 @@ function Steps({ items }) {
     <ol className="cl-steps">
       {items.map((text, i) => (
         <li key={text}>
-          {i > 0 && <Doodle name="arrow" className="cl-step-arrow" boil={false} delay={i * 120} />}
+          {i > 0 && <Footprints className="cl-step-arrow" />}
           <span className="cl-step-num">{i + 1}</span>
           <span>{text}</span>
         </li>
@@ -299,6 +299,7 @@ export default function ActionPage() {
 
       <section className="band band-paper cl-panel" id="cl-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
         <div className="band-inner">
+          <SeaGlass className="band-doodle cl-glass" />
           {tab === "join" ? (
             <JoinPanel upcoming={upcoming} reports={reports} onOrganize={() => setTab("organize")} />
           ) : (

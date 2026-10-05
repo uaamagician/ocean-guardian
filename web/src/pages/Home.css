@@ -704,11 +704,27 @@
 .step-arrow {
   display: none;
   position: absolute;
-  top: 0;
-  left: calc(-1 * var(--space-8) + 4px);
-  width: 64px;
-  height: 64px;
-  color: var(--ink-soft);
+  top: 10px;
+  left: calc(-1 * var(--space-8) - 6px);
+  width: 96px;
+  height: 32px;
+}
+
+.steps-glass {
+  top: -30px;
+  right: 2%;
+}
+
+.tw-glass {
+  bottom: -20px;
+  right: 30%;
+  rotate: 20deg;
+}
+
+.gap-glass {
+  top: 40px;
+  right: 8%;
+  rotate: -15deg;
 }
 
 @media (min-width: 800px) {
@@ -895,7 +911,8 @@
 }
 
 .band-paper {
-  background: var(--sand) var(--paper-grain);
+  background-color: var(--sand);
+  background-image: var(--paper-grain);
 }
 
 /* ---------- Problem ---------- */
