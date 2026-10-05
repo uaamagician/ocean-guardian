@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { Clock, Trash2, Users } from "lucide-react";
+import { AlertTriangle, Clock, Trash2, Users } from "lucide-react";
 import { useAllBeaches } from "../lib/beaches";
-import { useStoredPlan } from "../lib/cleanup";
+import { planInputs, useStoredPlan } from "../lib/cleanup";
+import usePublishedReports from "../lib/usePublishedReports";
+import { Level } from "../components/ReportDetail";
+import { AiSaw, Snapshots } from "../components/Snapshots";
 import { ORGANIZER_TYPES, createEvent } from "../lib/events";
 import { TOOL_BY_ID } from "../lib/guide";
 import { isGoogleUser, useUser } from "../lib/auth";
@@ -10,6 +13,17 @@ import SignInGate from "../components/SignInGate";
 import "./Events.css";
 
 const span = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
+
+function StepTitle({ n, id, children }) {
+  return (
+    <h2 className="create-step" id={id}>
+      <span className="cl-step-num" aria-hidden="true">
+        {n}
+      </span>
+      {children}
+    </h2>
+  );
+}
 
 // Next Saturday at 8:00, before the midday sun.
 function defaultStart() {
@@ -63,75 +77,86 @@ function EventForm({ beach, record, user }) {
 
   return (
     <form className="create-form" onSubmit={submit}>
-      <label className="field">
-        <span>Title</span>
-        <input value={form.title} maxLength={100} onChange={set("title")} required />
-      </label>
+      <fieldset className="create-block" aria-labelledby="step-when">
+        <StepTitle n={2} id="step-when">
+          When and where
+        </StepTitle>
+        <label className="field">
+          <span>Title</span>
+          <input value={form.title} maxLength={100} onChange={set("title")} required />
+        </label>
 
-      <div className="field-row">
-        <label className="field">
-          <span>Date</span>
-          <input type="date" value={form.date} min={new Date(now).toLocaleDateString("en-CA")} onChange={set("date")} required />
-        </label>
-        <label className="field">
-          <span>Start time</span>
-          <input type="time" value={form.time} onChange={set("time")} required />
-        </label>
-        <label className="field">
-          <span>Hours</span>
-          <input type="number" min={0.5} max={12} step={0.5} value={form.durationHours} onChange={set("durationHours")} />
-        </label>
-      </div>
-      {!inFuture && <p className="error-text">Pick a date and time in the future.</p>}
-
-      <label className="field">
-        <span>
-          Meeting point <span className="report-meta">(optional)</span>
-        </span>
-        <input
-          value={form.meetingPoint}
-          maxLength={200}
-          placeholder="For example: car park at the north end, by the lifeguard tower"
-          onChange={set("meetingPoint")}
-        />
-      </label>
-
-      <div className="field-row">
-        <label className="field">
-          <span>Organizer name</span>
-          <input value={form.organizerName} maxLength={80} placeholder="You, your club or company" onChange={set("organizerName")} required />
-        </label>
-        <label className="field">
-          <span>Spots</span>
-          <input type="number" min={1} max={500} value={form.capacity} onChange={set("capacity")} />
-        </label>
-      </div>
-
-      <fieldset className="field">
-        <legend>Organized by</legend>
-        <div className="kind-options">
-          {Object.entries(ORGANIZER_TYPES).map(([value, label]) => (
-            <label key={value} className="kind-option">
-              <input type="radio" name="orgType" checked={form.organizerType === value} onChange={() => setForm((f) => ({ ...f, organizerType: value }))} />
-              <span>{label}</span>
-            </label>
-          ))}
+        <div className="field-row">
+          <label className="field">
+            <span>Date</span>
+            <input type="date" value={form.date} min={new Date(now).toLocaleDateString("en-CA")} onChange={set("date")} required />
+          </label>
+          <label className="field">
+            <span>Start time</span>
+            <input type="time" value={form.time} onChange={set("time")} required />
+          </label>
+          <label className="field">
+            <span>Hours</span>
+            <input type="number" min={0.5} max={12} step={0.5} value={form.durationHours} onChange={set("durationHours")} />
+          </label>
         </div>
+        {!inFuture && <p className="error-text">Pick a date and time in the future.</p>}
+
+        <label className="field">
+          <span>
+            Meeting point <span className="report-meta">(optional)</span>
+          </span>
+          <input
+            value={form.meetingPoint}
+            maxLength={200}
+            placeholder="For example: car park at the north end, by the lifeguard tower"
+            onChange={set("meetingPoint")}
+          />
+        </label>
       </fieldset>
 
-      <label className="field">
-        <span>
-          Message to volunteers <span className="report-meta">(optional)</span>
-        </span>
-        <textarea rows={3} maxLength={1000} value={form.description} onChange={set("description")} />
-      </label>
+      <fieldset className="create-block" aria-labelledby="step-who">
+        <StepTitle n={3} id="step-who">
+          Who's organizing
+        </StepTitle>
 
-      <label className="field">
-        <span>
-          Your phone or email <span className="report-meta">(optional, only you see it)</span>
-        </span>
-        <input value={form.contact} maxLength={120} onChange={set("contact")} />
-      </label>
+        <div className="field-row">
+          <label className="field">
+            <span>Organizer name</span>
+            <input value={form.organizerName} maxLength={80} placeholder="You, your club or company" onChange={set("organizerName")} required />
+          </label>
+          <label className="field">
+            <span>Spots</span>
+            <input type="number" min={1} max={500} value={form.capacity} onChange={set("capacity")} />
+          </label>
+        </div>
+
+        <fieldset className="field">
+          <legend>Organized by</legend>
+          <div className="kind-options">
+            {Object.entries(ORGANIZER_TYPES).map(([value, label]) => (
+              <label key={value} className="kind-option">
+                <input type="radio" name="orgType" checked={form.organizerType === value} onChange={() => setForm((f) => ({ ...f, organizerType: value }))} />
+                <span>{label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <label className="field">
+          <span>
+            Message to volunteers <span className="report-meta">(optional)</span>
+          </span>
+          <textarea rows={3} maxLength={1000} value={form.description} onChange={set("description")} />
+        </label>
+
+        <label className="field">
+          <span>
+            Your phone or email <span className="report-meta">(optional, only you see it)</span>
+          </span>
+          <input value={form.contact} maxLength={120} onChange={set("contact")} />
+        </label>
+      </fieldset>
 
       {error && <p className="error-text">{error}</p>}
       <p className="bp-note">
@@ -152,6 +177,7 @@ export default function CreateEventPage() {
   const beach = beaches?.find((b) => b.id === beachId);
   const record = useStoredPlan(beachId || "none");
   const { ready, user } = useUser();
+  const { reports } = usePublishedReports();
 
   if (!beaches || record === undefined) {
     return (
@@ -167,7 +193,7 @@ export default function CreateEventPage() {
         <p className="page-intro">
           A cleanup starts from the beach's AI plan, which sets the crew size and gear for the work order.
         </p>
-        <Link to={beach ? `/map?b=${encodeURIComponent(beach.id)}&t=cleanup` : "/action"} className="btn btn-primary" viewTransition>
+        <Link to={beach ? `/map?b=${encodeURIComponent(beach.id)}&t=cleanup` : "/action?tab=organize"} className="btn btn-primary" viewTransition>
           {beach ? "Open the beach's cleanup plan" : "See beaches that need a cleanup"}
         </Link>
       </div>
@@ -175,30 +201,34 @@ export default function CreateEventPage() {
   }
 
   const plan = record.plan;
+  const evidence = planInputs(reports, beach);
   return (
     <div className="page page-wide create-page">
       <div className="section">
-        <span className="report-label">Organize a cleanup</span>
-        <h1>{beach.name}</h1>
-        <p className="page-intro">Set a time and place. Volunteers sign up on the cleanup's page and say what gear they can bring.</p>
+        <Link to="/action?tab=organize" className="btn-text create-back" viewTransition>
+          Back to beaches
+        </Link>
+        <h1>Organize a cleanup at {beach.name}</h1>
+        <p className="page-intro">
+          Check what the AI saw, then set a time and place. Volunteers sign up on the cleanup's page and say what gear
+          they can bring.
+        </p>
       </div>
 
       <div className="create-layout">
-        {!ready ? (
-          <p className="report-meta">Loading…</p>
-        ) : isGoogleUser(user) ? (
-          <EventForm key={user.uid} beach={beach} record={record} user={user} />
-        ) : (
-          <div className="create-form">
-            <SignInGate
-              title="Sign in to organize"
-              reason="Volunteers need to know who is running the cleanup, and you'll manage sign-ups from any device with the same account."
-            />
+        <section className="create-ai" aria-labelledby="create-ai-title">
+          <StepTitle n={1} id="create-ai-title">
+            What the AI saw
+          </StepTitle>
+          <Snapshots reports={evidence} max={3} />
+          <div className="create-ai-head">
+            <Level category={plan.severity} />
+            <span className="report-meta">
+              From {record.reportCount} photo report{record.reportCount === 1 ? "" : "s"}
+            </span>
           </div>
-        )}
-
-        <aside className="create-plan">
-          <span className="report-label">From the AI plan</span>
+          <AiSaw reports={evidence} />
+          <p>{plan.summary}</p>
           <div className="plan-stats">
             <div>
               <Users aria-hidden="true" />
@@ -216,13 +246,35 @@ export default function CreateEventPage() {
               <span>full bags</span>
             </div>
           </div>
-          <p className="report-meta">{plan.summary}</p>
-          <ul className="report-items">
-            {plan.gear.map((g) => (
-              <li key={g.tool}>{TOOL_BY_ID[g.tool]?.name}</li>
-            ))}
-          </ul>
-        </aside>
+          <div>
+            <span className="report-label">Gear volunteers will be asked to bring</span>
+            <ul className="report-items">
+              {plan.gear.map((g) => (
+                <li key={g.tool}>{TOOL_BY_ID[g.tool]?.name}</li>
+              ))}
+            </ul>
+          </div>
+          {plan.hazards?.length > 0 && (
+            <p className="create-hazards">
+              <AlertTriangle aria-hidden="true" />
+              {plan.hazards.join(" ")}
+            </p>
+          )}
+        </section>
+
+        {!ready ? (
+          <p className="report-meta">Loading…</p>
+        ) : isGoogleUser(user) ? (
+          <EventForm key={user.uid} beach={beach} record={record} user={user} />
+        ) : (
+          <div className="create-form">
+            <StepTitle n={2}>Sign in to continue</StepTitle>
+            <SignInGate
+              title="Sign in with Google"
+              reason="Volunteers need to know who is running the cleanup, and you'll manage sign-ups from any device with the same account."
+            />
+          </div>
+        )}
       </div>
     </div>
   );

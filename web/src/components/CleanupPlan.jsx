@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { Link } from "react-router";
 import { CalendarPlus, Clock, RefreshCw, Sparkles, Trash2, Truck, Users } from "lucide-react";
-import { MIN_REPORTS_FOR_PLAN, PLAN_VERSION, planInputs, requestPlan, useStoredPlan } from "../lib/cleanup";
+import { MIN_REPORTS_FOR_PLAN, PLAN_VERSION, planInputs, usePlanRequest, useStoredPlan } from "../lib/cleanup";
 import { TOOL_BY_ID } from "../lib/guide";
 import { Level } from "./ReportDetail";
 import EventCard from "./EventCard";
@@ -127,24 +126,8 @@ function BeachEvents({ beach }) {
 export default function CleanupPlan({ beach, allReports }) {
   const reports = planInputs(allReports, beach);
   const stored = useStoredPlan(beach.id);
-  const [request, setRequest] = useState({ beachId: null, loading: false, error: "", result: null });
-  const mine = request.beachId === beach.id ? request : { loading: false, error: "", result: null };
-
-  const run = async () => {
-    setRequest({ beachId: beach.id, loading: true, error: "", result: null });
-    try {
-      const result = await requestPlan(beach);
-      setRequest({ beachId: beach.id, loading: false, error: "", result });
-    } catch (err) {
-      console.error(err);
-      setRequest({
-        beachId: beach.id,
-        loading: false,
-        error: "Couldn't create a plan right now. The AI may be busy; try again in a minute.",
-        result: null,
-      });
-    }
-  };
+  const mine = usePlanRequest(beach);
+  const { run } = mine;
 
   if (reports.length < MIN_REPORTS_FOR_PLAN) {
     const missing = MIN_REPORTS_FOR_PLAN - reports.length;

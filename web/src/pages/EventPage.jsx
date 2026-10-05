@@ -4,6 +4,9 @@ import { Ban, CalendarDays, MapPin } from "lucide-react";
 import WorkOrder from "../components/WorkOrder";
 import SignupForm from "../components/SignupForm";
 import SignInGate from "../components/SignInGate";
+import { AiSaw, Snapshots } from "../components/Snapshots";
+import { planInputs } from "../lib/cleanup";
+import usePublishedReports from "../lib/usePublishedReports";
 import { isGoogleUser, useUser } from "../lib/auth";
 import { TOOL_BY_ID } from "../lib/guide";
 import {
@@ -43,6 +46,7 @@ export default function EventPage() {
   const event = useEvent(eventId);
   const signups = useSignups(eventId);
   const { ready, user } = useUser();
+  const { reports } = usePublishedReports();
   const uid = user?.uid ?? null;
   const signedIn = isGoogleUser(user);
   const isOrganizer = Boolean(event && uid && event.createdBy === uid);
@@ -77,6 +81,8 @@ export default function EventPage() {
   const mySignup = signups?.find((s) => s.id === uid);
   const full = joined >= event.capacity;
   const start = event.startsAt.toDate();
+  // The photos the AI plan was made from.
+  const evidence = planInputs(reports, event.location);
 
   const cancel = async () => {
     if (!window.confirm("Cancel this cleanup? Volunteers will see it as cancelled and can't sign up anymore.")) return;
@@ -92,22 +98,30 @@ export default function EventPage() {
     <div className="event-page">
       <header className="event-hero">
         <div className="event-hero-inner">
-          <span className="bp-tag bp-tag-community">{ORGANIZER_TYPES[event.organizer.type]}</span>
-          <h1>{event.title}</h1>
-          <p className="event-meta">
-            <span>
-              <CalendarDays aria-hidden="true" />
-              {start.toLocaleString("en-US", { weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" })}
-            </span>
-            <span>
-              <MapPin aria-hidden="true" />
-              <Link to={`/map?b=${encodeURIComponent(event.beachId)}`} viewTransition>
-                {event.beachName}
-              </Link>
-            </span>
-          </p>
-          <p className="event-organizer">Organized by {event.organizer.name}</p>
-          {event.description && <p className="event-description">{event.description}</p>}
+          <div className="event-hero-text">
+            <span className="bp-tag bp-tag-community">{ORGANIZER_TYPES[event.organizer.type]}</span>
+            <h1>{event.title}</h1>
+            <p className="event-meta">
+              <span>
+                <CalendarDays aria-hidden="true" />
+                {start.toLocaleString("en-US", { weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" })}
+              </span>
+              <span>
+                <MapPin aria-hidden="true" />
+                <Link to={`/map?b=${encodeURIComponent(event.beachId)}`} viewTransition>
+                  {event.beachName}
+                </Link>
+              </span>
+            </p>
+            <p className="event-organizer">Organized by {event.organizer.name}</p>
+            {event.description && <p className="event-description">{event.description}</p>}
+          </div>
+          <figure className="event-hero-photos">
+            <Snapshots reports={evidence} max={3} />
+            <figcaption>
+              <AiSaw reports={evidence} />
+            </figcaption>
+          </figure>
         </div>
       </header>
 

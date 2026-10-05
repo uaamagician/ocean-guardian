@@ -103,7 +103,7 @@ export default function UserMenu() {
           <Link to="/me#cleanups" role="menuitem" viewTransition>
             <CalendarCheck aria-hidden="true" /> My cleanups
           </Link>
-          <Link to="/action#organize" role="menuitem" viewTransition>
+          <Link to="/action?tab=organize" role="menuitem" viewTransition>
             <Megaphone aria-hidden="true" /> Organize a cleanup
           </Link>
           <Link to="/mine" role="menuitem" viewTransition>

@@ -90,7 +90,7 @@ function SignedIn({ user }) {
         {organized === undefined && <p className="report-meta">Loading…</p>}
         {organized?.length === 0 && (
           <p className="report-meta">
-            None yet. Open a beach with an AI plan on the <Link to="/action">Cleanups</Link> page to organize one.
+            None yet. <Link to="/action?tab=organize">Pick a beach</Link> the AI has looked at to organize one.
           </p>
         )}
         {organized?.length > 0 && (

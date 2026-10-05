@@ -236,7 +236,7 @@ function CleanupPreview() {
               Once a beach has two or more reports, AI reads them, looks at the latest photos and estimates the crew,
               the time and the gear a cleanup needs. Organizers can skip the site visit.
             </p>
-            <Link to="/action" className="btn btn-light" viewTransition>
+            <Link to="/action?tab=organize" className="btn btn-light" viewTransition>
               See beaches that need a cleanup
             </Link>
           </Reveal>

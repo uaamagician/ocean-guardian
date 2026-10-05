@@ -9,17 +9,46 @@
 .event-hero-inner {
   max-width: var(--content-width);
   margin: 0 auto;
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 900px) {
+  .event-hero-inner {
+    grid-template-columns: 1fr 360px;
+    align-items: center;
+  }
+}
+
+.event-hero-text {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-3);
 }
 
+/* The beach photos the plan came from, pinned beside the title. */
+.event-hero-photos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0 var(--space-4);
+}
+
+.event-hero-photos .ai-saw {
+  color: var(--marker);
+}
+
+.event-hero-photos .ai-saw-label,
+.event-hero-photos .ai-saw svg {
+  color: #ffffff;
+}
+
 .event-hero h1 {
   font-size: var(--text-3xl);
-  font-weight: 400;
+  font-variation-settings: "INFM" 100;
   line-height: 1.05;
-  letter-spacing: -0.03em;
   text-wrap: balance;
   max-width: 18em;
 }
@@ -588,25 +617,97 @@
   gap: var(--space-6);
 }
 
+/* What the AI saw stays in view on the left while the form scrolls. */
 @media (min-width: 1000px) {
   .create-layout {
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: minmax(0, 420px) 1fr;
     align-items: start;
+    gap: var(--space-7);
   }
 
-  .create-plan {
+  .create-ai {
     position: sticky;
-    top: calc(var(--nav-height) + var(--space-4));
+    top: calc(var(--nav-height) + var(--space-5));
   }
 }
 
+.create-back {
+  align-self: flex-start;
+  font-size: var(--text-sm);
+}
+
+.create-ai,
 .create-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-5);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-md);
   background: var(--surface);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.create-ai {
+  rotate: -0.4deg;
+}
+
+.create-ai .snaps {
+  margin: var(--space-2) var(--space-3) var(--space-2);
+}
+
+.create-ai-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.create-hazards {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--peach);
+  font-size: var(--text-sm);
+}
+
+.create-hazards svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--danger);
+}
+
+.create-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  font-variation-settings: "INFM" 100;
+}
+
+.create-form {
+  gap: var(--space-6);
+}
+
+.create-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.create-block + .create-block {
+  padding-top: var(--space-5);
+  background: var(--rule-ink) top left / 100% 6px no-repeat;
 }
 
 .field-row {
@@ -618,15 +719,6 @@
   .field-row {
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
-}
-
-.create-plan {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-5);
-  border-radius: var(--radius-md);
-  background: var(--surface);
 }
 
 /* ---------- Printing the work order ---------- */

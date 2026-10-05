@@ -27,6 +27,41 @@ export async function requestPlan(beach) {
   return data;
 }
 
+// Asks the AI to plan a cleanup at `beach`. The request is remembered per
+// beach, so switching to another beach doesn't show this one's result.
+export function usePlanRequest(beach) {
+  const [request, setRequest] = useState({ beachId: null, loading: false, error: "", result: null });
+  const mine = request.beachId === beach.id ? request : { loading: false, error: "", result: null };
+  const run = async () => {
+    setRequest({ beachId: beach.id, loading: true, error: "", result: null });
+    try {
+      const result = await requestPlan(beach);
+      setRequest({ beachId: beach.id, loading: false, error: "", result });
+    } catch (err) {
+      console.error(err);
+      setRequest({
+        beachId: beach.id,
+        loading: false,
+        error: "Couldn't create a plan right now. The AI may be busy; try again in a minute.",
+        result: null,
+      });
+    }
+  };
+  return { ...mine, run };
+}
+
+// The debris items the AI spotted most often across these reports.
+export function topItems(reports, max = 4) {
+  const counts = new Map();
+  for (const r of reports) {
+    for (const item of new Set(r.aiAnalysis?.items ?? [])) counts.set(item, (counts.get(item) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, max)
+    .map(([item]) => item);
+}
+
 // The last plan generated for this beach, kept live so a refresh elsewhere shows up here.
 export function useStoredPlan(beachId) {
   const [state, setState] = useState({ beachId: null, plan: undefined });
