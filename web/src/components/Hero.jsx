@@ -7,7 +7,7 @@ import ActionFan from "./ActionFan";
 // A matched pair of illustrations: the same stretch of beach, clean and after
 // the tide. Only the debris changes, so the spotlight edge never shows a seam.
 const BG_CLEAN = "/hero/clean.jpg";
-const BG_TRASH = "/hero/trash.jpg";
+const BG_TRASH = "/hero/trash-dim.jpg";
 
 const EASE = 0.1;
 
