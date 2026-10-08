@@ -4,14 +4,10 @@ import { prefersReducedMotion } from "../lib/motion";
 import { Marked, Note } from "./Sketch";
 import ActionFan from "./ActionFan";
 
-// Placeholder pair (public domain, USFWS via Wikimedia Commons): two different
-// beaches, so the coastline shifts at the spotlight's edge. For the final design,
-// put a matched pair (same shot, with and without debris) in web/public/hero/ and
-// point these at "/hero/clean.jpg" and "/hero/trash.jpg".
-const BG_CLEAN =
-  "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Midway_Atoll_beach_-_DPLA_-_bf2efbe93a65d318eb836aab4fa97dbf.jpg/1920px-Midway_Atoll_beach_-_DPLA_-_bf2efbe93a65d318eb836aab4fa97dbf.jpg";
-const BG_TRASH =
-  "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Beach_strewn_with_plastic_debris_%288080500982%29.jpg/1920px-Beach_strewn_with_plastic_debris_%288080500982%29.jpg";
+// A matched pair of illustrations: the same stretch of beach, clean and after
+// the tide. Only the debris changes, so the spotlight edge never shows a seam.
+const BG_CLEAN = "/hero/clean.jpg";
+const BG_TRASH = "/hero/trash.jpg";
 
 const EASE = 0.1;
 
@@ -29,6 +25,8 @@ function useSpotlight(sectionRef, layerRef) {
     let visible = true;
     let raf = 0;
     const start = performance.now();
+    // On phones the note card covers the lower third, so drift a little higher.
+    const driftY = section.clientWidth < 640 ? 0.56 : 0.66;
 
     const place = (x, y) => {
       layer.style.setProperty("--x", `${x}px`);
@@ -54,7 +52,7 @@ function useSpotlight(sectionRef, layerRef) {
         // Idle drift so touch visitors (no cursor) still see the reveal.
         const t = (now - start) / 1000;
         target.x = section.clientWidth * (0.5 + 0.28 * Math.sin(t * 0.45));
-        target.y = section.clientHeight * (0.66 + 0.1 * Math.sin(t * 0.8));
+        target.y = section.clientHeight * (driftY + 0.08 * Math.sin(t * 0.8));
       }
       smooth.x += (target.x - smooth.x) * EASE;
       smooth.y += (target.y - smooth.y) * EASE;
@@ -63,7 +61,7 @@ function useSpotlight(sectionRef, layerRef) {
     };
 
     smooth.x = section.clientWidth * 0.5;
-    smooth.y = section.clientHeight * 0.66;
+    smooth.y = section.clientHeight * driftY;
     place(smooth.x, smooth.y);
     if (reduceMotion) return undefined;
 

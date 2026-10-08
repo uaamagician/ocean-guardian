@@ -42,7 +42,8 @@
   mask-image: var(--spot);
 }
 
-/* Keeps white type readable over white sand and bright sky. */
+/* The illustration is light, so the heading is inked on top of it; a pale
+   wash behind the title keeps it crisp over the foam. */
 .hero-shade {
   position: absolute;
   inset: 0;
@@ -50,10 +51,10 @@
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(22, 36, 45, 0.55) 0%,
-    rgba(22, 36, 45, 0) 40%,
-    rgba(22, 36, 45, 0) 60%,
-    rgba(22, 36, 45, 0.5) 100%
+    rgba(255, 250, 240, 0.45) 0%,
+    rgba(255, 250, 240, 0) 38%,
+    rgba(17, 48, 58, 0) 75%,
+    rgba(17, 48, 58, 0.16) 100%
   );
 }
 
@@ -73,8 +74,10 @@
 
 .hero-heading h1 {
   line-height: 0.95;
-  color: #ffffff;
-  text-shadow: 0 2px 18px rgba(22, 36, 45, 0.35);
+  color: var(--ink);
+  text-shadow:
+    0 0 24px rgba(255, 250, 240, 0.9),
+    0 2px 0 rgba(255, 250, 240, 0.6);
 }
 
 .hero-line-1,
@@ -85,7 +88,7 @@
 }
 
 .hero-line-1 {
-  color: var(--marker);
+  color: var(--buoy);
   rotate: -3deg;
 }
 
@@ -97,7 +100,7 @@
 }
 
 .hero-line-2 .marked {
-  --marked-color: var(--marker);
+  --marked-color: var(--buoy);
 }
 
 .hero-hint {
@@ -108,10 +111,10 @@
   max-width: 24em;
   text-wrap: balance;
   flex-direction: column;
-  color: #ffffff;
+  color: var(--ink);
   font-size: 1.45rem;
   rotate: 2deg;
-  text-shadow: 0 1px 8px rgba(22, 36, 45, 0.6);
+  text-shadow: 0 0 12px rgba(255, 250, 240, 0.95);
 }
 
 .hero-hint .doodle {
