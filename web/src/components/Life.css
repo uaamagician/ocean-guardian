@@ -1,0 +1,298 @@
+/* ---------- Sea life: a turtle and bubbles behind a water section ---------- */
+
+.sea-life {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Section content sits above the swimmers. */
+.sea-life ~ .band-inner {
+  z-index: 1;
+}
+
+.turtle-path {
+  position: absolute;
+  top: 58%;
+  left: 0;
+  width: 120px;
+  animation: turtle-swim 46s linear infinite;
+  animation-delay: -12s;
+}
+
+.turtle {
+  display: block;
+  width: 120px;
+  height: 90px;
+  overflow: visible;
+  filter: url(#rough-still);
+  opacity: 0.55;
+  animation: turtle-bob 5s ease-in-out infinite;
+}
+
+.turtle-shell {
+  fill: var(--seaglass);
+  stroke: var(--ink);
+  stroke-width: 2.4;
+}
+
+.turtle-scutes {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  opacity: 0.6;
+}
+
+.turtle-head,
+.turtle-flipper path,
+.turtle-tail {
+  fill: #a9d8c4;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.turtle-eye {
+  fill: var(--ink);
+}
+
+/* Front flippers sweep together, the back ones paddle a little. */
+.turtle-flipper {
+  transform-box: view-box;
+}
+
+.turtle-flipper-front-top {
+  transform-origin: 72px 34px;
+  animation: flipper-top 2.6s ease-in-out infinite;
+}
+
+.turtle-flipper-front-bottom {
+  transform-origin: 72px 56px;
+  animation: flipper-bottom 2.6s ease-in-out infinite;
+}
+
+.turtle-flipper-back-top {
+  transform-origin: 38px 38px;
+  animation: flipper-bottom 2.6s ease-in-out infinite;
+}
+
+.turtle-flipper-back-bottom {
+  transform-origin: 38px 52px;
+  animation: flipper-top 2.6s ease-in-out infinite;
+}
+
+@keyframes flipper-top {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  50% {
+    rotate: 24deg;
+  }
+}
+
+@keyframes flipper-bottom {
+  0%,
+  100% {
+    rotate: 0deg;
+  }
+  50% {
+    rotate: -24deg;
+  }
+}
+
+@keyframes turtle-swim {
+  from {
+    translate: -160px 0;
+  }
+  to {
+    translate: calc(100vw + 40px) -60px;
+  }
+}
+
+@keyframes turtle-bob {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: -3deg;
+  }
+  50% {
+    translate: 0 -10px;
+    rotate: 3deg;
+  }
+}
+
+.bubble {
+  position: absolute;
+  bottom: -20px;
+  border: 1.5px solid rgba(29, 42, 50, 0.35);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.9) 0 18%, rgba(255, 255, 255, 0.25) 40%);
+  animation: bubble-rise linear infinite;
+}
+
+@keyframes bubble-rise {
+  0% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    translate: 10px -45vh;
+  }
+  100% {
+    translate: -6px -90vh;
+    opacity: 0;
+  }
+}
+
+/* ---------- A crab crossing the sand ---------- */
+
+.crab-lane {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 80px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.crab-path {
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  animation: crab-walk 26s linear infinite;
+  animation-delay: 3s;
+}
+
+.crab {
+  display: block;
+  width: 70px;
+  height: 44px;
+  overflow: visible;
+  filter: url(#rough-still);
+}
+
+.crab-body,
+.crab-claw {
+  fill: var(--buoy);
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.crab-arm,
+.crab-stalk,
+.crab-legs path {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.crab-eye {
+  fill: var(--ink);
+}
+
+/* Two sets of legs taking turns: a scuttle. */
+.crab-legs-a {
+  animation: legs 0.32s steps(1) infinite;
+}
+
+.crab-legs-b {
+  opacity: 0;
+  animation: legs 0.32s steps(1) infinite reverse;
+}
+
+@keyframes legs {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Out along the sand, a pause to look around, then off the other side. The
+   long gap at the end keeps it an occasional visitor. */
+@keyframes crab-walk {
+  0% {
+    translate: -90px 0;
+  }
+  22% {
+    translate: 38vw 0;
+  }
+  30% {
+    translate: 38vw 0;
+  }
+  55% {
+    translate: calc(100vw + 20px) 0;
+  }
+  100% {
+    translate: calc(100vw + 20px) 0;
+  }
+}
+
+/* ---------- Gulls over the hero ---------- */
+
+.gulls {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.gull-flight {
+  position: absolute;
+  left: 0;
+  animation: gull-fly linear infinite;
+}
+
+.gull {
+  display: block;
+  height: auto;
+  overflow: visible;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.75;
+  animation: flap 0.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes gull-fly {
+  from {
+    translate: -80px 40px;
+  }
+  to {
+    translate: calc(100vw + 80px) -60px;
+  }
+}
+
+@keyframes flap {
+  0%,
+  100% {
+    scale: 1 1;
+  }
+  50% {
+    scale: 1 -0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sea-life,
+  .crab-lane,
+  .gulls {
+    display: none;
+  }
+}

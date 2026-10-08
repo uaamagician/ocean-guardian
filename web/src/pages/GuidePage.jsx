@@ -2,7 +2,9 @@ import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router";
 import { ShieldAlert } from "lucide-react";
 import { DEBRIS_TYPES, SAFETY, TOOLS, TOOL_BY_ID } from "../lib/guide";
+import { DEBRIS_PHOTOS } from "../lib/debrisPhotos";
 import { Reveal } from "../components/Motion";
+import FadeImg from "../components/FadeImg";
 import useSectionMotion from "../lib/useSectionMotion";
 import "./Home.css";
 import "./GuidePage.css";
@@ -35,6 +37,28 @@ function useHashTarget() {
   }, [hash]);
 }
 
+// Two kinds get a warning stamped across the photo.
+const STAMPS = { natural: "Leave it", hazardous: "Don't touch" };
+
+function PhotoCredit({ photo }) {
+  return (
+    <figcaption>
+      {photo.caption}. Photo: {photo.credit},{" "}
+      {photo.licenseUrl ? (
+        <a href={photo.licenseUrl} target="_blank" rel="noreferrer">
+          {photo.license}
+        </a>
+      ) : (
+        photo.license
+      )}
+      , via{" "}
+      <a href={photo.source} target="_blank" rel="noreferrer">
+        Wikimedia Commons
+      </a>
+    </figcaption>
+  );
+}
+
 export default function GuidePage() {
   const rootRef = useRef(null);
   useSectionMotion(rootRef);
@@ -42,45 +66,54 @@ export default function GuidePage() {
 
   return (
     <div ref={rootRef}>
-      <div className="info-top" />
-      <section className="band band-dark guide-hero">
-        <div className="band-inner">
-          <Reveal className="band-head">
-            <h2>Field guide</h2>
-            <p>What turns up on beaches, how to handle it safely, and what to bring.</p>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="band" id="debris">
+      <section className="band guide-first" id="debris">
         <div className="band-inner">
           <Reveal className="band-head">
             <h2>What washes up</h2>
             <p>Grouped like cleanup data cards. Natural material stays on the beach.</p>
           </Reveal>
           <ul className="debris-grid">
-            {DEBRIS_TYPES.map(({ id, icon: Icon, name, examples, why, handle, tools }, i) => (
-              <Reveal as="li" key={id} id={`debris-${id}`} className={id === "natural" ? "is-natural" : ""} delay={(i % 3) * 40}>
-                <div className="debris-top">
-                  <Icon aria-hidden="true" />
-                  <h3>{name}</h3>
-                </div>
-                <p className="debris-examples">{examples}</p>
-                <p>{why}</p>
-                <p className="debris-handle">
-                  <strong>How to handle it.</strong> {handle}
-                </p>
-                {tools.length > 0 && (
-                  <ul className="tool-chips" aria-label="Tools">
-                    {tools.map((t) => (
-                      <li key={t}>
-                        <a href={`#tool-${t}`}>{TOOL_BY_ID[t].name}</a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </Reveal>
-            ))}
+            {DEBRIS_TYPES.map(({ id, icon: Icon, name, examples, why, handle, tools }, i) => {
+              const photo = DEBRIS_PHOTOS[id];
+              return (
+                <Reveal
+                  as="li"
+                  key={id}
+                  id={`debris-${id}`}
+                  className={`debris-card is-${id}`}
+                  delay={(i % 3) * 40}
+                >
+                  <figure className="debris-photo">
+                    <div className="debris-frame">
+                      <FadeImg src={photo.src} alt={`${name}: ${photo.caption}`} loading="lazy" />
+                      {STAMPS[id] && <span className="debris-stamp">{STAMPS[id]}</span>}
+                      <h3 className="debris-tag">
+                        <Icon aria-hidden="true" />
+                        {name}
+                      </h3>
+                    </div>
+                    <PhotoCredit photo={photo} />
+                  </figure>
+                  <div className="debris-body">
+                    <p className="debris-examples">{examples}</p>
+                    <p>{why}</p>
+                    <div className="debris-handle">
+                      <strong>How to handle it</strong>
+                      <p>{handle}</p>
+                    </div>
+                    {tools.length > 0 && (
+                      <ul className="tool-chips" aria-label="Tools">
+                        {tools.map((t) => (
+                          <li key={t}>
+                            <a href={`#tool-${t}`}>{TOOL_BY_ID[t].name}</a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </Reveal>
+              );
+            })}
           </ul>
         </div>
       </section>

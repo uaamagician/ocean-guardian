@@ -1,16 +1,13 @@
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { Link, useLocation, useSearchParams } from "react-router";
-import { CalendarCheck, Clock, Megaphone, Package, Users } from "lucide-react";
+import { CalendarCheck, Clock, MapPin, Megaphone, Users } from "lucide-react";
 import { Level } from "../components/ReportDetail";
 import { Reveal } from "../components/Motion";
-import { Doodle, Footprints, SeaGlass } from "../components/Sketch";
-import { AiSaw, Snapshots } from "../components/Snapshots";
-import JoinCard from "../components/JoinCard";
-import { useUpcomingEvents } from "../lib/events";
+import { Thumb } from "../components/Snapshots";
+import { ORGANIZER_TYPES, headcount, useSignups, useUpcomingEvents } from "../lib/events";
 import usePublishedReports from "../lib/usePublishedReports";
 import { useAllBeaches, useReportsByBeach } from "../lib/beaches";
-import { MIN_REPORTS_FOR_PLAN, planInputs, usePlanRequest, useStoredPlan } from "../lib/cleanup";
-import useSectionMotion from "../lib/useSectionMotion";
+import { MIN_REPORTS_FOR_PLAN, planInputs, topItems, usePlanRequest, useStoredPlan } from "../lib/cleanup";
 import "./Home.css";
 import "./ActionPage.css";
 import "./Events.css";
@@ -18,48 +15,77 @@ import "./Events.css";
 const SEVERITY_RANK = { heavy: 4, moderate: 3, light: 2, clean: 1 };
 const MAX_BEACHES = 12;
 
-const range = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
+const range = ({ min, max }) => (min === max ? `${min}` : `${min}–${max}`);
 
-// A short numbered how-to, drawn across the top of each tab.
-function Steps({ items }) {
+/* ---------- Join: one row per upcoming cleanup ---------- */
+
+function EventRow({ event, reports }) {
+  const signups = useSignups(event.id);
+  const joined = headcount(signups);
+  const left = Math.max(0, event.capacity - joined);
+  const start = event.startsAt.toDate();
+  const evidence = planInputs(reports, event.location);
+  const found = topItems(evidence, 3);
   return (
-    <ol className="cl-steps">
-      {items.map((text, i) => (
-        <li key={text}>
-          {i > 0 && <Footprints className="cl-step-arrow" />}
-          <span className="cl-step-num">{i + 1}</span>
-          <span>{text}</span>
-        </li>
-      ))}
-    </ol>
+    <Link to={`/events/${event.id}`} className="cl-row" viewTransition>
+      <span className="cl-date" aria-hidden="true">
+        <small>{start.toLocaleDateString("en-US", { month: "short" })}</small>
+        <strong>{start.getDate()}</strong>
+        <small>{start.toLocaleDateString("en-US", { weekday: "short" })}</small>
+      </span>
+      <Thumb reports={evidence} />
+      <span className="cl-main">
+        <strong className="cl-title">{event.title}</strong>
+        <span className="cl-meta">
+          <span>
+            <Clock aria-hidden="true" />
+            {start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}, {event.durationHours} h
+          </span>
+          <span>
+            <MapPin aria-hidden="true" />
+            {event.beachName}
+          </span>
+        </span>
+        <span className="cl-sub">
+          {ORGANIZER_TYPES[event.organizer.type]}: {event.organizer.name}
+          {found.length > 0 && ` · Expect ${found.join(", ")}`}
+        </span>
+      </span>
+      <span className="cl-side">
+        <span className="cl-spots">
+          <span className="wo-bar">
+            <span style={{ width: `${Math.min(100, (joined / event.capacity) * 100)}%` }} />
+          </span>
+          {left === 0 ? "Full" : `${left} of ${event.capacity} spots left`}
+        </span>
+        <span className="btn btn-primary btn-small">{left === 0 ? "Details" : "Join"}</span>
+      </span>
+    </Link>
   );
 }
-
-/* ---------- Join ---------- */
 
 function JoinPanel({ upcoming, reports, onOrganize }) {
   return (
     <>
       <div className="cl-panel-head">
-        <h2>Pick a cleanup and join</h2>
-        <Steps items={["Pick a cleanup below", "Sign in with Google", "Say how many are coming and what gear you'll bring"]} />
+        <h2>Upcoming cleanups</h2>
+        <p>Open one to see the work order, then sign in with Google to join.</p>
       </div>
       {upcoming === undefined && <p className="report-meta">Loading cleanups…</p>}
       {upcoming?.length === 0 && (
         <div className="cl-empty">
-          <Doodle name="starfish" className="cl-empty-doodle bob" />
           <h3>No cleanups scheduled yet</h3>
-          <p>Be the first. Pick a beach the AI has already looked at and set a time.</p>
+          <p>Beaches with an AI plan are ready for one.</p>
           <button type="button" className="btn btn-primary" onClick={onOrganize}>
             Organize the first one
           </button>
         </div>
       )}
       {upcoming?.length > 0 && (
-        <ul className="join-grid">
+        <ul className="cl-list">
           {upcoming.map((e, i) => (
             <Reveal as="li" key={e.id} delay={Math.min(i, 6) * 30}>
-              <JoinCard event={e} reports={reports} />
+              <EventRow event={e} reports={reports} />
             </Reveal>
           ))}
         </ul>
@@ -68,9 +94,9 @@ function JoinPanel({ upcoming, reports, onOrganize }) {
   );
 }
 
-/* ---------- Organize ---------- */
+/* ---------- Organize: one row per reported beach ---------- */
 
-function BeachCard({ beach, list, allReports }) {
+function BeachRow({ beach, list, allReports }) {
   const stored = useStoredPlan(beach.id);
   const ask = usePlanRequest(beach);
   const evidence = planInputs(allReports, beach);
@@ -78,68 +104,56 @@ function BeachCard({ beach, list, allReports }) {
   const plan = record?.plan;
   const ready = evidence.length >= MIN_REPORTS_FOR_PLAN;
   const missing = MIN_REPORTS_FOR_PLAN - evidence.length;
+  const found = topItems(evidence, 3);
   const beachLink = `/map?b=${encodeURIComponent(beach.id)}&t=cleanup`;
 
   return (
-    <article className="beach-tile">
-      <Snapshots reports={evidence.length ? evidence : list} max={3} />
-      <div className="beach-tile-body">
-        <div className="beach-tile-head">
-          <Link to={beachLink} className="beach-tile-name" viewTransition>
-            {beach.name}
-          </Link>
+    <div className="cl-row is-static">
+      <Thumb reports={evidence.length ? evidence : list} />
+      <span className="cl-main">
+        <Link to={beachLink} className="cl-title" viewTransition>
+          {beach.name}
+        </Link>
+        <span className="cl-meta">
           <Level category={list[0].aiAnalysis?.category} />
-        </div>
-        <span className="report-meta">
-          {beach.country || "Added by users"}, {list.length} report
-          {list.length > 1 ? "s" : ""}
+          <span>
+            {list.length} report{list.length > 1 ? "s" : ""}
+            {beach.country ? `, ${beach.country}` : ""}
+          </span>
         </span>
-
-        <AiSaw reports={evidence} />
-
+        {found.length > 0 && <span className="cl-sub">Found: {found.join(", ")}</span>}
+      </span>
+      <span className="cl-side">
         {plan ? (
-          <ul className="ai-plan-line" aria-label="AI plan">
-            <li>
-              <Users aria-hidden="true" /> {range(plan.volunteers)} people
-            </li>
-            <li>
-              <Clock aria-hidden="true" /> {plan.hours} h
-            </li>
-            <li>
-              <Package aria-hidden="true" /> {plan.gear.length} kinds of gear
-            </li>
-          </ul>
-        ) : stored === undefined ? (
-          <p className="report-meta">Checking for a plan…</p>
-        ) : ready ? (
-          <p className="report-meta">Enough photos for the AI to plan a cleanup here.</p>
+          <span className="cl-plan">
+            <Users aria-hidden="true" /> {range(plan.volunteers)} people
+            <Clock aria-hidden="true" /> {plan.hours} h
+          </span>
         ) : (
-          <p className="report-meta">
-            The AI needs {missing} more photo report{missing > 1 ? "s" : ""} to plan a cleanup.
-          </p>
+          <span className="cl-plan is-muted">
+            {stored === undefined
+              ? "Checking…"
+              : ready
+                ? "Ready for an AI plan"
+                : `Needs ${missing} more report${missing > 1 ? "s" : ""}`}
+          </span>
         )}
-        {ask.error && <p className="error-text">{ask.error}</p>}
-
-        <div className="beach-tile-actions">
-          {plan ? (
-            <Link to={`/events/new?b=${encodeURIComponent(beach.id)}`} className="btn btn-primary btn-small" viewTransition>
-              Organize here
-            </Link>
-          ) : stored === undefined ? null : ready ? (
-            <button type="button" className="btn btn-primary btn-small" onClick={ask.run} disabled={ask.loading}>
-              {ask.loading ? "The AI is looking at the photos…" : "Ask the AI for a plan"}
-            </button>
-          ) : (
-            <Link to="/report" className="btn btn-small" viewTransition>
-              Add a photo
-            </Link>
-          )}
-          <Link to={beachLink} className="btn-text" viewTransition>
-            Beach details
+        {ask.error && <span className="error-text">{ask.error}</span>}
+        {plan ? (
+          <Link to={`/events/new?b=${encodeURIComponent(beach.id)}`} className="btn btn-primary btn-small" viewTransition>
+            Organize here
           </Link>
-        </div>
-      </div>
-    </article>
+        ) : stored === undefined ? null : ready ? (
+          <button type="button" className="btn btn-primary btn-small" onClick={ask.run} disabled={ask.loading}>
+            {ask.loading ? "Planning…" : "Get AI plan"}
+          </button>
+        ) : (
+          <Link to="/report" className="btn btn-small" viewTransition>
+            Add a photo
+          </Link>
+        )}
+      </span>
+    </div>
   );
 }
 
@@ -165,19 +179,15 @@ function OrganizePanel({ reports }) {
   return (
     <>
       <div className="cl-panel-head">
-        <h2>Organize a cleanup</h2>
-        <Steps
-          items={[
-            "Pick a beach people have photographed",
-            "Check what the AI saw and planned",
-            "Set a time and meeting point, then share the link",
-          ]}
-        />
+        <h2>Pick a beach</h2>
+        <p>
+          A beach with an AI plan can host a cleanup now: you set the date and meeting point, and the plan becomes the
+          work order.
+        </p>
       </div>
       {rows === null && <p className="report-meta">Loading beaches…</p>}
       {rows?.length === 0 && (
         <div className="cl-empty">
-          <Doodle name="bottle" className="cl-empty-doodle bob" />
           <h3>No beach has been reported yet</h3>
           <p>A cleanup starts from photos. One report puts the first beach here.</p>
           <Link to="/report" className="btn btn-primary" viewTransition>
@@ -186,25 +196,19 @@ function OrganizePanel({ reports }) {
         </div>
       )}
       {rows?.length > 0 && (
-        <ul className="beach-grid">
+        <ul className="cl-list">
           {rows.map(({ beach, list }, i) => (
             <Reveal as="li" key={beach.id} delay={Math.min(i, 6) * 30}>
-              <BeachCard beach={beach} list={list} allReports={reports} />
+              <BeachRow beach={beach} list={list} allReports={reports} />
             </Reveal>
           ))}
         </ul>
       )}
-      <p className="report-meta cl-guide-note">
-        New to beach cleanups? The <Link to="/guide">field guide</Link> explains what you'll find, how to handle it
-        safely, and every tool a plan may ask for.
-      </p>
     </>
   );
 }
 
 export default function ActionPage() {
-  const rootRef = useRef(null);
-  useSectionMotion(rootRef);
   const [params, setParams] = useSearchParams();
   const { hash } = useLocation();
   const { reports } = usePublishedReports();
@@ -214,14 +218,10 @@ export default function ActionPage() {
   const setTab = (next) => setParams(next === "organize" ? { tab: next } : {}, { replace: true, preventScrollReset: true });
 
   return (
-    <div ref={rootRef}>
-      <div className="info-top" />
-      <section className="band band-dark cl-top">
-        <div className="band-inner">
-          <Reveal className="band-head">
-            <h2>Beach cleanups</h2>
-            <p>Join one near you, or organize your own from a beach the AI has already assessed.</p>
-          </Reveal>
+    <div className="cl-page">
+      <header className="cl-header">
+        <div className="cl-header-inner">
+          <h1>Beach cleanups</h1>
           <div className="cl-tabs" role="tablist" aria-label="Join or organize">
             <button
               type="button"
@@ -233,14 +233,8 @@ export default function ActionPage() {
               onClick={() => setTab("join")}
             >
               <CalendarCheck aria-hidden="true" />
-              <strong>Join a cleanup</strong>
-              <span>
-                {upcoming?.length
-                  ? `${upcoming.length} coming up`
-                  : upcoming === undefined
-                    ? "See what's scheduled"
-                    : "Nothing scheduled yet"}
-              </span>
+              Join
+              {upcoming?.length > 0 && <span className="cl-count">{upcoming.length}</span>}
             </button>
             <button
               type="button"
@@ -252,22 +246,18 @@ export default function ActionPage() {
               onClick={() => setTab("organize")}
             >
               <Megaphone aria-hidden="true" />
-              <strong>Organize one</strong>
-              <span>Start from a beach the AI has looked at</span>
+              Organize
             </button>
           </div>
         </div>
-      </section>
+      </header>
 
-      <section className="band band-paper cl-panel" id="cl-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
-        <div className="band-inner">
-          <SeaGlass className="band-doodle cl-glass" />
-          {tab === "join" ? (
-            <JoinPanel upcoming={upcoming} reports={reports} onOrganize={() => setTab("organize")} />
-          ) : (
-            <OrganizePanel reports={reports} />
-          )}
-        </div>
+      <section className="cl-panel" id="cl-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
+        {tab === "join" ? (
+          <JoinPanel upcoming={upcoming} reports={reports} onOrganize={() => setTab("organize")} />
+        ) : (
+          <OrganizePanel reports={reports} />
+        )}
       </section>
     </div>
   );

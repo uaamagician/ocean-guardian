@@ -12,6 +12,7 @@ import { Reveal } from "../components/Motion";
 import { Doodle, Footprints, Marked, SeaGlass } from "../components/Sketch";
 import { FinalCta, GuideTeaser, WhyItMatters } from "../components/Story";
 import JoinCard from "../components/JoinCard";
+import { Crab } from "../components/Life";
 import { useLatestPlan, usePlanCount } from "../lib/cleanup";
 import { useUpcomingEvents } from "../lib/events";
 import { HISTORY_PHOTOS } from "../lib/history";
@@ -36,6 +37,7 @@ function RightNow({ reports }) {
   ];
   return (
     <section className="band right-now">
+      <Crab />
       <div className="band-inner">
         <div className="right-now-head">
           <h2>Right now</h2>

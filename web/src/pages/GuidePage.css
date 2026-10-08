@@ -1,7 +1,3 @@
-.guide-hero {
-  padding-bottom: var(--space-7);
-}
-
 /* Anchored cards land below the fixed nav. */
 #debris,
 #tools,
@@ -43,49 +39,155 @@
   }
 }
 
-.debris-grid > li {
+/* Each kind of debris is a photo card: the picture with its name stuck on,
+   then what it is and how to handle it. */
+.debris-card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-5);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-md);
   background: var(--surface);
+  box-shadow: 3px 3px 0 var(--ink);
+  overflow: hidden;
   font-size: var(--text-sm);
+  color: var(--ink-soft);
+  transition:
+    transform 0.3s var(--ease-spring),
+    box-shadow 0.3s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .debris-card:hover {
+    transform: translate(-2px, -3px);
+    box-shadow: 6px 7px 0 var(--ink);
+  }
+
+  .debris-card:hover .debris-frame img {
+    scale: 1.06;
+  }
+}
+
+.debris-photo {
+  margin: 0;
+}
+
+.debris-frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--sand);
+  border-bottom: 2px solid var(--ink);
+}
+
+.debris-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: scale 0.6s var(--ease-out);
+}
+
+/* The name, on a strip of tape across the corner of the photo. */
+.debris-tag {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: calc(100% - 20px);
+  padding: 5px 12px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sketch);
+  background: var(--marker);
+  color: var(--ink);
+  font-size: var(--text-base);
+  box-shadow: 2px 2px 0 var(--ink);
+  rotate: -1.5deg;
+}
+
+.debris-tag svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.is-natural .debris-tag {
+  background: var(--mint);
+}
+
+.is-hazardous .debris-tag {
+  background: var(--peach);
+}
+
+/* A rubber stamp across the photo for the two "do not pick up" kinds. */
+.debris-stamp {
+  position: absolute;
+  top: 14px;
+  right: 12px;
+  padding: 2px 12px;
+  border: 3px solid currentColor;
+  border-radius: 6px;
+  color: #2f8a5e;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(255, 250, 240, 0.78);
+  rotate: 8deg;
+  mix-blend-mode: multiply;
+}
+
+.is-hazardous .debris-stamp {
+  color: var(--danger);
+  rotate: -7deg;
+}
+
+.debris-photo figcaption {
+  padding: 6px var(--space-4) 0;
+  font-size: 0.6875rem;
   color: var(--ink-soft);
 }
 
-.debris-grid > li.is-natural {
-  background: color-mix(in srgb, var(--lv-clean) 10%, white);
+.debris-photo figcaption a {
+  color: inherit;
 }
 
-.debris-top {
+.debris-body {
+  flex: 1;
   display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  color: var(--ink);
-}
-
-.debris-top svg {
-  width: 26px;
-  height: 26px;
-  color: var(--buoy);
-}
-
-.is-natural .debris-top svg {
-  color: var(--lv-clean);
-}
-
-.debris-top h3 {
-  font-size: var(--text-lg);
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) var(--space-4);
 }
 
 .debris-examples {
   color: var(--ink);
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.debris-handle {
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
 }
 
 .debris-handle strong {
+  display: block;
   color: var(--ink);
+  font-family: var(--font-display);
+}
+
+.is-hazardous .debris-handle {
+  background: var(--peach);
+}
+
+.is-natural .debris-handle {
+  background: var(--mint);
+}
+
+.guide-first {
+  padding-top: calc(var(--nav-height) + var(--space-6));
 }
 
 .tool-chips {

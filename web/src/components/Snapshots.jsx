@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { Sparkles, Waves } from "lucide-react";
 import usePhotoUrls from "../lib/usePhotoUrls";
 import { topItems } from "../lib/cleanup";
 import FadeImg from "./FadeImg";
@@ -43,5 +43,16 @@ export function AiSaw({ reports, max = 4 }) {
         {items.join(", ")}
       </span>
     </p>
+  );
+}
+
+// A single square photo of a beach, for list rows.
+export function Thumb({ reports }) {
+  const path = reports.map((r) => r.photos?.[0]).find(Boolean);
+  const [url] = usePhotoUrls(path ? [path] : []);
+  return (
+    <span className="thumb" aria-hidden="true">
+      {url ? <FadeImg src={url} alt="" loading="lazy" /> : <Waves />}
+    </span>
   );
 }

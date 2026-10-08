@@ -3,6 +3,7 @@ import { gsap } from "../lib/gsap";
 import { prefersReducedMotion } from "../lib/motion";
 import { Marked, Note } from "./Sketch";
 import ActionButtons from "./ActionButtons";
+import { Gulls } from "./Life";
 
 // A matched pair of illustrations: the same stretch of beach, clean and after
 // the tide. Only the debris changes, so the spotlight edge never shows a seam.
@@ -100,11 +101,33 @@ function useScrollAway(sectionRef) {
   }, [sectionRef]);
 }
 
+// Tapping the hero sends out rings, like a pebble dropped in the shallows.
+// The rings are plain DOM nodes in a layer React never renders into.
+function useRipples(sectionRef, layerRef) {
+  useEffect(() => {
+    if (prefersReducedMotion()) return undefined;
+    const section = sectionRef.current;
+    const onDown = (e) => {
+      const box = section.getBoundingClientRect();
+      const ring = document.createElement("span");
+      ring.className = "ripple";
+      ring.style.left = `${e.clientX - box.left}px`;
+      ring.style.top = `${e.clientY - box.top}px`;
+      layerRef.current.append(ring);
+      ring.addEventListener("animationend", () => ring.remove());
+    };
+    section.addEventListener("pointerdown", onDown);
+    return () => section.removeEventListener("pointerdown", onDown);
+  }, [sectionRef, layerRef]);
+}
+
 export default function Hero() {
   const sectionRef = useRef(null);
   const layerRef = useRef(null);
+  const rippleRef = useRef(null);
   useSpotlight(sectionRef, layerRef);
   useScrollAway(sectionRef);
+  useRipples(sectionRef, rippleRef);
 
   return (
     <section ref={sectionRef} className="hero">
@@ -116,7 +139,10 @@ export default function Hero() {
           style={{ backgroundImage: `url("${BG_TRASH}")` }}
           aria-hidden="true"
         />
+        <div className="hero-shimmer" aria-hidden="true" />
       </div>
+      <div className="hero-ripples" ref={rippleRef} aria-hidden="true" />
+      <Gulls />
       <div className="hero-shade" aria-hidden="true" />
 
       <div className="hero-heading">

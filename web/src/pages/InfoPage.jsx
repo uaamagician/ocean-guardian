@@ -12,44 +12,6 @@ const LEVEL_MEANING = [
   "8 °C-weeks or more. Widespread bleaching and some coral death are likely.",
 ];
 
-const SOURCES = [
-  {
-    name: "Open-Meteo Marine",
-    href: "https://open-meteo.com/en/docs/marine-weather-api",
-    what: "Sea temperature, waves and tides",
-    when: "Hourly",
-  },
-  {
-    name: "Open-Meteo Forecast",
-    href: "https://open-meteo.com/en/docs",
-    what: "Weather, wind and UV on cleanup days",
-    when: "Hourly, up to 16 days ahead",
-  },
-  {
-    name: "NOAA Coral Reef Watch",
-    href: "https://coralreefwatch.noaa.gov/",
-    what: "Coral bleaching heat stress (5 km satellite data)",
-    when: "Daily",
-  },
-  {
-    name: "Wikidata and OpenStreetMap",
-    href: "https://www.wikidata.org/",
-    what: "The list of 15,000+ named beaches",
-    when: "Rebuilt with each release",
-  },
-  {
-    name: "Wikipedia",
-    href: "https://en.wikipedia.org/",
-    what: "Short beach descriptions",
-    when: "When you open a beach",
-  },
-  {
-    name: "Ocean Guardian reports",
-    href: "/map",
-    what: "Debris levels and items, analyzed by Gemini from your photos",
-    when: "As reports come in",
-  },
-];
 
 export default function InfoPage() {
   return (
@@ -57,7 +19,7 @@ export default function InfoPage() {
       <header className="info-header">
         <div className="info-header-inner">
           <h1>Ocean data</h1>
-          <p>Live conditions around Taiwan, how to read a coral bleaching alert, and where every number on this site comes from.</p>
+          <p>Live sea temperature and coral bleaching alerts around Taiwan, and how to read them.</p>
         </div>
       </header>
 
@@ -122,29 +84,6 @@ export default function InfoPage() {
         </div>
       </section>
 
-      <section className="info-section" id="sources">
-        <h2>Data sources</h2>
-        <table className="sketch-table">
-          <thead>
-            <tr>
-              <th scope="col">Source</th>
-              <th scope="col">Used for</th>
-              <th scope="col">Updated</th>
-            </tr>
-          </thead>
-          <tbody>
-            {SOURCES.map((s) => (
-              <tr key={s.name}>
-                <th scope="row">
-                  {s.href.startsWith("/") ? <Link to={s.href}>{s.name}</Link> : <a href={s.href}>{s.name}</a>}
-                </th>
-                <td>{s.what}</td>
-                <td>{s.when}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
     </div>
   );
 }

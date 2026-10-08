@@ -3,6 +3,7 @@ import { DEBRIS_TYPES, TOOL_BY_ID } from "../lib/guide";
 import { CountUp, Reveal } from "./Motion";
 import { Doodle, Marked, Note } from "./Sketch";
 import ActionButtons from "./ActionButtons";
+import { SeaLife } from "./Life";
 
 // The numbers behind the project, each with its source.
 const FACTS = [
@@ -32,6 +33,7 @@ const FACTS = [
 export function WhyItMatters() {
   return (
     <section className="band band-dark why">
+      <SeaLife />
       <div className="band-inner">
         <Doodle name="bottle" className="band-doodle why-bottle bob" />
         <Reveal className="band-head">
