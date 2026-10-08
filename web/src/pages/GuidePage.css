@@ -2,28 +2,6 @@
   padding-bottom: var(--space-7);
 }
 
-.guide-jump {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.guide-jump a {
-  padding: 8px 16px;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius-pill);
-  color: var(--ink);
-  font-size: var(--text-sm);
-  text-decoration: none;
-  transition: background-color 0.2s var(--ease-out);
-}
-
-@media (hover: hover) {
-  .guide-jump a:hover {
-    background: var(--lemon);
-  }
-}
-
 /* Anchored cards land below the fixed nav. */
 #debris,
 #tools,

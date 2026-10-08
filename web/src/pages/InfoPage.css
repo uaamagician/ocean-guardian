@@ -21,23 +21,6 @@
   color: var(--ink-soft);
 }
 
-/* "On this page" links, underlined by hand. */
-.info-toc {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-5);
-  margin-top: var(--space-5);
-}
-
-.info-toc a {
-  color: var(--ink);
-  font-family: var(--font-display);
-  font-weight: 600;
-  text-decoration: underline wavy var(--buoy);
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 6px;
-}
-
 .info-section {
   display: flex;
   flex-direction: column;

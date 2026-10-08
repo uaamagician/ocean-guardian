@@ -58,12 +58,6 @@ export default function InfoPage() {
         <div className="info-header-inner">
           <h1>Ocean data</h1>
           <p>Live conditions around Taiwan, how to read a coral bleaching alert, and where every number on this site comes from.</p>
-          <nav className="info-toc" aria-label="On this page">
-            <a href="#conditions">Sea temperature</a>
-            <a href="#bleaching">Bleaching alerts</a>
-            <a href="#background">Background</a>
-            <a href="#sources">Data sources</a>
-          </nav>
         </div>
       </header>
 

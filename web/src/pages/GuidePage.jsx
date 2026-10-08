@@ -49,11 +49,6 @@ export default function GuidePage() {
             <h2>Field guide</h2>
             <p>What turns up on beaches, how to handle it safely, and what to bring.</p>
           </Reveal>
-          <nav className="guide-jump" aria-label="On this page">
-            <a href="#debris">What washes up</a>
-            <a href="#tools">Cleanup tools</a>
-            <a href="#safety">Stay safe</a>
-          </nav>
         </div>
       </section>
 
