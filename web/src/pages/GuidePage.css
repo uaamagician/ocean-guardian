@@ -1,4 +1,20 @@
-/* Anchored cards land below the fixed nav. */
+/* ---------- Field guide: laid out like a printed identification guide ---------- */
+
+.guide-section {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4) 0;
+}
+
+.guide-first {
+  padding-top: calc(var(--nav-height) + var(--space-6));
+}
+
+#safety {
+  padding-bottom: var(--space-8);
+}
+
+/* Anchored entries land below the fixed nav. */
 #debris,
 #tools,
 #safety,
@@ -7,123 +23,199 @@
   scroll-margin-top: calc(var(--nav-height) + var(--space-5));
 }
 
-.debris-grid,
-.tool-grid,
-.safety-grid {
-  display: grid;
-  gap: var(--space-4);
+.guide-title h1 {
+  font-size: var(--text-2xl);
+  font-variation-settings: "INFM" 100;
+}
+
+.guide-title p {
+  margin-top: var(--space-2);
+  max-width: 36em;
+  color: var(--ink-soft);
+}
+
+/* ---------- Chapters ---------- */
+
+.chapter {
+  margin-top: var(--space-7);
+}
+
+.chapter-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+  padding-bottom: var(--space-3);
+  background: var(--rule-ink) bottom left / 100% 6px no-repeat;
+}
+
+.chapter-head h2 {
+  font-size: var(--text-xl);
+  font-variation-settings: "INFM" 100;
+}
+
+.chapter-head p {
+  font-family: var(--font-hand);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--buoy);
+}
+
+.entries {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-@media (min-width: 700px) {
-  .debris-grid,
-  .safety-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* One entry: the photo on the left, the notes on the right, a ruled line
+   underneath. No boxes. */
+.entry {
+  display: grid;
+  gap: var(--space-4) var(--space-6);
+  padding: var(--space-6) 0;
+  background: var(--rule-ink) bottom left / 100% 6px no-repeat;
+}
 
-  .tool-grid {
-    grid-template-columns: repeat(2, 1fr);
+.entry:last-child {
+  background: none;
+}
+
+@media (min-width: 760px) {
+  .entry {
+    grid-template-columns: 300px 1fr;
+    align-items: start;
   }
 }
 
-@media (min-width: 1050px) {
-  .debris-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .tool-grid,
-  .safety-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* Each kind of debris is a photo card: the picture with its name stuck on,
-   then what it is and how to handle it. */
-.debris-card {
-  display: flex;
-  flex-direction: column;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius-md);
-  background: var(--surface);
-  box-shadow: 3px 3px 0 var(--ink);
-  overflow: hidden;
-  font-size: var(--text-sm);
-  color: var(--ink-soft);
-  transition:
-    transform 0.3s var(--ease-spring),
-    box-shadow 0.3s var(--ease-out);
-}
-
-@media (hover: hover) {
-  .debris-card:hover {
-    transform: translate(-2px, -3px);
-    box-shadow: 6px 7px 0 var(--ink);
-  }
-
-  .debris-card:hover .debris-frame img {
-    scale: 1.06;
-  }
-}
-
-.debris-photo {
+.entry-photo {
   margin: 0;
 }
 
-.debris-frame {
+/* A print pasted onto the page: white border, soft shadow, straight. */
+.entry-print {
   position: relative;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  background: var(--sand);
-  border-bottom: 2px solid var(--ink);
+  padding: 8px;
+  background: var(--surface);
+  box-shadow: 1px 4px 14px rgba(60, 40, 10, 0.18);
 }
 
-.debris-frame img {
+.entry-print img {
+  display: block;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
-  transition: scale 0.6s var(--ease-out);
+  background: var(--sand);
 }
 
-/* The name, on a strip of tape across the corner of the photo. */
-.debris-tag {
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
+.entry-photo figcaption {
+  margin-top: 6px;
+  font-size: 0.6875rem;
+  color: var(--ink-soft);
+}
+
+.entry-photo figcaption a {
+  color: inherit;
+}
+
+.entry-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.entry-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+/* Big handwritten index numbers, like a guide's plate numbers. */
+.entry-number {
+  font-family: var(--font-hand);
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 0.8;
+  color: var(--tide);
+}
+
+.entry-head h3 {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  max-width: calc(100% - 20px);
-  padding: 5px 12px;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius-sketch);
-  background: var(--marker);
+  gap: var(--space-2);
+  font-size: var(--text-xl);
+  font-variation-settings: "INFM" 100;
+}
+
+.entry-head h3 svg {
+  width: 24px;
+  height: 24px;
+  color: var(--buoy);
+}
+
+.entry-examples {
+  font-weight: 600;
+}
+
+.entry-cols {
+  display: grid;
+  gap: var(--space-3) var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+@media (min-width: 900px) {
+  .entry-cols {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.entry-cols h4 {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
   color: var(--ink);
-  font-size: var(--text-base);
-  box-shadow: 2px 2px 0 var(--ink);
-  rotate: -1.5deg;
 }
 
-.debris-tag svg {
-  width: 18px;
-  height: 18px;
-  flex: none;
+/* "How to handle it" is the part people need on the day: highlighted. */
+.entry-handle p {
+  display: inline;
+  padding: 0 2px;
+  background: linear-gradient(transparent 55%, var(--lemon) 55%);
+  color: var(--ink);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
-.is-natural .debris-tag {
-  background: var(--mint);
+.is-hazardous .entry-handle p {
+  background: linear-gradient(transparent 55%, var(--peach) 55%);
 }
 
-.is-hazardous .debris-tag {
-  background: var(--peach);
+.is-natural .entry-handle p {
+  background: linear-gradient(transparent 55%, var(--mint) 55%);
+}
+
+.entry-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.entry-tools > span:first-child {
+  font-weight: 700;
+}
+
+.entry-tools a {
+  color: var(--tide);
 }
 
 /* A rubber stamp across the photo for the two "do not pick up" kinds. */
 .debris-stamp {
   position: absolute;
-  top: 14px;
-  right: 12px;
+  top: 18px;
+  right: 16px;
   padding: 2px 12px;
   border: 3px solid currentColor;
   border-radius: 6px;
@@ -133,9 +225,8 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  background: rgba(255, 250, 240, 0.78);
+  background: rgba(255, 250, 240, 0.88);
   rotate: 8deg;
-  mix-blend-mode: multiply;
 }
 
 .is-hazardous .debris-stamp {
@@ -143,136 +234,77 @@
   rotate: -7deg;
 }
 
-.debris-photo figcaption {
-  padding: 6px var(--space-4) 0;
-  font-size: 0.6875rem;
-  color: var(--ink-soft);
-}
+/* ---------- The kit: a two-column checklist ---------- */
 
-.debris-photo figcaption a {
-  color: inherit;
-}
-
-.debris-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4) var(--space-4);
-}
-
-.debris-examples {
-  color: var(--ink);
-  font-weight: 600;
-}
-
-.debris-handle {
-  padding: var(--space-3);
-  border-radius: var(--radius-sm);
-  background: var(--paper);
-}
-
-.debris-handle strong {
-  display: block;
-  color: var(--ink);
-  font-family: var(--font-display);
-}
-
-.is-hazardous .debris-handle {
-  background: var(--peach);
-}
-
-.is-natural .debris-handle {
-  background: var(--mint);
-}
-
-.guide-first {
-  padding-top: calc(var(--nav-height) + var(--space-6));
-}
-
-.tool-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: auto 0 0;
-  padding: var(--space-2) 0 0;
+.kit {
+  display: grid;
+  gap: 0 var(--space-7);
+  margin: 0;
+  padding: 0;
   list-style: none;
 }
 
-.tool-chips a {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: var(--radius-pill);
-  background: var(--paper);
-  color: var(--ink);
-  font-size: var(--text-xs);
-  text-decoration: none;
-  transition: background-color 0.2s var(--ease-out);
-}
-
-@media (hover: hover) {
-  .tool-chips a:hover {
-    background: var(--sand);
+@media (min-width: 760px) {
+  .kit {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-.tool-grid > li {
+.kit > li {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-5);
-  border-radius: var(--radius-md);
-  background: var(--surface);
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  background: var(--rule-ink) bottom left / 100% 6px no-repeat;
+}
+
+.kit svg {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  margin-top: 2px;
+  color: var(--tide);
+}
+
+.kit h3 {
+  font-size: var(--text-base);
+}
+
+.kit p {
   font-size: var(--text-sm);
   color: var(--ink-soft);
 }
 
-.tool-grid svg {
-  width: 26px;
-  height: 26px;
-  color: var(--tide);
-}
-
-.tool-grid h3 {
-  font-size: var(--text-base);
-  font-weight: 600;
+.kit .kit-when {
+  margin-top: 2px;
   color: var(--ink);
+  font-style: italic;
 }
 
-.tool-when {
-  margin-top: auto;
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--line);
-  color: var(--ink);
-  font-size: var(--text-xs);
+/* ---------- Safety: a numbered list ---------- */
+
+.safety {
+  display: grid;
+  gap: 0 var(--space-7);
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  list-style: none;
 }
 
-/* Arriving from a cleanup plan's tool link briefly highlights that tool. */
-.tool-grid > li[data-target="true"],
-.debris-grid > li[data-target="true"] {
-  animation: target-glow 2.4s var(--ease-out);
-}
-
-@keyframes target-glow {
-  0%,
-  35% {
-    box-shadow: 0 0 0 3px var(--buoy);
-  }
-  100% {
-    box-shadow: 0 0 0 3px transparent;
+@media (min-width: 760px) {
+  .safety {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-.safety-grid > li {
+.safety > li {
   display: flex;
-  flex-direction: column;
   gap: var(--space-3);
-  padding-top: var(--space-4);
-  background: var(--rule-ink) top left / 100% 6px no-repeat;
-  color: var(--ink);
+  padding: var(--space-4) 0;
+  background: var(--rule-ink) bottom left / 100% 6px no-repeat;
 }
 
-.safety-grid svg {
+.safety svg {
+  flex: none;
   width: 24px;
   height: 24px;
   color: var(--buoy);
@@ -280,4 +312,20 @@
 
 .guide-cta {
   align-self: flex-start;
+}
+
+/* Arriving from a cleanup plan's tool link briefly highlights that entry. */
+.kit > li[data-target="true"],
+.entry[data-target="true"] {
+  animation: target-glow 2.4s var(--ease-out);
+}
+
+@keyframes target-glow {
+  0%,
+  35% {
+    background-color: var(--lemon);
+  }
+  100% {
+    background-color: transparent;
+  }
 }

@@ -489,46 +489,35 @@ svg.lucide {
   color: var(--ink);
 }
 
-/* The paper and its shadow are layers behind the links, so the torn edge
-   doesn't clip the account menu. */
-.nav::before,
-.nav::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  clip-path: polygon(0 0, 100% 0, 100% 86%, 97.5% 97%, 94% 88%, 90.5% 100%, 86% 89%, 82% 98%, 77.5% 87%, 73% 99%, 68% 88%, 63.5% 96%, 59% 86%, 54% 100%, 49.5% 88%, 45% 97%, 40% 86%, 35.5% 99%, 31% 88%, 26% 98%, 21.5% 87%, 17% 100%, 12.5% 88%, 8% 97%, 4% 86%, 0 95%);
+/* The torn strip of frosted paper behind the header (see Nav.jsx). Its own
+   view-transition name keeps it still while pages change. */
+.nav-paper,
+.nav-shadow {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: var(--nav-height);
   pointer-events: none;
+  clip-path: polygon(0 0, 100% 0, 100% 86%, 97.5% 97%, 94% 88%, 90.5% 100%, 86% 89%, 82% 98%, 77.5% 87%, 73% 99%, 68% 88%, 63.5% 96%, 59% 86%, 54% 100%, 49.5% 88%, 45% 97%, 40% 86%, 35.5% 99%, 31% 88%, 26% 98%, 21.5% 87%, 17% 100%, 12.5% 88%, 8% 97%, 4% 86%, 0 95%);
 }
 
-.nav::before {
-  background-color: var(--surface);
-  background-image: var(--paper-grain);
+.nav-paper {
+  z-index: 999;
+  background-color: rgba(255, 250, 240, 0.62);
+  -webkit-backdrop-filter: blur(16px) saturate(1.25);
+  backdrop-filter: blur(16px) saturate(1.25);
+  view-transition-name: nav-paper;
 }
 
-.nav::after {
-  z-index: -2;
-  translate: 0 4px;
-  background: rgba(29, 42, 50, 0.22);
+.nav-shadow {
+  z-index: 998;
+  translate: 0 3px;
+  background: rgba(29, 42, 50, 0.14);
+  view-transition-name: nav-shadow;
 }
 
-/* Over the home hero: frosted, see-through paper. */
-.nav::before,
-.nav::after {
-  transition:
-    background-color 0.35s var(--ease-out),
-    opacity 0.35s var(--ease-out);
-}
-
-.nav[data-glass="true"]::before {
-  background-color: rgba(255, 250, 240, 0.4);
-  background-image: none;
-  -webkit-backdrop-filter: blur(10px) saturate(1.2);
-  backdrop-filter: blur(10px) saturate(1.2);
-}
-
-.nav[data-glass="true"]::after {
-  opacity: 0.35;
+::view-transition-group(nav-paper),
+::view-transition-group(nav-shadow) {
+  animation: none;
 }
 
 .nav-logo {
@@ -659,8 +648,9 @@ svg.lucide {
   display: flex;
   flex-direction: column;
   padding: var(--space-5) var(--space-4) var(--space-6);
-  background-color: var(--surface);
-  background-image: var(--paper-grain);
+  background-color: rgba(255, 250, 240, 0.86);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
   box-shadow: 0 10px 24px rgba(29, 42, 50, 0.2);
   clip-path: polygon(0 0, 100% 0, 100% 96%, 92% 100%, 84% 97%, 75% 100%, 66% 96%, 57% 100%, 48% 97%, 39% 100%, 30% 96%, 21% 100%, 12% 97%, 0 100%);
 }

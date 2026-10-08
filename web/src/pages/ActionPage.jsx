@@ -1,19 +1,54 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { CalendarCheck, Clock, MapPin, Megaphone, Users } from "lucide-react";
 import { Level } from "../components/ReportDetail";
 import { Reveal } from "../components/Motion";
 import { Thumb } from "../components/Snapshots";
+import ListToolbar from "../components/ListToolbar";
 import { ORGANIZER_TYPES, headcount, useSignups, useUpcomingEvents } from "../lib/events";
-import usePublishedReports from "../lib/usePublishedReports";
+import usePublishedReports, { distanceKm } from "../lib/usePublishedReports";
+import { getPosition } from "../lib/reports";
 import { useAllBeaches, useReportsByBeach } from "../lib/beaches";
-import { MIN_REPORTS_FOR_PLAN, planInputs, topItems, usePlanRequest, useStoredPlan } from "../lib/cleanup";
+import { MIN_REPORTS_FOR_PLAN, planInputs, topItems, usePlanIds, usePlanRequest, useStoredPlan } from "../lib/cleanup";
 import "./Home.css";
 import "./ActionPage.css";
 import "./Events.css";
 
 const SEVERITY_RANK = { heavy: 4, moderate: 3, light: 2, clean: 1 };
-const MAX_BEACHES = 12;
+const PAGE = 12;
+
+const matches = (query, ...fields) => {
+  const q = query.trim().toLowerCase();
+  return !q || fields.some((f) => f?.toLowerCase().includes(q));
+};
+
+const regionsOf = (items, getRegion) =>
+  [...new Set(items.map(getRegion).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+
+// Asks for the visitor's location the first time "Nearest to me" is picked.
+function useMyPosition(wanted) {
+  const [state, setState] = useState({ here: null, error: "" });
+  useEffect(() => {
+    if (!wanted || state.here || state.error) return undefined;
+    let cancelled = false;
+    getPosition()
+      .then((here) => !cancelled && setState({ here, error: "" }))
+      .catch((err) => !cancelled && setState({ here: null, error: err.message }));
+    return () => {
+      cancelled = true;
+    };
+  }, [wanted, state.here, state.error]);
+  return state;
+}
+
+function ShowMore({ shown, total, onMore }) {
+  if (shown >= total) return null;
+  return (
+    <button type="button" className="btn cl-more" onClick={onMore}>
+      Show {Math.min(PAGE, total - shown)} more
+    </button>
+  );
+}
 
 const range = ({ min, max }) => (min === max ? `${min}` : `${min}–${max}`);
 
@@ -64,13 +99,56 @@ function EventRow({ event, reports }) {
   );
 }
 
+const JOIN_SORTS = { soonest: "Soonest first", largest: "Largest first", nearest: "Nearest to me" };
+
 function JoinPanel({ upcoming, reports, onOrganize }) {
+  const { beaches } = useAllBeaches();
+  const [query, setQuery] = useState("");
+  const [region, setRegion] = useState("");
+  const [sort, setSort] = useState("soonest");
+  const [limit, setLimit] = useState(PAGE);
+  const { here, error } = useMyPosition(sort === "nearest");
+
+  const regionOf = useMemo(() => {
+    const byId = new Map((beaches ?? []).map((b) => [b.id, b.country]));
+    return (e) => byId.get(e.beachId);
+  }, [beaches]);
+
+  const list = useMemo(() => {
+    if (!upcoming) return upcoming;
+    const found = upcoming.filter(
+      (e) => matches(query, e.title, e.beachName, e.organizer.name) && (!region || regionOf(e) === region),
+    );
+    if (sort === "largest") return [...found].sort((a, b) => b.capacity - a.capacity);
+    if (sort === "nearest" && here) return [...found].sort((a, b) => distanceKm(here, a.location) - distanceKm(here, b.location));
+    return found;
+  }, [upcoming, query, region, sort, here, regionOf]);
+
   return (
     <>
       <div className="cl-panel-head">
         <h2>Upcoming cleanups</h2>
         <p>Open one to see the work order, then sign in with Google to join.</p>
       </div>
+      {upcoming?.length > 0 && (
+        <ListToolbar
+          query={query}
+          onQuery={(v) => {
+            setQuery(v);
+            setLimit(PAGE);
+          }}
+          placeholder="Search by beach, title or organizer"
+          regions={regionsOf(upcoming, regionOf)}
+          region={region}
+          onRegion={setRegion}
+          sorts={JOIN_SORTS}
+          sort={sort}
+          onSort={setSort}
+          count={list.length}
+          noun="cleanup"
+          note={sort === "nearest" ? (error ? "Location unavailable" : here ? "" : "Finding you…") : ""}
+        />
+      )}
       {upcoming === undefined && <p className="report-meta">Loading cleanups…</p>}
       {upcoming?.length === 0 && (
         <div className="cl-empty">
@@ -81,15 +159,17 @@ function JoinPanel({ upcoming, reports, onOrganize }) {
           </button>
         </div>
       )}
-      {upcoming?.length > 0 && (
+      {upcoming?.length > 0 && list.length === 0 && <p className="cl-none">No cleanups match. Try another search or region.</p>}
+      {list?.length > 0 && (
         <ul className="cl-list">
-          {upcoming.map((e, i) => (
+          {list.slice(0, limit).map((e, i) => (
             <Reveal as="li" key={e.id} delay={Math.min(i, 6) * 30}>
               <EventRow event={e} reports={reports} />
             </Reveal>
           ))}
         </ul>
       )}
+      {list && <ShowMore shown={limit} total={list.length} onMore={() => setLimit((n) => n + PAGE)} />}
     </>
   );
 }
@@ -157,24 +237,64 @@ function BeachRow({ beach, list, allReports }) {
   );
 }
 
+const ORGANIZE_SORTS = {
+  dirtiest: "Dirtiest first",
+  recent: "Latest report",
+  reports: "Most reports",
+  nearest: "Nearest to me",
+  name: "Name A–Z",
+};
+const ORGANIZE_STATUS = { all: "All beaches", planned: "AI plan ready", needs: "Needs more photos" };
+
+const newest = (list) => list[0].createdAt?.toMillis?.() ?? 0;
+
 function OrganizePanel({ reports }) {
   const { beaches } = useAllBeaches();
   const { byBeach } = useReportsByBeach(beaches, reports);
+  const planIds = usePlanIds();
+  const [query, setQuery] = useState("");
+  const [region, setRegion] = useState("");
+  const [sort, setSort] = useState("dirtiest");
+  const [status, setStatus] = useState("all");
+  const [limit, setLimit] = useState(PAGE);
+  const { here, error } = useMyPosition(sort === "nearest");
 
-  // Dirtiest first, then the beaches with the most evidence.
-  const rows = useMemo(() => {
+  const all = useMemo(() => {
     if (!beaches) return null;
     const byId = new Map(beaches.map((b) => [b.id, b]));
     return [...byBeach.entries()]
       .map(([id, list]) => ({ beach: byId.get(id), list }))
       .filter((r) => r.beach)
-      .sort(
-        (a, b) =>
-          (SEVERITY_RANK[b.list[0].aiAnalysis?.category] ?? 0) - (SEVERITY_RANK[a.list[0].aiAnalysis?.category] ?? 0) ||
-          b.list.length - a.list.length,
-      )
-      .slice(0, MAX_BEACHES);
-  }, [beaches, byBeach]);
+      .map((r) => ({ ...r, evidence: planInputs(reports, r.beach).length }));
+  }, [beaches, byBeach, reports]);
+
+  const rows = useMemo(() => {
+    if (!all) return null;
+    const found = all.filter(
+      ({ beach, evidence }) =>
+        matches(query, beach.name, beach.country) &&
+        (!region || beach.country === region) &&
+        (status === "all" ||
+          (status === "planned" && planIds?.has(beach.id)) ||
+          (status === "needs" && !planIds?.has(beach.id) && evidence < MIN_REPORTS_FOR_PLAN)),
+    );
+    const bySeverity = (a, b) =>
+      (SEVERITY_RANK[b.list[0].aiAnalysis?.category] ?? 0) - (SEVERITY_RANK[a.list[0].aiAnalysis?.category] ?? 0) ||
+      b.list.length - a.list.length;
+    const order = {
+      dirtiest: bySeverity,
+      recent: (a, b) => newest(b.list) - newest(a.list),
+      reports: (a, b) => b.list.length - a.list.length || bySeverity(a, b),
+      nearest: here ? (a, b) => distanceKm(here, a.beach) - distanceKm(here, b.beach) : bySeverity,
+      name: (a, b) => a.beach.name.localeCompare(b.beach.name),
+    }[sort];
+    return [...found].sort(order);
+  }, [all, query, region, status, sort, here, planIds]);
+
+  const reset = (setter) => (value) => {
+    setter(value);
+    setLimit(PAGE);
+  };
 
   return (
     <>
@@ -185,8 +305,28 @@ function OrganizePanel({ reports }) {
           work order.
         </p>
       </div>
-      {rows === null && <p className="report-meta">Loading beaches…</p>}
-      {rows?.length === 0 && (
+      {all?.length > 0 && (
+        <ListToolbar
+          query={query}
+          onQuery={reset(setQuery)}
+          placeholder="Search beaches"
+          regions={regionsOf(all, (r) => r.beach.country)}
+          region={region}
+          onRegion={reset(setRegion)}
+          sorts={ORGANIZE_SORTS}
+          sort={sort}
+          onSort={setSort}
+          statuses={ORGANIZE_STATUS}
+          status={status}
+          onStatus={reset(setStatus)}
+          count={rows.length}
+          noun="beach"
+          plural="beaches"
+          note={sort === "nearest" ? (error ? "Location unavailable" : here ? "" : "Finding you…") : ""}
+        />
+      )}
+      {all === null && <p className="report-meta">Loading beaches…</p>}
+      {all?.length === 0 && (
         <div className="cl-empty">
           <h3>No beach has been reported yet</h3>
           <p>A cleanup starts from photos. One report puts the first beach here.</p>
@@ -195,15 +335,17 @@ function OrganizePanel({ reports }) {
           </Link>
         </div>
       )}
+      {all?.length > 0 && rows.length === 0 && <p className="cl-none">No beaches match. Try another search or filter.</p>}
       {rows?.length > 0 && (
         <ul className="cl-list">
-          {rows.map(({ beach, list }, i) => (
+          {rows.slice(0, limit).map(({ beach, list }, i) => (
             <Reveal as="li" key={beach.id} delay={Math.min(i, 6) * 30}>
               <BeachRow beach={beach} list={list} allReports={reports} />
             </Reveal>
           ))}
         </ul>
       )}
+      {rows && <ShowMore shown={limit} total={rows.length} onMore={() => setLimit((n) => n + PAGE)} />}
     </>
   );
 }

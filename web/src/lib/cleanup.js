@@ -77,19 +77,25 @@ export function useStoredPlan(beachId) {
   return state.beachId === beachId ? state.plan : undefined;
 }
 
-// How many beaches have an AI cleanup plan (a small collection, read live).
-export function usePlanCount() {
-  const [count, setCount] = useState(undefined);
+// Which beaches have an AI cleanup plan, as a set of beach ids (a small
+// collection, read live). Null if it can't be read.
+export function usePlanIds() {
+  const [ids, setIds] = useState(undefined);
   useEffect(
     () =>
       onSnapshot(
         collection(db, "cleanupPlans"),
-        (snap) => setCount(snap.size),
-        () => setCount(null),
+        (snap) => setIds(new Set(snap.docs.map((d) => d.id))),
+        () => setIds(null),
       ),
     [],
   );
-  return count;
+  return ids;
+}
+
+export function usePlanCount() {
+  const ids = usePlanIds();
+  return ids ? ids.size : ids;
 }
 
 // The most recently generated plan anywhere, used as a live example on the home page.
