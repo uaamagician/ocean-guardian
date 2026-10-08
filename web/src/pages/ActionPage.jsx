@@ -5,7 +5,8 @@ import { Level } from "../components/ReportDetail";
 import { Reveal } from "../components/Motion";
 import { Doodle, Footprints, SeaGlass } from "../components/Sketch";
 import { AiSaw, Snapshots } from "../components/Snapshots";
-import { ORGANIZER_TYPES, headcount, useSignups, useUpcomingEvents } from "../lib/events";
+import JoinCard from "../components/JoinCard";
+import { useUpcomingEvents } from "../lib/events";
 import usePublishedReports from "../lib/usePublishedReports";
 import { useAllBeaches, useReportsByBeach } from "../lib/beaches";
 import { MIN_REPORTS_FOR_PLAN, planInputs, usePlanRequest, useStoredPlan } from "../lib/cleanup";
@@ -35,42 +36,6 @@ function Steps({ items }) {
 }
 
 /* ---------- Join ---------- */
-
-function JoinCard({ event, reports }) {
-  const signups = useSignups(event.id);
-  const joined = headcount(signups);
-  const start = event.startsAt.toDate();
-  const left = Math.max(0, event.capacity - joined);
-  const evidence = planInputs(reports, event.location);
-  return (
-    <Link to={`/events/${event.id}`} className="join-tile" viewTransition>
-      <div className="join-tile-photo">
-        <Snapshots reports={evidence} max={1} />
-        <span className="date-sticker" aria-hidden="true">
-          <small>{start.toLocaleDateString("en-US", { month: "short" })}</small>
-          <strong>{start.getDate()}</strong>
-        </span>
-      </div>
-      <div className="join-tile-body">
-        <strong className="join-tile-title">{event.title}</strong>
-        <span className="report-meta">
-          {start.toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit" })}, {event.beachName}
-        </span>
-        <span className="report-meta">
-          {ORGANIZER_TYPES[event.organizer.type]}: {event.organizer.name}
-        </span>
-        <AiSaw reports={evidence} max={3} />
-        <div className="join-tile-spots">
-          <div className="wo-bar">
-            <span style={{ width: `${Math.min(100, (joined / event.capacity) * 100)}%` }} />
-          </div>
-          <span>{left === 0 ? "Full" : `${left} of ${event.capacity} spots left`}</span>
-        </div>
-        <span className="btn btn-primary btn-small join-tile-cta">{left === 0 ? "See details" : "Join this cleanup"}</span>
-      </div>
-    </Link>
-  );
-}
 
 function JoinPanel({ upcoming, reports, onOrganize }) {
   return (
@@ -255,10 +220,7 @@ export default function ActionPage() {
         <div className="band-inner">
           <Reveal className="band-head">
             <h2>Beach cleanups</h2>
-            <p>
-              Join one near you, or organize your own. Every cleanup starts from photos people took at the beach: the
-              AI looks at them and works out the crew, the time and the gear.
-            </p>
+            <p>Join one near you, or organize your own from a beach the AI has already assessed.</p>
           </Reveal>
           <div className="cl-tabs" role="tablist" aria-label="Join or organize">
             <button

@@ -137,12 +137,8 @@ export default function Hero() {
       </div>
 
       <div className="hero-bottom">
-        <div className="hero-left taped hero-anim hero-fade" style={{ animationDelay: "0.35s" }}>
-          <p>More than 11 million tonnes of plastic enter the ocean every year. Some of it washes back, onto beaches we think are clean.</p>
-        </div>
-
         <div className="hero-right taped hero-anim hero-fade" style={{ animationDelay: "0.45s" }}>
-          <p>Snap a photo as you walk by. AI identifies the debris and how much there is, and the beach map updates for everyone.</p>
+          <p>Photograph a beach. AI spots the debris, maps it and plans the cleanup.</p>
           <ActionFan className="hero-fan" />
         </div>
       </div>

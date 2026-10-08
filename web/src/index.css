@@ -502,6 +502,25 @@ img {
   background: rgba(29, 42, 50, 0.22);
 }
 
+/* Over the home hero: frosted, see-through paper. */
+.nav::before,
+.nav::after {
+  transition:
+    background-color 0.35s var(--ease-out),
+    opacity 0.35s var(--ease-out);
+}
+
+.nav[data-glass="true"]::before {
+  background-color: rgba(255, 250, 240, 0.4);
+  background-image: none;
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  backdrop-filter: blur(10px) saturate(1.2);
+}
+
+.nav[data-glass="true"]::after {
+  opacity: 0.35;
+}
+
 .nav-logo {
   display: flex;
   align-items: center;

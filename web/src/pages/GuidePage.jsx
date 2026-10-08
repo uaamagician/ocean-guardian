@@ -47,10 +47,7 @@ export default function GuidePage() {
         <div className="band-inner">
           <Reveal className="band-head">
             <h2>Field guide</h2>
-            <p>
-              What turns up on beaches, how to handle each kind safely, and what to bring. Every cleanup plan on Ocean
-              Guardian links back to these tools.
-            </p>
+            <p>What turns up on beaches, how to handle it safely, and what to bring.</p>
           </Reveal>
           <nav className="guide-jump" aria-label="On this page">
             <a href="#debris">What washes up</a>
@@ -64,10 +61,7 @@ export default function GuidePage() {
         <div className="band-inner">
           <Reveal className="band-head">
             <h2>What washes up</h2>
-            <p>
-              Grouped the way volunteers count them on cleanup data cards. The AI uses the same idea: it lists only
-              man-made debris and leaves natural material out.
-            </p>
+            <p>Grouped like cleanup data cards. Natural material stays on the beach.</p>
           </Reveal>
           <ul className="debris-grid">
             {DEBRIS_TYPES.map(({ id, icon: Icon, name, examples, why, handle, tools }, i) => (
@@ -100,7 +94,7 @@ export default function GuidePage() {
         <div className="band-inner">
           <Reveal className="band-head">
             <h2>Cleanup tools</h2>
-            <p>The AI picks from this list when it plans a cleanup, so every tool it suggests is explained here.</p>
+            <p>Every tool an AI cleanup plan can ask for.</p>
           </Reveal>
           <ul className="tool-grid">
             {TOOLS.map(({ id, icon: Icon, name, use, when }, i) => (

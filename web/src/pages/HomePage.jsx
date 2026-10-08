@@ -1,6 +1,6 @@
 import { useMemo, useRef } from "react";
 import { Link, useNavigate } from "react-router";
-import { Package, Sparkles, Users } from "lucide-react";
+import { ClipboardList, Sparkles, Users } from "lucide-react";
 import Hero from "../components/Hero";
 import ReportsMap from "../components/ReportsMap";
 import { Level } from "../components/ReportDetail";
@@ -10,8 +10,10 @@ import LiveOcean from "../components/LiveOcean";
 import Journey from "../components/Journey";
 import { Reveal } from "../components/Motion";
 import { Doodle, Footprints, Marked, SeaGlass } from "../components/Sketch";
-import { Audiences, FinalCta, Gap, GuideTeaser, Problem, Sdg14, TaiwanNumbers } from "../components/Story";
-import { useLatestPlan } from "../lib/cleanup";
+import { FinalCta, GuideTeaser, WhyItMatters } from "../components/Story";
+import JoinCard from "../components/JoinCard";
+import { useLatestPlan, usePlanCount } from "../lib/cleanup";
+import { useUpcomingEvents } from "../lib/events";
 import { HISTORY_PHOTOS } from "../lib/history";
 import { TOOL_BY_ID } from "../lib/guide";
 import { CATEGORIES, TONE_COLORS, formatTime } from "../lib/labels";
@@ -20,19 +22,78 @@ import { useBeaches, useReportsByBeach } from "../lib/beaches";
 import useSectionMotion from "../lib/useSectionMotion";
 import "./Home.css";
 
+// Live numbers and the next cleanups, straight under the hero.
+function RightNow({ reports }) {
+  const { beaches } = useBeaches();
+  const { byBeach } = useReportsByBeach(beaches, reports);
+  const upcoming = useUpcomingEvents();
+  const plans = usePlanCount();
+  const stats = [
+    { value: reports?.length, label: "beach reports", to: "/map" },
+    { value: beaches && reports ? byBeach.size : undefined, label: "beaches reported", to: "/map" },
+    { value: plans, label: "AI cleanup plans", to: "/action?tab=organize" },
+    { value: upcoming?.length, label: "cleanups coming up", to: "/action" },
+  ];
+  return (
+    <section className="band right-now">
+      <div className="band-inner">
+        <div className="right-now-head">
+          <h2>Right now</h2>
+          <span className="report-meta">Live from the beach map and the cleanup board</span>
+        </div>
+        <ul className="now-stats">
+          {stats.map((s, i) => (
+            <Reveal as="li" key={s.label} delay={i * 40}>
+              <Link to={s.to} className="now-stat" viewTransition>
+                <strong>{s.value ?? "–"}</strong>
+                <span>{s.label}</span>
+              </Link>
+            </Reveal>
+          ))}
+        </ul>
+
+        <div className="now-next">
+          <h3>Next cleanups</h3>
+          <Link to="/action" className="btn-text" viewTransition>
+            All cleanups
+          </Link>
+        </div>
+        {upcoming === undefined && <p className="report-meta">Loading cleanups…</p>}
+        {upcoming?.length === 0 && (
+          <div className="cl-empty now-empty">
+            <p>No cleanups scheduled yet. Beaches with an AI plan are ready for one.</p>
+            <Link to="/action?tab=organize" className="btn btn-primary" viewTransition>
+              Organize a cleanup
+            </Link>
+          </div>
+        )}
+        {upcoming?.length > 0 && (
+          <ul className="join-grid">
+            {upcoming.slice(0, 3).map((e) => (
+              <li key={e.id}>
+                <JoinCard event={e} reports={reports} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function WorldMap({ reports }) {
   const navigate = useNavigate();
   const { beaches } = useBeaches();
   const { unmatched, tones } = useReportsByBeach(beaches, reports);
   return (
-    <section className="band">
+    <section className="band band-paper">
       <div className="band-inner">
         <div className="band-split">
           <Reveal className="band-head">
             <h2>
-              Beaches around the world, <Marked kind="underline" delay={300}>right now</Marked>
+              Every beach, <Marked kind="underline">one map</Marked>
             </h2>
-            <p>Over 15,000 beaches, colored by what people have reported. Click one for live water conditions, reports, and reviews on Google Maps.</p>
+            <p>15,000+ beaches, colored by their latest report. Click one for water conditions and reports.</p>
           </Reveal>
           <Link to="/map" className="btn" viewTransition>
             Open the full map
@@ -73,11 +134,11 @@ function DebrisStats({ reports }) {
   const maxItem = stats.topItems[0]?.[1] ?? 1;
 
   return (
-    <section className="band band-deep wave-edge">
+    <section className="band band-dark">
       <div className="band-inner">
         <Reveal className="band-head">
           <h2>Marine debris at a glance</h2>
-          <p>Counted from every public report. The more people report, the closer this gets to the real coastline.</p>
+          <p>Counted from every public report.</p>
         </Reveal>
         <div className="stats">
           <div className="stat-big">
@@ -160,7 +221,7 @@ function HowItWorks({ reports }) {
             <h2>
               Report a beach in <Marked kind="circle" delay={300}>three steps</Marked>
             </h2>
-            <p>No sign-up and no forms. Shoot it however you like, wide or close up, with up to four photos.</p>
+            <p>No sign-up, no forms. Up to four photos, wide or close up.</p>
           </Reveal>
           <Link to="/report" className="btn btn-primary" viewTransition>
             Start reporting
@@ -170,17 +231,17 @@ function HowItWorks({ reports }) {
         <ol className="steps">
           <li>
             <h3>Snap and upload</h3>
-            <p>Photograph the beach in front of you. Your location is added automatically.</p>
+            <p>Your location is added automatically.</p>
           </li>
           <li>
             <Footprints className="step-arrow" />
             <h3>AI analysis</h3>
-            <p>Gemini identifies the debris and how bad it is, and asks for another photo when something is unclear.</p>
+            <p>Gemini names the debris and rates the beach, and asks for a closer photo when unsure.</p>
           </li>
           <li>
             <Footprints className="step-arrow" />
             <h3>Map update</h3>
-            <p>Reports the AI is confident about appear on the world beach map right away.</p>
+            <p>Confident reports go on the beach map right away.</p>
           </li>
         </ol>
         {latest.length > 0 && (
@@ -229,15 +290,12 @@ function LatestPlan({ record }) {
 function CleanupPreview() {
   const latest = useLatestPlan();
   return (
-    <section className="band band-dark wave-edge">
+    <section className="band band-dark">
       <div className="band-inner">
         <div className="band-split">
           <Reveal className="band-head">
             <h2>Plan a cleanup from the reports</h2>
-            <p>
-              Once a beach has two or more reports, AI reads them, looks at the latest photos and estimates the crew,
-              the time and the gear a cleanup needs. Organizers can skip the site visit.
-            </p>
+            <p>With two or more reports, AI estimates the crew, time and gear, so organizers can skip the site visit.</p>
             <Link to="/action?tab=organize" className="btn btn-light" viewTransition>
               See beaches that need a cleanup
             </Link>
@@ -247,18 +305,18 @@ function CleanupPreview() {
         <ul className="features">
           <li>
             <Sparkles aria-hidden="true" />
-            <h3>AI cleanup planning</h3>
-            <p>Crew size, hours, bags and gear, worked out from what people actually reported.</p>
+            <h3>AI cleanup plan</h3>
+            <p>Crew, hours, bags and gear from the reports.</p>
           </li>
           <li>
             <Users aria-hidden="true" />
-            <h3>Team up and sign up</h3>
-            <p>Companies, NGOs and school clubs host a cleanup; anyone signs up and says what gear they'll bring.</p>
+            <h3>Sign-ups</h3>
+            <p>Volunteers sign in with Google and tick the gear they'll bring.</p>
           </li>
           <li>
-            <Package aria-hidden="true" />
-            <h3>Cleanup impact</h3>
-            <p>Coming next: a photo afterward, compared with before, becomes data for an ESG report.</p>
+            <ClipboardList aria-hidden="true" />
+            <h3>Work order</h3>
+            <p>Teams, a gear checklist and hazards, printable for the day.</p>
           </li>
         </ul>
       </div>
@@ -277,10 +335,7 @@ function HistoryTeaser() {
             <h2>
               Cleanups that <Marked kind="underline">came before</Marked>
             </h2>
-            <p>
-              From a Texas beach in 1986 to Ishigaki in 2025: cleanups volunteers photographed and shared, and soon
-              the ones organized here.
-            </p>
+            <p>Cleanups volunteers photographed and shared, from 1986 to today.</p>
           </Reveal>
           <Link to="/history" className="btn btn-light" viewTransition>
             See the cleanup history
@@ -314,19 +369,16 @@ export default function HomePage() {
   return (
     <div ref={rootRef}>
       <Hero />
-      <Problem />
-      <Journey />
-      <Gap />
-      <Sdg14 />
-      <TaiwanNumbers />
-      <LiveOcean />
+      <RightNow reports={reports} />
       <WorldMap reports={reports} />
       <DebrisStats reports={reports} />
+      <LiveOcean />
       <HowItWorks reports={reports} />
       <CleanupPreview />
+      <Journey />
+      <WhyItMatters />
       <GuideTeaser />
       <HistoryTeaser />
-      <Audiences />
       <FinalCta />
     </div>
   );

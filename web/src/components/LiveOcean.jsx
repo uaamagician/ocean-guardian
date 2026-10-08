@@ -27,12 +27,12 @@ function useFeaturedConditions() {
 export default function LiveOcean({ title = "The ocean right now" }) {
   const { temps, corals } = useFeaturedConditions();
   return (
-    <section className="band band-dark wave-edge">
+    <section className="band band-dark">
       <div className="band-inner">
         <Doodle name="sun" className="band-doodle live-sun" />
         <Reveal className="band-head">
           <h2>{title}</h2>
-          <p>Coral bleaches when the water stays too warm for weeks. Here are today's sea temperatures and bleaching alerts around Taiwan.</p>
+          <p>Sea temperature and coral bleaching alerts around Taiwan, updated daily.</p>
         </Reveal>
         <div className="spots">
           {FEATURED_SPOTS.map((spot, i) => {

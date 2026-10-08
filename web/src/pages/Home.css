@@ -122,28 +122,19 @@
   height: 36px;
 }
 
-/* The two side notes are paper slips taped onto the photo. */
-.hero-left,
+/* The note is a slip of frosted paper taped onto the illustration. */
 .hero-right {
   position: absolute;
   z-index: 50;
   padding: var(--space-5) var(--space-5) var(--space-4);
-  background: var(--surface);
+  background: rgba(255, 250, 240, 0.62);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   color: var(--ink);
-  box-shadow: 3px 6px 18px rgba(22, 36, 45, 0.35);
+  box-shadow: 3px 6px 18px rgba(22, 36, 45, 0.18);
   border-radius: 3px 4px 3px 5px;
 }
 
-.hero-left {
-  display: none;
-  bottom: 64px;
-  left: 40px;
-  max-width: 270px;
-  rotate: -2.5deg;
-  --tape-tilt: 4deg;
-}
-
-.hero-left p,
 .hero-right p {
   font-size: var(--text-sm);
   line-height: 1.6;
@@ -166,10 +157,6 @@
     font-size: 4.2rem;
   }
 
-  .hero-left {
-    display: block;
-  }
-
   .hero-right {
     bottom: 80px;
     left: auto;
@@ -183,10 +170,6 @@
   .hero-line-1,
   .hero-line-2 {
     font-size: 5.6rem;
-  }
-
-  .hero-left {
-    left: 56px;
   }
 
   .hero-right {
@@ -289,56 +272,6 @@
   .band-doodle {
     display: block;
   }
-}
-
-.problem-bottle {
-  top: -20px;
-  right: 34%;
-  width: 72px;
-  height: 72px;
-  color: var(--marker);
-}
-
-.problem-bag {
-  bottom: -30px;
-  left: 44%;
-  width: 60px;
-  height: 60px;
-  color: rgba(255, 255, 255, 0.55);
-  animation-delay: -2s;
-}
-
-.sdg-fish {
-  top: 150px;
-  left: 30%;
-  width: 90px;
-  height: 90px;
-  color: var(--marker);
-}
-
-.sdg-wave {
-  top: -10px;
-  left: 4%;
-  width: 70px;
-  height: 70px;
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.tw-shell {
-  top: -24px;
-  right: 4%;
-  width: 84px;
-  height: 84px;
-  color: var(--buoy);
-}
-
-.tw-star {
-  top: 70px;
-  right: 18%;
-  width: 54px;
-  height: 54px;
-  color: var(--tide);
-  animation-delay: -1.5s;
 }
 
 .live-sun {
@@ -718,18 +651,6 @@
   right: 2%;
 }
 
-.tw-glass {
-  bottom: -20px;
-  right: 30%;
-  rotate: 20deg;
-}
-
-.gap-glass {
-  top: 40px;
-  right: 8%;
-  rotate: -15deg;
-}
-
 @media (min-width: 800px) {
   .step-arrow {
     display: block;
@@ -916,67 +837,6 @@
 .band-paper {
   background-color: var(--sand);
   background-image: var(--paper-grain);
-}
-
-/* ---------- Problem ---------- */
-
-.problem .band-inner {
-  gap: var(--space-7);
-}
-
-@media (min-width: 1000px) {
-  .problem .band-inner {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-  }
-}
-
-.mega-number {
-  display: block;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-variation-settings: "INFM" 100;
-  font-size: clamp(3.2rem, 10vw, 9rem);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
-}
-
-.problem-lead {
-  margin-top: var(--space-3);
-  font-size: var(--text-lg);
-  color: rgba(255, 255, 255, 0.88);
-}
-
-.problem-note {
-  margin-top: var(--space-4);
-  color: var(--marker);
-}
-
-.problem-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  max-width: 440px;
-  color: rgba(255, 255, 255, 0.78);
-}
-
-.problem-forecast {
-  display: flex;
-  flex-direction: column;
-  padding-top: var(--space-4);
-  background: var(--rule-light) top left / 100% 6px no-repeat;
-  color: #ffffff;
-}
-
-.forecast-number {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-variation-settings: "INFM" 100;
-  font-size: 2.5rem;
-  line-height: 1.1;
-  color: var(--buoy);
 }
 
 /* ---------- Journey: snapshots pinned to a kraft-paper board ---------- */
@@ -1171,12 +1031,106 @@
   transform-origin: left;
 }
 
-/* ---------- Gap: sticky notes ---------- */
+/* ---------- Right now: live numbers and the next cleanups ---------- */
 
-.gap-list,
-.audience-grid,
-.fact-row,
-.number-grid {
+.right-now {
+  padding-top: var(--space-7);
+}
+
+.right-now .band-inner {
+  gap: var(--space-5);
+}
+
+.right-now-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+}
+
+.right-now-head h2 {
+  font-size: var(--text-2xl);
+  font-variation-settings: "INFM" 100;
+}
+
+.now-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 800px) {
+  .now-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.now-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  height: 100%;
+  padding: var(--space-4) var(--space-5);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    transform 0.25s var(--ease-spring),
+    box-shadow 0.2s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .now-stat:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+}
+
+.now-stat strong {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 800;
+  font-variation-settings: "INFM" 100;
+  line-height: 1.05;
+  color: var(--tide);
+  font-variant-numeric: tabular-nums;
+}
+
+.now-stats li:nth-child(even) .now-stat strong {
+  color: var(--buoy);
+}
+
+.now-stat span {
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.now-next {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.now-next h3 {
+  font-family: var(--font-hand);
+  font-size: 1.9rem;
+}
+
+.now-empty {
+  padding: var(--space-6) var(--space-5);
+}
+
+/* ---------- Why it matters: the numbers, each with its source ---------- */
+
+.why-grid {
   display: grid;
   gap: var(--space-5);
   margin: 0;
@@ -1185,253 +1139,54 @@
 }
 
 @media (min-width: 800px) {
-  .gap-list,
-  .fact-row {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .gap-list {
-    gap: var(--space-6);
-  }
-
-  .audience-grid,
-  .number-grid {
+  .why-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 1100px) {
-  .audience-grid,
-  .number-grid {
+  .why-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-.gap-list li {
-  --note: var(--lemon);
-  --tilt: -1.6deg;
+.why-grid li {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-6) var(--space-5) var(--space-5);
-  background: var(--note);
-  border-radius: 2px 2px 22px 2px / 2px 2px 8px 2px;
-  box-shadow: 2px 8px 16px rgba(60, 40, 10, 0.14);
-  rotate: var(--tilt);
-  transition: rotate 0.35s var(--ease-spring), translate 0.35s var(--ease-spring);
-}
-
-.gap-list li:nth-child(2) {
-  --note: var(--peach);
-  --tilt: 1.2deg;
-}
-
-.gap-list li:nth-child(3) {
-  --note: var(--mint);
-  --tilt: -0.6deg;
-}
-
-@media (hover: hover) {
-  .gap-list li:hover {
-    rotate: 0deg;
-    translate: 0 -6px;
-  }
-}
-
-.gap-list svg,
-.audience-grid svg {
-  width: 34px;
-  height: 34px;
-  color: var(--ink);
-  stroke-width: 1.6;
-  margin-bottom: var(--space-2);
-  filter: url(#rough-still);
-}
-
-.gap-list p,
-.audience-grid p {
-  color: var(--ink-soft);
-}
-
-.gap-list p {
-  color: var(--ink);
-  opacity: 0.8;
-}
-
-.gap-answer {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-4);
-  padding: var(--space-6);
-  border: 2px solid var(--ink);
-  border-radius: var(--radius-md);
-  background: var(--surface);
-  box-shadow: 6px 6px 0 var(--ink);
-}
-
-.gap-answer p {
-  font-size: var(--text-lg);
-  max-width: 44em;
-}
-
-@media (min-width: 1000px) {
-  .gap-answer {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-}
-
-/* ---------- SDG 14 ---------- */
-
-.sdg-top {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-}
-
-@media (min-width: 1000px) {
-  .sdg-top {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-  }
-}
-
-.fact-row li {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
   padding-top: var(--space-4);
   background: var(--rule-light) top left / 100% 6px no-repeat;
 }
 
-.fact-row strong {
+.why-number {
   font-family: var(--font-display);
+  font-size: clamp(2.2rem, 3.4vw, 3rem);
   font-weight: 800;
   font-variation-settings: "INFM" 100;
-  font-size: 2.6rem;
-  line-height: 1.1;
+  line-height: 1.05;
   color: var(--marker);
+  font-variant-numeric: tabular-nums;
 }
 
-.fact-row p {
-  color: rgba(255, 255, 255, 0.82);
+.why-label {
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.fact-row small {
+.why-grid small {
   color: rgba(255, 255, 255, 0.5);
   font-size: var(--text-xs);
 }
 
-/* The SDG target, copied out by hand onto a slip of paper. */
-.target {
-  position: relative;
-  margin: var(--space-4) auto 0;
-  max-width: 860px;
-  padding: var(--space-7) var(--space-6) var(--space-5);
-  background: var(--surface)
-    repeating-linear-gradient(transparent 0 33px, rgba(42, 109, 140, 0.18) 33px 34px);
-  background-position: 0 22px;
-  color: var(--ink);
-  box-shadow: 4px 10px 26px rgba(0, 0, 0, 0.35);
-  rotate: -0.8deg;
+.why-note {
+  color: var(--marker);
 }
 
-.target::before {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  top: -12px;
-  left: 50%;
-  width: 110px;
-  height: 28px;
-  translate: -50% 0;
-  rotate: 3deg;
-  background: rgba(255, 240, 180, 0.75);
-  clip-path: polygon(2% 0, 98% 4%, 100% 30%, 97% 55%, 100% 100%, 4% 96%, 0 70%, 3% 40%);
-}
-
-.target p {
-  font-family: var(--font-hand);
-  font-weight: 600;
-  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
-  line-height: 34px;
-}
-
-.target footer {
-  margin-top: var(--space-4);
-  font-size: var(--text-sm);
-  color: var(--ink-soft);
-}
-
-/* ---------- Taiwan numbers ---------- */
-
-.number-grid li {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-5) 0 0;
-  background: var(--rule-ink) top left / 100% 6px no-repeat;
-}
-
-.number-grid-value {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-variation-settings: "INFM" 100;
-  font-size: clamp(2.3rem, 3.6vw, 3.2rem);
-  line-height: 1.05;
-  font-variant-numeric: tabular-nums;
-}
-
-.number-grid li:nth-child(1) .number-grid-value {
-  color: var(--tide);
-}
-
-.number-grid li:nth-child(2) .number-grid-value {
-  color: var(--buoy);
-}
-
-.number-grid li:nth-child(4) .number-grid-value {
-  color: var(--tide);
-}
-
-.number-grid span:not(.number-grid-value):not(.visually-hidden) {
-  color: var(--ink-soft);
-}
-
-/* ---------- Audiences: index cards ---------- */
-
-.audience-grid li {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-5) var(--space-5) var(--space-5) var(--space-6);
-  background:
-    linear-gradient(90deg, transparent 22px, rgba(232, 90, 48, 0.45) 22px 23.5px, transparent 23.5px),
-    repeating-linear-gradient(transparent 0 27px, rgba(42, 109, 140, 0.16) 27px 28px),
-    var(--surface);
-  background-position: 0 0, 0 46px, 0 0;
-  box-shadow: 1px 4px 12px rgba(60, 40, 10, 0.14);
-  rotate: 0.6deg;
-  transition: rotate 0.35s var(--ease-spring), translate 0.35s var(--ease-spring);
-}
-
-.audience-grid li:nth-child(even) {
-  rotate: -0.9deg;
-}
-
-@media (hover: hover) {
-  .audience-grid li:hover {
-    rotate: 0deg;
-    translate: 0 -5px;
-  }
-}
-
-.audience-grid svg {
-  color: var(--tide);
+.why-bottle {
+  top: -10px;
+  right: 4%;
+  width: 72px;
+  height: 72px;
+  color: var(--marker);
 }
 
 /* ---------- Final call to action ---------- */

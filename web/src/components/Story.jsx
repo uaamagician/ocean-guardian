@@ -1,237 +1,58 @@
 import { Link } from "react-router";
-import { Building2, CalendarX, FileText, Footprints, HandHeart, Megaphone, Waves } from "lucide-react";
 import { DEBRIS_TYPES, TOOL_BY_ID } from "../lib/guide";
 import { CountUp, Reveal } from "./Motion";
-import { Doodle, Marked, Note, SeaGlass } from "./Sketch";
+import { Doodle, Marked, Note } from "./Sketch";
 import ActionFan from "./ActionFan";
 
-export function Problem() {
-  return (
-    <section className="band band-dark problem wave-edge">
-      <div className="band-inner">
-        <Reveal className="problem-figure">
-          <CountUp value={11000000} className="mega-number" />
-          <p className="problem-lead">tonnes of plastic enter the ocean every year.</p>
-          <Note arrow="before" className="problem-note">
-            that's about 21 tonnes every minute
-          </Note>
-        </Reveal>
-        <Doodle name="bottle" className="band-doodle problem-bottle bob" />
-        <Doodle name="bag" className="band-doodle problem-bag bob" delay={300} />
-        <div className="problem-body">
-          <Reveal as="p" delay={40}>
-            Ocean currents carry plastic fragments, abandoned fishing nets and industrial packaging thousands of
-            kilometers, then leave them on coastlines: crowded tourist beaches, holiday resorts, even atolls where
-            nobody lives.
-          </Reveal>
-          <Reveal as="p" delay={80}>
-            Millions of people who love the sea want to change this. In practice it is hard to know where help is
-            needed, what to bring, or whether any of it makes a difference.
-          </Reveal>
-          <Reveal className="problem-forecast" delay={120}>
-            <CountUp value={29} suffix=" million" className="forecast-number" />
-            <span>tonnes a year by 2040 if nothing changes.</span>
-          </Reveal>
-          <p className="data-note">Source: The Pew Charitable Trusts and SYSTEMIQ, Breaking the Plastic Wave (2020).</p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-const GAPS = [
+// The numbers behind the project, each with its source.
+const FACTS = [
   {
-    icon: FileText,
-    title: "Data that goes to sleep",
-    body: "Cleanup data cards are filled in by hand after an event, then rarely looked at again.",
+    value: 11000000,
+    label: "tonnes of plastic enter the ocean every year",
+    source: "Pew Charitable Trusts and SYSTEMIQ, 2020",
   },
   {
-    icon: CalendarX,
-    title: "Counting stops between events",
-    body: "Campaigns mobilize thousands of volunteers for a day. Between events, nobody is keeping watch.",
+    value: 29,
+    suffix: " million",
+    label: "tonnes a year by 2040 if nothing changes",
+    source: "Pew Charitable Trusts and SYSTEMIQ, 2020",
   },
   {
-    icon: Waves,
-    title: "Paperwork instead of maps",
-    body: "Official platforms track permits and totals, but can't show what a beach looks like today.",
+    value: 223273,
+    label: "coastal cleanups in Taiwan since 2020",
+    source: "Taiwan Ministry of Environment",
+  },
+  {
+    value: 378347,
+    label: "tonnes of coastal waste removed in Taiwan",
+    source: "Taiwan Ministry of Environment",
   },
 ];
 
-export function Gap() {
+export function WhyItMatters() {
   return (
-    <section className="band">
+    <section className="band band-dark why">
       <div className="band-inner">
+        <Doodle name="bottle" className="band-doodle why-bottle bob" />
         <Reveal className="band-head">
-          <h2>
-            <span className="serif-italic">People want to help.</span> The tools{" "}
-            <Marked kind="circle" delay={350}>
-              hold them back.
-            </Marked>
-          </h2>
-        </Reveal>
-        <SeaGlass className="band-doodle gap-glass" />
-        <ul className="gap-list">
-          {GAPS.map(({ icon: Icon, title, body }, i) => (
-            <Reveal as="li" key={title} delay={i * 25}>
-              <Icon aria-hidden="true" />
-              <h3>{title}</h3>
-              <p>{body}</p>
-            </Reveal>
-          ))}
-        </ul>
-        <Reveal className="gap-answer">
+          <h2>Why it matters</h2>
           <p>
-            Ocean Guardian keeps the record going between cleanups. Anyone can add a photo in seconds, AI turns it into
-            data, and the map shows where help is needed now.
+            Cleanups happen on cleanup days. Debris arrives with every tide. SDG target 14.1 asks for a significant cut
+            in marine debris; it starts with knowing which beach needs help today.
           </p>
-          <Link to="/map" className="btn">
-            See the live map
-          </Link>
         </Reveal>
-      </div>
-    </section>
-  );
-}
-
-const OCEAN_FACTS = [
-  { value: 50, prefix: "About ", suffix: "%", text: "of the oxygen on Earth is produced in the ocean.", source: "NOAA" },
-  {
-    value: 30,
-    prefix: "About ",
-    suffix: "%",
-    text: "of the carbon dioxide people release is absorbed by the ocean.",
-    source: "United Nations",
-  },
-  {
-    value: 3,
-    suffix: " billion+",
-    text: "people depend on marine and coastal life for their livelihoods.",
-    source: "United Nations",
-  },
-];
-
-export function Sdg14() {
-  return (
-    <section className="band band-deep sdg wave-edge">
-      <div className="band-inner">
-        <Doodle name="fish" className="band-doodle sdg-fish bob" />
-        <Doodle name="wave" className="band-doodle sdg-wave" delay={200} />
-        <div className="sdg-top">
-          <Reveal className="sdg-figure">
-            <CountUp value={70} suffix="%" className="mega-number" />
-            <p className="problem-lead">of Earth's surface is ocean.</p>
-          </Reveal>
-          <Reveal className="band-head" delay={50}>
-            <h2>Built for SDG 14, Life Below Water</h2>
-            <p>
-              The fourteenth UN Sustainable Development Goal is to conserve and sustainably use the oceans, seas and
-              marine resources. The ocean steadies our climate, makes much of the oxygen we breathe, and feeds and
-              employs billions of people.
-            </p>
-          </Reveal>
-        </div>
-
-        <ul className="fact-row">
-          {OCEAN_FACTS.map((f, i) => (
-            <Reveal as="li" key={f.text} delay={i * 25}>
-              <strong>
-                {f.prefix}
-                <CountUp value={f.value} suffix={f.suffix} />
-              </strong>
-              <p>{f.text}</p>
+        <ul className="why-grid">
+          {FACTS.map((f, i) => (
+            <Reveal as="li" key={f.label} delay={i * 40}>
+              <CountUp value={f.value} suffix={f.suffix} className="why-number" />
+              <span className="why-label">{f.label}</span>
               <small>{f.source}</small>
             </Reveal>
           ))}
         </ul>
-
-        <Reveal as="blockquote" className="target">
-          <p>
-            “By 2025, prevent and significantly reduce marine pollution of all kinds, in particular from land-based
-            activities, including marine debris and nutrient pollution.”
-          </p>
-          <footer>
-            SDG Target 14.1. Ocean Guardian focuses on the land-based debris that ends up on beaches.
-          </footer>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-const TAIWAN_STATS = [
-  { value: 223273, label: "coastal cleanups" },
-  { value: 378347, label: "tonnes of coastal waste removed" },
-  { value: 1920954, label: "volunteer turnouts" },
-  { value: 74.1, decimals: 1, suffix: "%", label: "of the coastline adopted by groups" },
-];
-
-export function TaiwanNumbers() {
-  return (
-    <section className="band">
-      <div className="band-inner">
-        <Reveal className="band-head">
-          <h2>
-            Taiwan's coastal cleanups, <Marked delay={300}>in numbers</Marked>
-          </h2>
-          <p>
-            Since 2020, according to Taiwan's Ministry of Environment. That's a huge effort, and it all happens on
-            cleanup days. Ocean Guardian adds what happens in between.
-          </p>
-        </Reveal>
-        <Doodle name="shell" className="band-doodle tw-shell bob" />
-        <SeaGlass className="band-doodle tw-glass" />
-        <Doodle name="starfish" className="band-doodle tw-star bob" delay={250} />
-        <ul className="number-grid">
-          {TAIWAN_STATS.map((s, i) => (
-            <Reveal as="li" key={s.label} delay={i * 40}>
-              <CountUp value={s.value} decimals={s.decimals} suffix={s.suffix} className="number-grid-value" />
-              <span>{s.label}</span>
-            </Reveal>
-          ))}
-        </ul>
-        <p className="report-meta">
-          Source:{" "}
-          <a href="https://ecolife2.moenv.gov.tw/BeachCleanup/">Ministry of Environment, Coastal Clean-up Platform</a>,
-          retrieved October 2026.
-        </p>
-      </div>
-    </section>
-  );
-}
-
-const AUDIENCES = [
-  { icon: Footprints, title: "Beachgoers", body: "Check a beach before you go, and report what you find when you get there." },
-  { icon: HandHeart, title: "Volunteers", body: "See which beaches need help most, and join a cleanup near you." },
-  {
-    icon: Megaphone,
-    title: "Organizers",
-    body: "NGOs, schools and clubs can skip the site visit and plan crews and gear from live reports.",
-  },
-  {
-    icon: Building2,
-    title: "Companies",
-    body: "Turn volunteer days into measurable results for ESG and SDG 14.1 reporting.",
-  },
-];
-
-export function Audiences() {
-  return (
-    <section className="band">
-      <div className="band-inner">
-        <Reveal className="band-head">
-          <h2>
-            One map, <Marked kind="underline" delay={300}>four ways</Marked> to help
-          </h2>
-        </Reveal>
-        <ul className="audience-grid">
-          {AUDIENCES.map(({ icon: Icon, title, body }, i) => (
-            <Reveal as="li" key={title} delay={i * 40}>
-              <Icon aria-hidden="true" />
-              <h3>{title}</h3>
-              <p>{body}</p>
-            </Reveal>
-          ))}
-        </ul>
+        <Note arrow="before" className="why-note">
+          that's about 21 tonnes every minute
+        </Note>
       </div>
     </section>
   );
@@ -249,10 +70,7 @@ export function GuideTeaser() {
             <h2>
               Know what you're <Marked delay={300}>picking up</Marked>
             </h2>
-            <p>
-              Nets need cutters, styrofoam needs a sieve, needles need a professional, and driftwood should stay put.
-              The field guide covers each kind of debris and every tool a cleanup plan may ask for.
-            </p>
+            <p>How to handle each kind of debris safely, and every tool a cleanup plan may ask for.</p>
           </Reveal>
           <Link to="/guide" className="btn" viewTransition>
             Open the field guide

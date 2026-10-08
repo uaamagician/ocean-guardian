@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router";
 import { Camera, Menu, X } from "lucide-react";
 import UserMenu from "./UserMenu";
@@ -19,6 +19,20 @@ function Logo() {
       <path d="M5 18c2.2 0 2.2-2 4.4-2s2.2 2 4.4 2 2.2-2 4.4-2 2.2 2 4.4 2 2.2-2 4.4-2" strokeLinecap="round" />
     </svg>
   );
+}
+
+// On the home page the paper strip turns see-through over the hero
+// illustration, and goes back to solid paper once the hero scrolls away.
+function useOverHero(isHome) {
+  const [overHero, setOverHero] = useState(isHome);
+  useEffect(() => {
+    if (!isHome) return undefined;
+    const onScroll = () => setOverHero(window.scrollY < window.innerHeight * 0.6);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isHome]);
+  return isHome && overHero;
 }
 
 // Slides the marker circle to whichever link is active.
@@ -44,6 +58,7 @@ export default function Nav() {
   const [open, setOpen] = useState(false);
   const [openedAt, setOpenedAt] = useState(pathname);
   const pillRef = useRef(null);
+  const glass = useOverHero(pathname === "/");
   usePillIndicator(pillRef, pathname);
   const { user } = useUser();
 
@@ -54,7 +69,7 @@ export default function Nav() {
 
   return (
     <>
-      <nav className="nav" aria-label="Main">
+      <nav className="nav" data-glass={glass && !open} aria-label="Main">
         <Link to="/" className="nav-logo" aria-label="Ocean Guardian home" viewTransition>
           <Logo />
           <span className="nav-wordmark">Ocean Guardian</span>
