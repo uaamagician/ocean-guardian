@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
+import { Camera, Images } from "lucide-react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import { MAX_PHOTOS, fromReportDoc, getPosition, resizePhoto, submitReport } from "../lib/reports";
@@ -22,8 +23,11 @@ function useGeoPosition() {
   return [state, relocate];
 }
 
+// Two ways in: the camera straight away (phones open it directly), or
+// photos already on the device.
 function PhotoPicker({ photos, onAdd, onRemove, busy, error }) {
-  const inputRef = useRef(null);
+  const cameraRef = useRef(null);
+  const libraryRef = useRef(null);
   const remaining = MAX_PHOTOS - photos.length;
 
   const handleChange = (e) => {
@@ -35,7 +39,16 @@ function PhotoPicker({ photos, onAdd, onRemove, busy, error }) {
   return (
     <div className="section">
       <input
-        ref={inputRef}
+        ref={cameraRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="visually-hidden"
+        onChange={handleChange}
+        tabIndex={-1}
+      />
+      <input
+        ref={libraryRef}
         type="file"
         accept="image/*"
         multiple
@@ -44,10 +57,18 @@ function PhotoPicker({ photos, onAdd, onRemove, busy, error }) {
         tabIndex={-1}
       />
       {photos.length === 0 ? (
-        <button type="button" className="picker-empty" onClick={() => inputRef.current.click()} disabled={busy}>
-          <strong>{busy ? "Preparing photos…" : "Take or choose photos"}</strong>
-          <span>Up to {MAX_PHOTOS} photos. You can pick several at once.</span>
-        </button>
+        <div className="picker-choices">
+          <button type="button" className="picker-choice is-camera" onClick={() => cameraRef.current.click()} disabled={busy}>
+            <Camera aria-hidden="true" />
+            <strong>{busy ? "Preparing photo…" : "Take a photo"}</strong>
+            <span>Opens your camera</span>
+          </button>
+          <button type="button" className="picker-choice" onClick={() => libraryRef.current.click()} disabled={busy}>
+            <Images aria-hidden="true" />
+            <strong>Choose photos</strong>
+            <span>Up to {MAX_PHOTOS} from your library</span>
+          </button>
+        </div>
       ) : (
         <div className="picker-grid">
           {photos.map((photo, i) => (
@@ -59,9 +80,14 @@ function PhotoPicker({ photos, onAdd, onRemove, busy, error }) {
             </figure>
           ))}
           {remaining > 0 && (
-            <button type="button" className="picker-add" onClick={() => inputRef.current.click()} disabled={busy}>
-              {busy ? "Preparing…" : "Add another"}
-            </button>
+            <div className="picker-add">
+              <button type="button" onClick={() => cameraRef.current.click()} disabled={busy}>
+                <Camera aria-hidden="true" /> {busy ? "Preparing…" : "Take another"}
+              </button>
+              <button type="button" onClick={() => libraryRef.current.click()} disabled={busy}>
+                <Images aria-hidden="true" /> Add from library
+              </button>
+            </div>
           )}
         </div>
       )}

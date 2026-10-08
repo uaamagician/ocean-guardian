@@ -183,14 +183,17 @@
   padding: var(--space-8) var(--space-4);
 }
 
+/* "Sea" sections: pale shallow water between the stretches of sand. */
 .band-dark {
-  background: var(--night);
-  color: #ffffff;
+  background-color: var(--sea);
+  background-image: var(--paper-grain);
+  color: var(--ink);
 }
 
 .band-deep {
-  background: var(--deep);
-  color: #ffffff;
+  background-color: var(--sea-deep);
+  background-image: var(--paper-grain);
+  color: var(--ink);
 }
 
 .band-inner {
@@ -224,18 +227,11 @@
 
 .band-dark .band-head p,
 .band-deep .band-head p {
-  color: rgba(255, 255, 255, 0.72);
-}
-
-.band-dark .marked,
-.band-deep .marked {
-  --marked-color: var(--marker);
+  color: var(--ink-soft);
 }
 
 /* On dark grounds the highlighter is coral, so white text reads before and
    after the swipe. */
-.band-dark .marked-highlight,
-.band-deep .marked-highlight,
 .final-cta .marked-highlight {
   --marked-color: var(--buoy);
 }
@@ -279,7 +275,7 @@
   right: 2%;
   width: 96px;
   height: 96px;
-  color: var(--marker);
+  color: var(--buoy);
   animation: spin 40s linear infinite;
 }
 
@@ -303,7 +299,8 @@
 /* Pages without a hero start under the fixed nav. */
 .info-top {
   height: var(--nav-height);
-  background: var(--night);
+  background-color: var(--sea);
+  background-image: var(--paper-grain);
 }
 
 .bleach-levels {
@@ -363,7 +360,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  border: 2px solid rgba(255, 255, 255, 0.55);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-md);
   filter: url(#rough-still);
   pointer-events: none;
@@ -390,7 +387,7 @@
 }
 
 .spot-region {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-soft);
   font-size: var(--text-xs);
 }
 
@@ -401,7 +398,7 @@
   font-size: 3.4rem;
   line-height: 1;
   margin-top: var(--space-3);
-  color: var(--marker);
+  color: var(--tide);
 }
 
 .spot-temp small {
@@ -411,13 +408,13 @@
 
 .spot-change {
   font-size: var(--text-sm);
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-soft);
 }
 
 .spot-coral {
   margin-top: var(--space-3);
   padding-top: var(--space-3);
-  background: var(--rule-light) top left / 100% 6px no-repeat;
+  background: var(--rule-ink) top left / 100% 6px no-repeat;
   font-size: var(--text-sm);
 }
 
@@ -427,13 +424,13 @@
 
 .spot-coral small {
   display: block;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-soft);
   font-size: var(--text-xs);
 }
 
 .data-note {
   font-size: var(--text-xs);
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--ink-soft);
 }
 
 /* ---------- World map preview: a map taped into the notebook ---------- */
@@ -499,11 +496,11 @@
   font-variation-settings: "INFM" 100;
   font-size: 5rem;
   line-height: 1;
-  color: var(--marker);
+  color: var(--tide);
 }
 
 .stat-big span {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-soft);
 }
 
 .stat-block {
@@ -516,14 +513,14 @@
   font-family: var(--font-hand);
   font-size: 1.7rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
 }
 
 /* Colored in by hand: rough edges and pencil hatching. */
 .level-bar {
   display: flex;
   height: 22px;
-  border: 2px solid rgba(255, 255, 255, 0.7);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
   overflow: hidden;
   filter: url(#rough-still);
@@ -568,15 +565,15 @@
 
 .item-bars .bar {
   height: 14px;
-  border: 2px solid var(--marker);
+  border: 2px solid var(--buoy);
   border-radius: 3px 8px 4px 9px;
-  background: repeating-linear-gradient(-55deg, var(--marker) 0 2px, transparent 2px 6px);
+  background: repeating-linear-gradient(-55deg, var(--buoy) 0 2px, transparent 2px 6px);
   filter: url(#rough-still);
 }
 
 .item-bars .count {
   text-align: right;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-soft);
   font-variant-numeric: tabular-nums;
 }
 
@@ -799,13 +796,13 @@
 .features svg {
   width: 36px;
   height: 36px;
-  color: var(--marker);
+  color: var(--buoy);
   stroke-width: 1.6;
   filter: url(#rough-still);
 }
 
 .features p {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ink-soft);
   font-size: var(--text-sm);
 }
 
@@ -1155,7 +1152,7 @@
   flex-direction: column;
   gap: var(--space-1);
   padding-top: var(--space-4);
-  background: var(--rule-light) top left / 100% 6px no-repeat;
+  background: var(--rule-ink) top left / 100% 6px no-repeat;
 }
 
 .why-number {
@@ -1164,21 +1161,25 @@
   font-weight: 800;
   font-variation-settings: "INFM" 100;
   line-height: 1.05;
-  color: var(--marker);
+  color: var(--tide);
   font-variant-numeric: tabular-nums;
 }
 
+.why-grid li:nth-child(even) .why-number {
+  color: var(--buoy);
+}
+
 .why-label {
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--ink);
 }
 
 .why-grid small {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--ink-soft);
   font-size: var(--text-xs);
 }
 
 .why-note {
-  color: var(--marker);
+  color: var(--buoy);
 }
 
 .why-bottle {
@@ -1186,7 +1187,7 @@
   right: 4%;
   width: 72px;
   height: 72px;
-  color: var(--marker);
+  color: var(--buoy);
 }
 
 /* ---------- Final call to action ---------- */
@@ -1245,13 +1246,14 @@
   font-size: var(--text-lg);
 }
 
-.final-fan {
-  margin-bottom: var(--space-4);
+.final-actions {
+  justify-content: center;
 }
 
-.hero-fan {
-  align-self: center;
-  margin-bottom: var(--space-3);
+/* In the narrow hero note the three buttons stack, full width. */
+.hero-actions {
+  flex-direction: column;
+  align-self: stretch;
 }
 
 .final-cta-credit {
@@ -1435,7 +1437,7 @@
   display: block;
   margin-top: var(--space-2);
   font-size: 0.6875rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ink-soft);
 }
 
 /* Buttons inside a heading block keep their natural width. */

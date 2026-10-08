@@ -22,11 +22,11 @@
   align-items: flex-start;
   gap: var(--space-1);
   padding: var(--space-5);
-  border: 2px solid rgba(255, 255, 255, 0.7);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-md);
-  background: transparent;
-  box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.25);
-  color: #ffffff;
+  background: var(--surface);
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
   text-align: left;
   cursor: pointer;
   rotate: -0.6deg;
@@ -43,9 +43,9 @@
 
 /* The chosen tab is the one coloured in with the highlighter. */
 .cl-tab[aria-selected="true"] {
-  border-color: var(--marker);
+  border-color: var(--ink);
   background: var(--marker);
-  box-shadow: 5px 5px 0 #ffffff;
+  box-shadow: 4px 4px 0 var(--ink);
   color: var(--ink);
   rotate: 0deg;
 }
@@ -70,8 +70,8 @@
 @media (hover: hover) {
   .cl-tab:not([aria-selected="true"]):hover {
     transform: translate(-2px, -2px);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 6px 6px 0 rgba(255, 255, 255, 0.4);
+    background: var(--lemon);
+    box-shadow: 5px 5px 0 var(--ink);
   }
 }
 

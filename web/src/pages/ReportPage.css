@@ -37,27 +37,67 @@
   outline: 3px solid var(--tide);
 }
 
-.picker-empty {
+.picker-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.picker-choice {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
-  min-height: 200px;
-  border: 2px dashed var(--tide);
+  min-height: 170px;
+  padding: var(--space-4);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-md);
   background: var(--surface);
+  box-shadow: 3px 3px 0 var(--ink);
+  color: var(--ink);
+  text-align: center;
   cursor: pointer;
+  transition:
+    transform 0.2s var(--ease-spring),
+    box-shadow 0.2s var(--ease-out);
 }
 
-.picker-empty strong {
+/* Taking a photo on the spot is the main way to report. */
+.picker-choice.is-camera {
+  background: var(--marker);
+}
+
+@media (hover: hover) {
+  .picker-choice:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+}
+
+.picker-choice:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.picker-choice svg {
+  width: 34px;
+  height: 34px;
+  margin-bottom: var(--space-1);
+}
+
+.picker-choice strong {
   font-family: var(--font-display);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
 }
 
-.picker-empty span {
+.picker-choice span {
   color: var(--ink-soft);
   font-size: var(--text-sm);
+}
+
+.picker-choice.is-camera span {
+  color: var(--ink);
 }
 
 .picker-grid {
@@ -95,13 +135,34 @@
 }
 
 .picker-add {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
   aspect-ratio: 4 / 3;
-  border: 2px dashed var(--line);
+}
+
+.picker-add button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 2px dashed var(--ink-soft);
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--tide);
-  font-weight: 500;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
   cursor: pointer;
+}
+
+.picker-add button:hover:not(:disabled) {
+  background: var(--lemon);
+}
+
+.picker-add svg {
+  width: 18px;
+  height: 18px;
 }
 
 .tips {

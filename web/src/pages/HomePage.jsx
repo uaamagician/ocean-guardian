@@ -296,7 +296,7 @@ function CleanupPreview() {
           <Reveal className="band-head">
             <h2>Plan a cleanup from the reports</h2>
             <p>With two or more reports, AI estimates the crew, time and gear, so organizers can skip the site visit.</p>
-            <Link to="/action?tab=organize" className="btn btn-light" viewTransition>
+            <Link to="/action?tab=organize" className="btn" viewTransition>
               See beaches that need a cleanup
             </Link>
           </Reveal>
@@ -337,7 +337,7 @@ function HistoryTeaser() {
             </h2>
             <p>Cleanups volunteers photographed and shared, from 1986 to today.</p>
           </Reveal>
-          <Link to="/history" className="btn btn-light" viewTransition>
+          <Link to="/history" className="btn" viewTransition>
             See the cleanup history
           </Link>
         </div>

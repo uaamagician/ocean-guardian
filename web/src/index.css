@@ -11,6 +11,9 @@
   --kraft: #d9c296;
   --line: #d3bf96;
   --seaglass: #8fcdbb;
+  /* Shallow water, as in the hero illustration: the "sea" sections. */
+  --sea: #d4ecea;
+  --sea-deep: #c4e3e0;
   --driftwood: #8a6a3d;
   --tide: #2a6d8c;
   --buoy: #e85a30;
@@ -29,8 +32,9 @@
   --lv-none: #8d9ca1;
 
   /* PingFang TC only renders the Chinese text in older reports. */
-  --font-body: "Nunito", system-ui, "PingFang TC", sans-serif;
-  --font-display: "Shantell Sans", "Nunito", system-ui, sans-serif;
+  /* Everything is lettered by hand: Shantell Sans for text, Caveat for notes. */
+  --font-body: "Shantell Sans", system-ui, "PingFang TC", sans-serif;
+  --font-display: "Shantell Sans", system-ui, sans-serif;
   --font-hand: "Caveat", "Shantell Sans", cursive;
 
   --text-xs: 0.75rem;
@@ -118,7 +122,8 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   font-size: var(--text-base);
-  line-height: 1.6;
+  line-height: 1.65;
+  font-variation-settings: "INFM" 15;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -208,6 +213,11 @@ img {
   width: 0;
   height: 0;
   overflow: hidden;
+}
+
+/* Line icons get the same slight wobble as the drawings. */
+svg.lucide {
+  filter: url(#rough-fine);
 }
 
 .doodle {
@@ -480,7 +490,7 @@ img {
 }
 
 /* The paper and its shadow are layers behind the links, so the torn edge
-   doesn't clip the hanging Report tab or the account menu. */
+   doesn't clip the account menu. */
 .nav::before,
 .nav::after {
   content: "";
@@ -583,57 +593,44 @@ img {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  align-self: stretch;
 }
 
-/* Report hangs from the top edge like a sticky note, swaying a little. */
+/* Report: the one filled button in the header. */
 .nav-cta {
-  align-self: flex-start;
   display: inline-flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 6px;
-  min-height: calc(var(--nav-height) + 6px);
-  padding: 0 16px 12px;
+  padding: 7px 16px;
   border: 2px solid var(--ink);
-  border-top: 0;
-  border-radius: 0 0 10px 16px / 0 0 14px 10px;
+  border-radius: var(--radius-sketch);
   background: var(--marker);
-  box-shadow: 3px 3px 0 var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
   color: var(--ink);
   font-family: var(--font-display);
   font-size: var(--text-sm);
   font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
-  transform-origin: 50% 0;
-  animation: hang 5s ease-in-out infinite;
-  transition: min-height 0.3s var(--ease-spring);
-}
-
-@keyframes hang {
-  0%,
-  100% {
-    rotate: 2deg;
-  }
-  50% {
-    rotate: -1.5deg;
-  }
+  transition:
+    transform 0.2s var(--ease-spring),
+    box-shadow 0.2s var(--ease-out);
 }
 
 @media (hover: hover) {
   .nav-cta:hover {
-    min-height: calc(var(--nav-height) + 14px);
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--ink);
   }
 }
 
 .nav-cta:active {
-  min-height: calc(var(--nav-height) - 2px);
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--ink);
 }
 
 .nav-cta svg {
   width: 16px;
   height: 16px;
-  margin-bottom: 2px;
 }
 
 .nav-menu-button {
@@ -724,7 +721,7 @@ img {
   }
 
   .nav-cta {
-    padding: 0 22px 12px;
+    padding: 7px 18px;
   }
 
   .nav-cta-long {
@@ -746,7 +743,7 @@ img {
 }
 
 .nav-signin {
-  padding: 8px 16px;
+  padding: 7px 16px;
   border: 2px solid var(--ink);
   border-radius: var(--radius-sketch);
   font-family: var(--font-display);
@@ -963,7 +960,7 @@ img {
   }
 
   .nav-cta {
-    padding: 0 12px 12px;
+    padding: 7px 10px;
   }
 
   .nav-cta-text {
@@ -1005,189 +1002,17 @@ img {
   }
 }
 
-/* ---------- Action fan (components/ActionFan.jsx) ----------
-   Three pieces of sea glass in a little pile; pointing at them spreads them
-   out on the sand. */
+/* ---------- Action buttons (components/ActionButtons.jsx) ---------- */
 
-.fan {
-  --card: 3.6rem;
-  position: relative;
-  flex: none;
-  width: 15rem;
-  height: calc(var(--card) + 2.8rem);
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
 }
 
-.fan-card {
-  position: absolute;
-  left: 50%;
-  top: calc(var(--card) / 2 + 6px);
-  width: var(--card);
-  height: var(--card);
-  color: var(--ink);
-  text-decoration: none;
-  translate: -50% -50%;
-  transition:
-    translate 0.5s var(--ease-spring),
-    rotate 0.5s var(--ease-spring);
-}
-
-/* Stacked: three cards dropped on top of each other at odd angles. */
-.fan-coral {
-  --tone: #e2774f;
-  --pebble: 46% 54% 42% 58% / 55% 44% 56% 45%;
-  z-index: 1;
-  rotate: 24deg;
-}
-
-.fan-sun {
-  --tone: #e9b044;
-  --pebble: 58% 42% 55% 45% / 45% 58% 42% 55%;
-  z-index: 2;
-  rotate: -18deg;
-}
-
-.fan-sea {
-  --tone: #3f9890;
-  --pebble: 50% 50% 44% 56% / 58% 46% 54% 42%;
-  z-index: 3;
-  rotate: -6deg;
-}
-
-/* Frosted glass: a soft shine top-left, darker edges, a shadow on the sand. */
-.fan-face {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  border: 2px solid rgba(29, 42, 50, 0.85);
-  border-radius: var(--pebble);
-  background:
-    radial-gradient(ellipse 40% 28% at 32% 26%, rgba(255, 255, 255, 0.6), transparent 70%),
-    radial-gradient(circle at 50% 55%, transparent 55%, rgba(0, 0, 0, 0.18) 100%),
-    var(--tone);
-  box-shadow:
-    3px 5px 0 rgba(29, 42, 50, 0.28),
-    inset 0 0 8px rgba(255, 255, 255, 0.35);
-  transition:
-    scale 0.2s var(--ease-spring),
-    box-shadow 0.2s var(--ease-out);
-}
-
-.fan-face svg {
-  width: 26px;
-  height: 26px;
-  color: #ffffff;
-  stroke-width: 2.2;
-  filter: url(#rough-still);
-}
-
-.fan-face svg {
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.25));
-}
-
-/* The life buoy keeps turning, a little slower once the cards are dealt. */
-.fan-sea .fan-face svg {
-  animation: spin 2.4s linear infinite;
-}
-
-.fan-label {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  translate: -50% 10px;
-  font-family: var(--font-hand);
-  font-size: 1.3rem;
-  font-weight: 700;
-  line-height: 1;
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.25s var(--ease-out);
-}
-
-/* Dealt out: left, middle, right, nearly upright. */
-.fan:hover .fan-coral,
-.fan:focus-within .fan-coral {
-  translate: -190% -50%;
-  rotate: -8deg;
-}
-
-.fan:hover .fan-sea,
-.fan:focus-within .fan-sea {
-  rotate: 0deg;
-}
-
-.fan:hover .fan-sun,
-.fan:focus-within .fan-sun {
-  translate: 90% -50%;
-  rotate: 8deg;
-}
-
-.fan:hover .fan-label,
-.fan:focus-within .fan-label {
-  opacity: 1;
-}
-
-.fan:hover .fan-sea .fan-face svg,
-.fan:focus-within .fan-sea .fan-face svg {
-  animation-duration: 4s;
-}
-
-/* Picked up off the sand: bigger, with the shadow dropping further away. */
-.fan-card:hover .fan-face,
-.fan-card:focus-visible .fan-face {
-  scale: 1.12;
-  box-shadow:
-    5px 9px 0 rgba(29, 42, 50, 0.22),
-    inset 0 0 8px rgba(255, 255, 255, 0.35);
-}
-
-.fan-card:active .fan-face {
-  scale: 0.92;
-  box-shadow:
-    1px 2px 0 rgba(29, 42, 50, 0.3),
-    inset 0 0 8px rgba(255, 255, 255, 0.35);
-}
-
-.fan-card:focus-visible {
-  outline: none;
-}
-
-.fan-card:focus-visible .fan-face {
-  outline: 3px solid var(--buoy);
-  outline-offset: 3px;
-}
-
-/* On dark photos. */
-.fan-light .fan-label {
-  color: #ffffff;
-  text-shadow: 0 1px 6px rgba(22, 36, 45, 0.7);
-}
-
-/* No hover on touch screens: deal the cards out from the start. */
-@media (hover: none) {
-  .fan .fan-coral {
-    translate: -190% -50%;
-    rotate: -8deg;
-  }
-
-  .fan .fan-sea {
-    rotate: 0deg;
-  }
-
-  .fan .fan-sun {
-    translate: 90% -50%;
-    rotate: 8deg;
-  }
-
-  .fan .fan-label {
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fan-sea .fan-face svg {
-    animation: none;
-  }
+.action-buttons .btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* ---------- Beach snapshots (components/Snapshots.jsx) ---------- */

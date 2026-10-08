@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { gsap } from "../lib/gsap";
 import { prefersReducedMotion } from "../lib/motion";
 import { Marked, Note } from "./Sketch";
-import ActionFan from "./ActionFan";
+import ActionButtons from "./ActionButtons";
 
 // A matched pair of illustrations: the same stretch of beach, clean and after
 // the tide. Only the debris changes, so the spotlight edge never shows a seam.
@@ -139,7 +139,7 @@ export default function Hero() {
       <div className="hero-bottom">
         <div className="hero-right taped hero-anim hero-fade" style={{ animationDelay: "0.45s" }}>
           <p>Photograph a beach. AI spots the debris, maps it and plans the cleanup.</p>
-          <ActionFan className="hero-fan" />
+          <ActionButtons className="hero-actions" />
         </div>
       </div>
     </section>

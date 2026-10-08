@@ -2,8 +2,9 @@
 
 .event-hero {
   padding: calc(var(--nav-height) + var(--space-7)) var(--space-4) var(--space-7);
-  background: var(--night);
-  color: #ffffff;
+  background-color: var(--sea);
+  background-image: var(--paper-grain);
+  color: var(--ink);
 }
 
 .event-hero-inner {
@@ -36,14 +37,7 @@
   padding: 0 var(--space-4);
 }
 
-.event-hero-photos .ai-saw {
-  color: var(--marker);
-}
 
-.event-hero-photos .ai-saw-label,
-.event-hero-photos .ai-saw svg {
-  color: #ffffff;
-}
 
 .event-hero h1 {
   font-size: var(--text-3xl);
@@ -57,7 +51,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-5);
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--ink-soft);
 }
 
 .event-meta span {
@@ -73,17 +67,17 @@
 }
 
 .event-meta a {
-  color: #ffffff;
+  color: var(--ink);
 }
 
 .event-organizer {
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--ink-soft);
   font-size: var(--text-sm);
 }
 
 .event-description {
   max-width: 40em;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--ink);
   white-space: pre-line;
 }
 
@@ -549,7 +543,7 @@
   align-items: center;
   padding: var(--space-2) 0;
   border-radius: var(--radius-sm);
-  background: var(--night);
+  background: var(--buoy);
   color: #ffffff;
   line-height: 1.1;
 }

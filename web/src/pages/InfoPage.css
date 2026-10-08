@@ -1,0 +1,151 @@
+/* ---------- Ocean data: a plain information page ---------- */
+
+.info-header {
+  padding: calc(var(--nav-height) + var(--space-6)) var(--space-4) var(--space-7);
+}
+
+.info-header-inner,
+.info-section {
+  max-width: var(--content-width);
+  margin: 0 auto;
+}
+
+.info-header h1 {
+  font-size: var(--text-2xl);
+  font-variation-settings: "INFM" 100;
+}
+
+.info-header p {
+  max-width: 40em;
+  margin-top: var(--space-2);
+  color: var(--ink-soft);
+}
+
+/* "On this page" links, underlined by hand. */
+.info-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-5);
+}
+
+.info-toc a {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-decoration: underline wavy var(--buoy);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 6px;
+}
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-4) 0;
+  scroll-margin-top: var(--nav-height);
+}
+
+.info-section:last-child {
+  padding-bottom: var(--space-8);
+}
+
+.info-section h2 {
+  font-size: var(--text-xl);
+  font-variation-settings: "INFM" 100;
+}
+
+.info-lead {
+  max-width: 44em;
+  color: var(--ink-soft);
+}
+
+#conditions {
+  scroll-margin-top: var(--nav-height);
+}
+
+/* A table ruled by hand: wobbly lines between rows. */
+.sketch-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-md);
+  box-shadow: 3px 3px 0 var(--ink);
+  overflow: hidden;
+  font-size: var(--text-sm);
+}
+
+.sketch-table th,
+.sketch-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  vertical-align: top;
+}
+
+.sketch-table thead th {
+  background: var(--lemon);
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.sketch-table tbody tr {
+  background: var(--rule-ink) top left / 100% 6px no-repeat;
+}
+
+.sketch-table tbody th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sketch-table a {
+  color: var(--tide);
+}
+
+@media (max-width: 600px) {
+  .sketch-table th,
+  .sketch-table td {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .sketch-table tbody th {
+    white-space: normal;
+  }
+}
+
+.info-facts {
+  display: grid;
+  gap: var(--space-5);
+}
+
+@media (min-width: 800px) {
+  .info-facts {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.info-facts article {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.info-facts h3 {
+  font-size: var(--text-lg);
+}
+
+.info-facts p {
+  color: var(--ink-soft);
+}
+
+.info-facts small {
+  margin-top: auto;
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}

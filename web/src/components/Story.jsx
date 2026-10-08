@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { DEBRIS_TYPES, TOOL_BY_ID } from "../lib/guide";
 import { CountUp, Reveal } from "./Motion";
 import { Doodle, Marked, Note } from "./Sketch";
-import ActionFan from "./ActionFan";
+import ActionButtons from "./ActionButtons";
 
 // The numbers behind the project, each with its source.
 const FACTS = [
@@ -129,7 +129,7 @@ export function FinalCta() {
           </span>
         </h2>
         <p>Start with the beach nearest you. It takes one photo.</p>
-        <ActionFan className="fan-light final-fan" />
+        <ActionButtons light className="final-actions" />
       </Reveal>
       <small className="final-cta-credit">Long Fong Fishing Port, Miaoli. Photo: Taiwankengo, CC BY-SA 4.0</small>
     </section>

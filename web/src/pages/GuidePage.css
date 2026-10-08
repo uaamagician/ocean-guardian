@@ -10,9 +10,9 @@
 
 .guide-jump a {
   padding: 8px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-pill);
-  color: #ffffff;
+  color: var(--ink);
   font-size: var(--text-sm);
   text-decoration: none;
   transition: background-color 0.2s var(--ease-out);
@@ -20,7 +20,7 @@
 
 @media (hover: hover) {
   .guide-jump a:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--lemon);
   }
 }
 
@@ -188,8 +188,8 @@
   flex-direction: column;
   gap: var(--space-3);
   padding-top: var(--space-4);
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.85);
+  background: var(--rule-ink) top left / 100% 6px no-repeat;
+  color: var(--ink);
 }
 
 .safety-grid svg {

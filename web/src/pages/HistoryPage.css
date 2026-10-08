@@ -3,7 +3,7 @@
   right: 6%;
   width: 90px;
   height: 90px;
-  color: var(--marker);
+  color: var(--buoy);
 }
 
 /* ---------- Timeline: a rope laid down the sand, snapshots on either side ---------- */
@@ -213,6 +213,4 @@
   align-items: flex-start;
 }
 
-.hist-cta .fan {
-  margin: var(--space-4) 0 var(--space-5) var(--space-6);
-}
+

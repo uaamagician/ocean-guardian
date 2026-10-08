@@ -4,7 +4,7 @@ import { Reveal } from "../components/Motion";
 import { Doodle, Footprints, Marked } from "../components/Sketch";
 import FadeImg from "../components/FadeImg";
 import EventCard from "../components/EventCard";
-import ActionFan from "../components/ActionFan";
+import ActionButtons from "../components/ActionButtons";
 import { HISTORY } from "../lib/history";
 import { usePastEvents } from "../lib/events";
 import useSectionMotion from "../lib/useSectionMotion";
@@ -141,7 +141,7 @@ export default function HistoryPage() {
             <h2>Add the next page</h2>
             <p>Report the beach near you, join a cleanup, or organize your own.</p>
           </Reveal>
-          <ActionFan className="fan-light" />
+          <ActionButtons />
         </div>
       </section>
     </div>

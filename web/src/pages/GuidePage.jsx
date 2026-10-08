@@ -122,7 +122,7 @@ export default function GuidePage() {
               </Reveal>
             ))}
           </ul>
-          <Link to="/action" className="btn btn-light guide-cta" viewTransition>
+          <Link to="/action" className="btn guide-cta" viewTransition>
             See beaches that need a cleanup
           </Link>
         </div>
