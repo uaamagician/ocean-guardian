@@ -489,8 +489,7 @@ svg.lucide {
   color: var(--ink);
 }
 
-/* The torn strip of frosted paper behind the header (see Nav.jsx). Its own
-   view-transition name keeps it still while pages change. */
+/* The torn strip of frosted paper behind the header (see Nav.jsx). */
 .nav-paper,
 .nav-shadow {
   position: fixed;
@@ -505,19 +504,12 @@ svg.lucide {
   background-color: rgba(255, 250, 240, 0.62);
   -webkit-backdrop-filter: blur(16px) saturate(1.25);
   backdrop-filter: blur(16px) saturate(1.25);
-  view-transition-name: nav-paper;
 }
 
 .nav-shadow {
   z-index: 998;
   translate: 0 3px;
   background: rgba(29, 42, 50, 0.14);
-  view-transition-name: nav-shadow;
-}
-
-::view-transition-group(nav-paper),
-::view-transition-group(nav-shadow) {
-  animation: none;
 }
 
 .nav-logo {
@@ -1524,17 +1516,11 @@ svg.lucide {
   }
 }
 
-/* Page changes cross-fade with a short rise; the nav stays put. */
-.nav {
-  view-transition-name: site-nav;
-}
-
-::view-transition-group(site-nav) {
-  animation: none;
-}
-
 /* Changing pages, the new one washes in from the bottom like the tide: a
-   wave-edged mask rises over the old page. */
+   wave-edged mask rises over the old page. The header takes part like
+   everything else (no view-transition-name): it's identical on every page,
+   so it reads as staying put, and its torn, frosted edge is never swapped
+   for a flat snapshot mid-transition. */
 ::view-transition-old(root) {
   animation: vt-out 0.7s var(--ease-in-out) both;
 }
@@ -1560,11 +1546,10 @@ svg.lucide {
   }
 }
 
-/* The old page stays under the incoming tide, drawing back a little. */
+/* The old page stays where it is under the incoming tide, dimming a little. */
 @keyframes vt-out {
   to {
-    transform: translateY(-28px);
-    filter: brightness(0.92);
+    filter: brightness(0.9);
   }
 }
 

@@ -54,8 +54,8 @@ export default function Nav() {
 
   return (
     <>
-      {/* The frosted paper sits outside <nav>: the nav has a view-transition
-          name, which would stop a backdrop blur inside it from seeing the page. */}
+      {/* The torn, frosted paper is its own layer behind the header, so its
+          clip-path never cuts off the account menu. */}
       <div className="nav-shadow" aria-hidden="true" />
       <div className="nav-paper" aria-hidden="true" />
       <nav className="nav" aria-label="Main">

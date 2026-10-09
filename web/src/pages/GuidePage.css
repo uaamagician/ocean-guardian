@@ -1,21 +1,35 @@
 /* ---------- Field guide: laid out like a printed identification guide ---------- */
 
-.guide-section {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: var(--space-8) var(--space-4) 0;
-}
-
-.guide-first {
-  padding-top: calc(var(--nav-height) + var(--space-6));
-}
-
-#safety {
+.guide {
   padding-bottom: var(--space-8);
 }
 
+.guide-title,
+.guide-section {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.guide-title {
+  padding-top: calc(var(--nav-height) + var(--space-6));
+  padding-bottom: var(--space-7);
+}
+
+.guide-title h1 {
+  font-size: var(--text-3xl);
+  font-variation-settings: "INFM" 100;
+  line-height: 1;
+}
+
+.guide-title p {
+  margin-top: var(--space-3);
+  max-width: 34em;
+  font-size: var(--text-lg);
+  color: var(--ink-soft);
+}
+
 /* Anchored entries land below the fixed nav. */
-#debris,
 #tools,
 #safety,
 [id^="tool-"],
@@ -23,57 +37,122 @@
   scroll-margin-top: calc(var(--nav-height) + var(--space-5));
 }
 
-.guide-title h1 {
-  font-size: var(--text-2xl);
-  font-variation-settings: "INFM" 100;
-}
-
-.guide-title p {
-  margin-top: var(--space-2);
-  max-width: 36em;
+.chapter-kicker {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--ink-soft);
 }
 
-/* ---------- Chapters ---------- */
-
-.chapter {
-  margin-top: var(--space-7);
-}
-
-.chapter-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-1) var(--space-4);
-  padding-bottom: var(--space-3);
-  background: var(--rule-ink) bottom left / 100% 6px no-repeat;
-}
-
-.chapter-head h2 {
-  font-size: var(--text-xl);
-  font-variation-settings: "INFM" 100;
-}
-
-.chapter-head p {
+.chapter-note {
   font-family: var(--font-hand);
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   font-weight: 600;
   line-height: 1.1;
   color: var(--buoy);
 }
 
-.entries {
+/* ---------- Chapter openers: a tinted band between two wave edges ---------- */
+
+.chapter-opener {
+  --tone: var(--sea);
+  margin: var(--space-6) 0 var(--space-4);
+  padding: var(--space-7) var(--space-4);
+  background-color: var(--tone);
+  background-image: var(--paper-grain);
+}
+
+.tone-sea {
+  --tone: var(--sea);
+}
+
+.tone-sand {
+  --tone: var(--kraft);
+}
+
+.tone-lemon {
+  --tone: var(--lemon);
+}
+
+.tone-peach {
+  --tone: var(--peach);
+}
+
+.tone-mint {
+  --tone: var(--mint);
+}
+
+.chapter-opener-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5) var(--space-7);
+}
+
+.chapter-opener h2 {
+  margin: var(--space-1) 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-variation-settings: "INFM" 100;
+  line-height: 1;
+}
+
+/* The chapter's photos as a row of overlapping round prints. */
+.chapter-thumbs {
+  display: flex;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 18px;
   list-style: none;
 }
 
-/* One entry: the photo on the left, the notes on the right, a ruled line
-   underneath. No boxes. */
+.chapter-thumbs li {
+  width: 78px;
+  height: 78px;
+  margin-left: -18px;
+  border: 4px solid var(--surface);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(60, 40, 10, 0.2);
+  rotate: calc((var(--i) - 2) * 4deg);
+  transition:
+    translate 0.35s var(--ease-spring),
+    rotate 0.35s var(--ease-spring);
+}
+
+.chapter-thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (hover: hover) {
+  .chapter-opener:hover .chapter-thumbs li {
+    translate: 0 -6px;
+    rotate: 0deg;
+  }
+
+  .chapter-opener:hover .chapter-thumbs li:nth-child(even) {
+    translate: 0 4px;
+  }
+}
+
+/* ---------- Entries: plates with the photo and notes on facing sides ---------- */
+
+.entries {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+  list-style: none;
+}
+
 .entry {
   display: grid;
-  gap: var(--space-4) var(--space-6);
-  padding: var(--space-6) 0;
+  gap: var(--space-5) var(--space-8);
+  padding: var(--space-7) 0;
   background: var(--rule-ink) bottom left / 100% 6px no-repeat;
 }
 
@@ -81,10 +160,14 @@
   background: none;
 }
 
-@media (min-width: 760px) {
+@media (min-width: 820px) {
   .entry {
-    grid-template-columns: 300px 1fr;
-    align-items: start;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .entry.is-flipped .entry-photo {
+    order: 2;
   }
 }
 
@@ -92,12 +175,24 @@
   margin: 0;
 }
 
-/* A print pasted onto the page: white border, soft shadow, straight. */
+/* A large print pasted onto the page, tilted a touch. */
 .entry-print {
   position: relative;
-  padding: 8px;
+  padding: 10px 10px 12px;
   background: var(--surface);
-  box-shadow: 1px 4px 14px rgba(60, 40, 10, 0.18);
+  box-shadow: 2px 8px 24px rgba(60, 40, 10, 0.22);
+  rotate: -1.2deg;
+  transition: rotate 0.4s var(--ease-spring);
+}
+
+.is-flipped .entry-print {
+  rotate: 1.2deg;
+}
+
+@media (hover: hover) {
+  .entry:hover .entry-print {
+    rotate: 0deg;
+  }
 }
 
 .entry-print img {
@@ -108,8 +203,36 @@
   background: var(--sand);
 }
 
+/* The plate number, stamped on the corner of the print. */
+.entry-number {
+  position: absolute;
+  left: -16px;
+  bottom: -16px;
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border: 3px solid var(--ink);
+  border-radius: 52% 48% 55% 45% / 48% 55% 45% 52%;
+  background: var(--marker);
+  font-family: var(--font-hand);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  box-shadow: 2px 3px 0 var(--ink);
+  rotate: -8deg;
+}
+
+.is-flipped .entry-number {
+  left: auto;
+  right: -16px;
+  rotate: 8deg;
+}
+
+/* Clear of the number stamp hanging off the print's corner. */
 .entry-photo figcaption {
-  margin-top: 6px;
+  margin-top: 26px;
   font-size: 0.6875rem;
   color: var(--ink-soft);
 }
@@ -124,104 +247,152 @@
   gap: var(--space-3);
 }
 
-.entry-head {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
-}
-
-/* Big handwritten index numbers, like a guide's plate numbers. */
-.entry-number {
-  font-family: var(--font-hand);
-  font-size: 2.6rem;
-  font-weight: 700;
-  line-height: 0.8;
-  color: var(--tide);
-}
-
-.entry-head h3 {
+.entry-text h3 {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-xl);
+  gap: var(--space-3);
+  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
   font-variation-settings: "INFM" 100;
+  line-height: 1.1;
 }
 
-.entry-head h3 svg {
-  width: 24px;
-  height: 24px;
+.entry-text h3 svg {
+  flex: none;
+  width: 30px;
+  height: 30px;
   color: var(--buoy);
 }
 
+/* The examples, written in the margin with an arrow pointing at the photo. */
 .entry-examples {
+  position: relative;
+  font-family: var(--font-hand);
+  font-size: 1.55rem;
   font-weight: 600;
+  line-height: 1.15;
+  color: var(--tide);
 }
 
-.entry-cols {
-  display: grid;
-  gap: var(--space-3) var(--space-5);
-  font-size: var(--text-sm);
-  color: var(--ink-soft);
+.entry-arrow {
+  display: none;
+  position: absolute;
+  top: -6px;
+  left: -76px;
+  width: 64px;
+  height: 32px;
+  overflow: visible;
+  fill: none;
+  stroke: var(--tide);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-@media (min-width: 900px) {
-  .entry-cols {
-    grid-template-columns: 1fr 1fr;
+.is-flipped .entry-arrow {
+  left: auto;
+  right: -76px;
+  scale: -1 1;
+}
+
+@media (min-width: 820px) {
+  .entry-arrow {
+    display: block;
   }
 }
 
-.entry-cols h4 {
-  margin: 0 0 2px;
+.entry-why {
+  color: var(--ink-soft);
+}
+
+/* What to do on the day: a ticked note. */
+.entry-handle {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-md);
+  background: var(--lemon);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.is-hazardous .entry-handle {
+  background: var(--peach);
+}
+
+.is-natural .entry-handle {
+  background: var(--mint);
+}
+
+.entry-handle > svg {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  padding: 3px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--surface);
+  color: #2f8a5e;
+  stroke-width: 3;
+}
+
+.entry-handle strong {
+  display: block;
   font-family: var(--font-display);
-  font-size: var(--text-sm);
-  font-weight: 700;
-  color: var(--ink);
 }
 
-/* "How to handle it" is the part people need on the day: highlighted. */
 .entry-handle p {
-  display: inline;
-  padding: 0 2px;
-  background: linear-gradient(transparent 55%, var(--lemon) 55%);
-  color: var(--ink);
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
-
-.is-hazardous .entry-handle p {
-  background: linear-gradient(transparent 55%, var(--peach) 55%);
-}
-
-.is-natural .entry-handle p {
-  background: linear-gradient(transparent 55%, var(--mint) 55%);
+  font-size: var(--text-sm);
 }
 
 .entry-tools {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px var(--space-2);
-  font-size: var(--text-sm);
-}
-
-.entry-tools > span:first-child {
-  font-weight: 700;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .entry-tools a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-sketch);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition:
+    background-color 0.2s,
+    rotate 0.25s var(--ease-spring);
+}
+
+.entry-tools svg {
+  width: 16px;
+  height: 16px;
   color: var(--tide);
+}
+
+@media (hover: hover) {
+  .entry-tools a:hover {
+    background: var(--lemon);
+    rotate: -2deg;
+  }
 }
 
 /* A rubber stamp across the photo for the two "do not pick up" kinds. */
 .debris-stamp {
   position: absolute;
-  top: 18px;
-  right: 16px;
-  padding: 2px 12px;
+  top: 22px;
+  right: 20px;
+  padding: 2px 14px;
   border: 3px solid currentColor;
   border-radius: 6px;
   color: #2f8a5e;
   font-family: var(--font-display);
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -234,7 +405,29 @@
   rotate: -7deg;
 }
 
-/* ---------- The kit: a two-column checklist ---------- */
+/* ---------- Appendix: the kit and safety ---------- */
+
+.guide-section {
+  margin-top: var(--space-8);
+}
+
+.kit-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+  padding-bottom: var(--space-3);
+  background: var(--rule-ink) bottom left / 100% 6px no-repeat;
+}
+
+.kit-head .chapter-kicker {
+  flex-basis: 100%;
+}
+
+.kit-head h2 {
+  font-size: var(--text-2xl);
+  font-variation-settings: "INFM" 100;
+}
 
 .kit {
   display: grid;
@@ -257,12 +450,34 @@
   background: var(--rule-ink) bottom left / 100% 6px no-repeat;
 }
 
-.kit svg {
+/* Each tool's icon in a hand-drawn ring. */
+.kit-icon {
   flex: none;
-  width: 30px;
-  height: 30px;
-  margin-top: 2px;
-  color: var(--tide);
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 2px solid var(--ink);
+  border-radius: 52% 48% 55% 45% / 48% 55% 45% 52%;
+  background: var(--sea);
+}
+
+.kit > li:nth-child(4n + 2) .kit-icon {
+  background: var(--lemon);
+}
+
+.kit > li:nth-child(4n + 3) .kit-icon {
+  background: var(--peach);
+}
+
+.kit > li:nth-child(4n) .kit-icon {
+  background: var(--mint);
+}
+
+.kit-icon svg {
+  width: 26px;
+  height: 26px;
+  color: var(--ink);
 }
 
 .kit h3 {
@@ -279,8 +494,6 @@
   color: var(--ink);
   font-style: italic;
 }
-
-/* ---------- Safety: a numbered list ---------- */
 
 .safety {
   display: grid;

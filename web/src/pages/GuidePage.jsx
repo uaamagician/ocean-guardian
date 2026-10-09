@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router";
-import { ShieldAlert } from "lucide-react";
+import { Check, ShieldAlert } from "lucide-react";
 import { DEBRIS_TYPES, SAFETY, TOOLS, TOOL_BY_ID } from "../lib/guide";
 import { DEBRIS_PHOTOS } from "../lib/debrisPhotos";
 import { Reveal } from "../components/Motion";
@@ -59,63 +59,98 @@ function PhotoCredit({ photo }) {
   );
 }
 
-// Chapters of the guide, the way a field guide groups species.
+// Chapters of the guide, the way a field guide groups species. Each has its
+// own tint for the chapter opener.
 const CHAPTERS = [
-  { title: "Plastic", note: "Most of what a cleanup picks up.", ids: ["bottles", "bags", "foodware", "styrofoam", "microplastics"] },
-  { title: "From boats, and the big stuff", note: "Heavy, tangled, often half-buried.", ids: ["fishing", "large"] },
-  { title: "Other materials", note: "Small but sharp, or easy to miss.", ids: ["cigarettes", "glass", "metal"] },
-  { title: "Handle with care", note: "Don't pick these up yourself.", ids: ["hazardous"] },
-  { title: "Leave it on the beach", note: "Part of the shore, not litter.", ids: ["natural"] },
+  { title: "Plastic", note: "Most of what a cleanup picks up.", tone: "sea", ids: ["bottles", "bags", "foodware", "styrofoam", "microplastics"] },
+  { title: "From boats, and the big stuff", note: "Heavy, tangled, often half-buried.", tone: "sand", ids: ["fishing", "large"] },
+  { title: "Other materials", note: "Small but sharp, or easy to miss.", tone: "lemon", ids: ["cigarettes", "glass", "metal"] },
+  { title: "Handle with care", note: "Don't pick these up yourself.", tone: "peach", ids: ["hazardous"] },
+  { title: "Leave it on the beach", note: "Part of the shore, not litter.", tone: "mint", ids: ["natural"] },
 ];
 const DEBRIS_BY_ID = Object.fromEntries(DEBRIS_TYPES.map((d) => [d.id, d]));
-const NUMBER_OF = Object.fromEntries(CHAPTERS.flatMap((c) => c.ids).map((id, i) => [id, String(i + 1).padStart(2, "0")]));
+const ORDER = CHAPTERS.flatMap((c) => c.ids);
+const NUMBER_OF = Object.fromEntries(ORDER.map((id, i) => [id, String(i + 1).padStart(2, "0")]));
 
-function Entry({ id }) {
+// One plate of the guide. Photo and notes swap sides from one entry to the
+// next, like facing pages.
+function Entry({ id, flip }) {
   const { icon: Icon, name, examples, why, handle, tools } = DEBRIS_BY_ID[id];
   const photo = DEBRIS_PHOTOS[id];
   return (
-    <Reveal as="li" id={`debris-${id}`} className={`entry is-${id}`}>
+    <Reveal as="li" id={`debris-${id}`} className={`entry is-${id} ${flip ? "is-flipped" : ""}`}>
       <figure className="entry-photo">
         <div className="entry-print">
           <FadeImg src={photo.src} alt={`${name}: ${photo.caption}`} loading="lazy" />
           {STAMPS[id] && <span className="debris-stamp">{STAMPS[id]}</span>}
+          <span className="entry-number" aria-hidden="true">
+            {NUMBER_OF[id]}
+          </span>
         </div>
         <PhotoCredit photo={photo} />
       </figure>
       <div className="entry-text">
-        <div className="entry-head">
-          <span className="entry-number" aria-hidden="true">
-            {NUMBER_OF[id]}
-          </span>
-          <h3>
-            <Icon aria-hidden="true" />
-            {name}
-          </h3>
-        </div>
-        <p className="entry-examples">{examples}</p>
-        <div className="entry-cols">
+        <h3>
+          <Icon aria-hidden="true" />
+          {name}
+        </h3>
+        <p className="entry-examples">
+          <svg className="entry-arrow" viewBox="0 0 60 30" aria-hidden="true" focusable="false">
+            <path d="M58 22 C 44 26, 22 24, 6 10" />
+            <path d="M14 8 L5 9 L8 17" />
+          </svg>
+          {examples}
+        </p>
+        <p className="entry-why">{why}</p>
+        <div className="entry-handle">
+          <Check aria-hidden="true" />
           <div>
-            <h4>Why it matters</h4>
-            <p>{why}</p>
-          </div>
-          <div className="entry-handle">
-            <h4>How to handle it</h4>
+            <strong>How to handle it</strong>
             <p>{handle}</p>
           </div>
         </div>
         {tools.length > 0 && (
-          <p className="entry-tools">
-            <span>Bring:</span>
-            {tools.map((t, i) => (
-              <span key={t}>
-                <a href={`#tool-${t}`}>{TOOL_BY_ID[t].name}</a>
-                {i < tools.length - 1 ? "," : ""}
-              </span>
-            ))}
-          </p>
+          <ul className="entry-tools" aria-label="Bring">
+            {tools.map((t) => {
+              const { icon: ToolIcon, name: toolName } = TOOL_BY_ID[t];
+              return (
+                <li key={t}>
+                  <a href={`#tool-${t}`}>
+                    <ToolIcon aria-hidden="true" />
+                    {toolName}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
         )}
       </div>
     </Reveal>
+  );
+}
+
+// A tinted band between wave edges that opens each chapter, with a row of
+// the photos inside it.
+function ChapterOpener({ chapter, number }) {
+  return (
+    <header className={`chapter-opener wave-edge tone-${chapter.tone}`}>
+      <div className="chapter-opener-inner">
+        <div>
+          <span className="chapter-kicker">
+            Chapter {number} · {chapter.ids.length} kind{chapter.ids.length > 1 ? "s" : ""}
+          </span>
+          <h2>{chapter.title}</h2>
+          <p className="chapter-note">{chapter.note}</p>
+        </div>
+        <ul className="chapter-thumbs" aria-hidden="true">
+          {chapter.ids.map((id, i) => (
+            <li key={id} style={{ "--i": i }}>
+              <img src={DEBRIS_PHOTOS[id].src} alt="" loading="lazy" />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </header>
   );
 }
 
@@ -123,38 +158,41 @@ export default function GuidePage() {
   const rootRef = useRef(null);
   useSectionMotion(rootRef);
   useHashTarget();
+  let n = 0;
 
   return (
     <div ref={rootRef} className="guide">
-      <section className="guide-section guide-first" id="debris">
-        <header className="guide-title">
-          <h1>What washes up</h1>
-          <p>Twelve kinds of beach debris, how to recognize them and how to handle each one.</p>
-        </header>
-        {CHAPTERS.map((chapter) => (
+      <header className="guide-title">
+        <span className="chapter-kicker">Ocean Guardian field guide</span>
+        <h1>What washes up</h1>
+        <p>Twelve kinds of beach debris: how to recognize each one, why it matters and how to handle it.</p>
+      </header>
+
+      <div id="debris">
+        {CHAPTERS.map((chapter, c) => (
           <section key={chapter.title} className="chapter">
-            <header className="chapter-head">
-              <h2>{chapter.title}</h2>
-              <p>{chapter.note}</p>
-            </header>
+            <ChapterOpener chapter={chapter} number={c + 1} />
             <ol className="entries">
               {chapter.ids.map((id) => (
-                <Entry key={id} id={id} />
+                <Entry key={id} id={id} flip={n++ % 2 === 1} />
               ))}
             </ol>
           </section>
         ))}
-      </section>
+      </div>
 
       <section className="guide-section guide-kit" id="tools">
-        <header className="chapter-head">
+        <header className="kit-head">
+          <span className="chapter-kicker">Appendix</span>
           <h2>The kit</h2>
-          <p>Every tool an AI cleanup plan can ask for.</p>
+          <p className="chapter-note">Every tool an AI cleanup plan can ask for.</p>
         </header>
         <ul className="kit">
           {TOOLS.map(({ id, icon: Icon, name, use, when }) => (
             <Reveal as="li" key={id} id={`tool-${id}`}>
-              <Icon aria-hidden="true" />
+              <span className="kit-icon">
+                <Icon aria-hidden="true" />
+              </span>
               <div>
                 <h3>{name}</h3>
                 <p>{use}</p>
@@ -166,7 +204,7 @@ export default function GuidePage() {
       </section>
 
       <section className="guide-section" id="safety">
-        <header className="chapter-head">
+        <header className="kit-head">
           <h2>Stay safe</h2>
         </header>
         <ol className="safety">
