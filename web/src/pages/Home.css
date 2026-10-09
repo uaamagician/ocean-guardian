@@ -1286,8 +1286,11 @@
   z-index: 35;
   overflow: hidden;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(170deg, #000 0%, #000 22%, transparent 48%);
-  mask-image: linear-gradient(170deg, #000 0%, #000 22%, transparent 48%);
+  /* Only over the water: the shoreline traced from hero/clean.jpg, sized and
+     placed exactly like the photo (cover, centred) so it lines up at any
+     screen size. The sand stays still. */
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1706' height='960' viewBox='0 0 1706 960'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='26'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' d='M-60 -60 H1766 V100 C1600 165 1500 225 1400 285 C1300 345 1150 365 1000 370 C850 368 700 365 600 405 C520 455 420 525 300 540 C180 548 80 540 -60 532 Z'/%3E%3C/svg%3E") center / cover no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1706' height='960' viewBox='0 0 1706 960'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='26'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' d='M-60 -60 H1766 V100 C1600 165 1500 225 1400 285 C1300 345 1150 365 1000 370 C850 368 700 365 600 405 C520 455 420 525 300 540 C180 548 80 540 -60 532 Z'/%3E%3C/svg%3E") center / cover no-repeat;
   mix-blend-mode: overlay;
 }
 
