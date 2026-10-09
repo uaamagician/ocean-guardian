@@ -12,3 +12,10 @@ export const englishName = (user) => (isEnglish(user?.displayName) ? user.displa
 
 // What to call someone on screen: their English name, or else their email.
 export const shownName = (user) => englishName(user) || user?.email || "";
+
+// Who runs a cleanup, as "Individual: Jane Doe". Events saved before names had
+// to be in English just show the organizer type.
+export const organizerLabel = (organizer, types) => {
+  const type = types[organizer?.type] ?? "";
+  return isEnglish(organizer?.name) && organizer.name ? `${type}: ${organizer.name}` : type;
+};

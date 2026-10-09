@@ -6,6 +6,7 @@ import { Reveal } from "../components/Motion";
 import { Thumb } from "../components/Snapshots";
 import ListToolbar from "../components/ListToolbar";
 import { ORGANIZER_TYPES, headcount, useSignups, useUpcomingEvents } from "../lib/events";
+import { organizerLabel } from "../lib/english";
 import usePublishedReports, { distanceKm } from "../lib/usePublishedReports";
 import { getPosition } from "../lib/reports";
 import { useAllBeaches, useReportsByBeach } from "../lib/beaches";
@@ -82,7 +83,7 @@ function EventRow({ event, reports }) {
           </span>
         </span>
         <span className="cl-sub">
-          {ORGANIZER_TYPES[event.organizer.type]}: {event.organizer.name}
+          {organizerLabel(event.organizer, ORGANIZER_TYPES)}
           {found.length > 0 && ` · Expect ${found.join(", ")}`}
         </span>
       </span>

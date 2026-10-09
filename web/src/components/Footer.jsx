@@ -3,8 +3,10 @@ import { Doodle } from "./Sketch";
 export default function Footer() {
   return (
     <footer className="footer wave-edge">
-      <span className="footer-fish" aria-hidden="true">
-        <Doodle name="fish" boil={false} />
+      <span className="footer-sea" aria-hidden="true">
+        <span className="footer-fish">
+          <Doodle name="fish" boil={false} />
+        </span>
       </span>
       <div className="footer-inner">
         <div>

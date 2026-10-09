@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { ORGANIZER_TYPES, headcount, useSignups } from "../lib/events";
+import { organizerLabel } from "../lib/english";
 import { planInputs } from "../lib/cleanup";
 import { AiSaw, Snapshots } from "./Snapshots";
 // The tile styles live with the Cleanups page, where they started.
@@ -28,7 +29,7 @@ export default function JoinCard({ event, reports }) {
           {start.toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit" })}, {event.beachName}
         </span>
         <span className="report-meta">
-          {ORGANIZER_TYPES[event.organizer.type]}: {event.organizer.name}
+          {organizerLabel(event.organizer, ORGANIZER_TYPES)}
         </span>
         <AiSaw reports={evidence} max={3} />
         <div className="join-tile-spots">

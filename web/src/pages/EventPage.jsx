@@ -9,6 +9,7 @@ import { planInputs } from "../lib/cleanup";
 import usePublishedReports from "../lib/usePublishedReports";
 import { isGoogleUser, useUser } from "../lib/auth";
 import { TOOL_BY_ID } from "../lib/guide";
+import { isEnglish } from "../lib/english";
 import {
   ORGANIZER_TYPES,
   cancelEvent,
@@ -113,7 +114,7 @@ export default function EventPage() {
                 </Link>
               </span>
             </p>
-            <p className="event-organizer">Organized by {event.organizer.name}</p>
+            {isEnglish(event.organizer.name) && <p className="event-organizer">Organized by {event.organizer.name}</p>}
             {event.description && <p className="event-description">{event.description}</p>}
           </div>
           <figure className="event-hero-photos">

@@ -1356,11 +1356,19 @@ svg.lucide {
 
 .footer {
   position: relative;
-  overflow-x: clip;
   background: var(--night);
   color: rgba(255, 255, 255, 0.65);
   font-size: var(--text-xs);
   padding: var(--space-8) var(--space-4) var(--space-6);
+}
+
+/* The fish swims in its own clipped layer, so the footer itself never clips
+   and the wave along its top edge always shows. */
+.footer-sea {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .footer-fish {
