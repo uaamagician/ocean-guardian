@@ -199,7 +199,7 @@ function LatestCard({ report }) {
   const [cover] = usePhotoUrls(report.photos?.slice(0, 1) ?? []);
   return (
     <Link to={`/map?r=${report.id}`} className="latest-card" viewTransition>
-      {cover ? <FadeImg src={cover} alt="" loading="lazy" /> : <div className="latest-card-placeholder" />}
+      <span className="latest-photo">{cover && <FadeImg src={cover} alt="" loading="lazy" decoding="async" />}</span>
       <Level category={report.aiAnalysis?.category} />
       <span className="report-meta">{formatTime(report.createdAt)}</span>
       {report.aiAnalysis?.items?.length > 0 && (

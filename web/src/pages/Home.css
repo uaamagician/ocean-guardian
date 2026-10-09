@@ -330,11 +330,6 @@
   font-size: var(--text-sm);
 }
 
-.latest-card-placeholder {
-  aspect-ratio: 4 / 3;
-  background: var(--sand);
-}
-
 /* ---------- Live ocean conditions: hand-drawn tide cards ---------- */
 
 .spots {
@@ -654,13 +649,21 @@
   }
 }
 
+/* The four newest reports, wrapping onto a second row on narrow screens
+   instead of scrolling sideways, so no card is ever cut off at the edge. */
 .latest {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(250px, 1fr);
-  gap: var(--space-6);
-  overflow-x: auto;
-  padding: var(--space-4) var(--space-3) var(--space-5);
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4) var(--space-3);
+  margin: 0;
+  padding: var(--space-4) var(--space-2) var(--space-2);
+}
+
+@media (min-width: 900px) {
+  .latest {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6) var(--space-5);
+  }
 }
 
 /* Instant photos, each at its own angle. */
@@ -690,11 +693,20 @@
   }
 }
 
-.latest-card img {
-  width: 100%;
+/* Sand shows through until the photo arrives, so a slow photo never leaves
+   a blank white card. */
+.latest-photo {
+  display: block;
   aspect-ratio: 4 / 3;
-  object-fit: cover;
+  overflow: hidden;
   background: var(--sand);
+}
+
+.latest-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .latest-card .report-items li {
