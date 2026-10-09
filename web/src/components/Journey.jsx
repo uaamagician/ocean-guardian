@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { prefersReducedMotion } from "../lib/motion";
-import { gsap } from "../lib/gsap";
+import { gsap, ScrollTrigger } from "../lib/gsap";
 import FadeImg from "./FadeImg";
 import { Note } from "./Sketch";
 
@@ -112,7 +112,25 @@ function usePinnedTrack(sectionRef, trackRef, progressRef) {
       });
     }, section);
 
-    return () => ctx.revert();
+    // Reports, photos and the map above load after this runs and push the
+    // section down. Re-measure whenever the page height changes, or the pin
+    // starts early and the section covers the ones above it.
+    let lastHeight = document.body.scrollHeight;
+    let timer;
+    const observer = new ResizeObserver(() => {
+      const height = document.body.scrollHeight;
+      if (height === lastHeight) return;
+      lastHeight = height;
+      clearTimeout(timer);
+      timer = setTimeout(() => ScrollTrigger.refresh(), 150);
+    });
+    observer.observe(document.body);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+      ctx.revert();
+    };
   }, [pinned, sectionRef, trackRef, progressRef]);
 
   return pinned;
