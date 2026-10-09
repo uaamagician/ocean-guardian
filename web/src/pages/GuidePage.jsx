@@ -60,7 +60,7 @@ function PhotoCredit({ photo }) {
 }
 
 // Chapters of the guide, the way a field guide groups species. Each has its
-// own tint for the chapter opener.
+// own highlighter color.
 const CHAPTERS = [
   { title: "Plastic", note: "Most of what a cleanup picks up.", tone: "sea", ids: ["bottles", "bags", "foodware", "styrofoam", "microplastics"] },
   { title: "From boats, and the big stuff", note: "Heavy, tangled, often half-buried.", tone: "sand", ids: ["fishing", "large"] },
@@ -129,27 +129,14 @@ function Entry({ id, flip }) {
   );
 }
 
-// A tinted band between wave edges that opens each chapter, with a row of
-// the photos inside it.
-function ChapterOpener({ chapter, number }) {
+// A chapter's title, swiped with that chapter's highlighter color.
+function ChapterHead({ chapter }) {
   return (
-    <header className={`chapter-opener wave-edge tone-${chapter.tone}`}>
-      <div className="chapter-opener-inner">
-        <div>
-          <span className="chapter-kicker">
-            Chapter {number} · {chapter.ids.length} kind{chapter.ids.length > 1 ? "s" : ""}
-          </span>
-          <h2>{chapter.title}</h2>
-          <p className="chapter-note">{chapter.note}</p>
-        </div>
-        <ul className="chapter-thumbs" aria-hidden="true">
-          {chapter.ids.map((id, i) => (
-            <li key={id} style={{ "--i": i }}>
-              <img src={DEBRIS_PHOTOS[id].src} alt="" loading="lazy" />
-            </li>
-          ))}
-        </ul>
-      </div>
+    <header className={`chapter-head tone-${chapter.tone}`}>
+      <h2>
+        <span>{chapter.title}</span>
+      </h2>
+      <p className="chapter-note">{chapter.note}</p>
     </header>
   );
 }
@@ -163,15 +150,14 @@ export default function GuidePage() {
   return (
     <div ref={rootRef} className="guide">
       <header className="guide-title">
-        <span className="chapter-kicker">Ocean Guardian field guide</span>
         <h1>What washes up</h1>
-        <p>Twelve kinds of beach debris: how to recognize each one, why it matters and how to handle it.</p>
+        <p>How to recognize each kind of beach debris, and how to handle it.</p>
       </header>
 
       <div id="debris">
-        {CHAPTERS.map((chapter, c) => (
+        {CHAPTERS.map((chapter) => (
           <section key={chapter.title} className="chapter">
-            <ChapterOpener chapter={chapter} number={c + 1} />
+            <ChapterHead chapter={chapter} />
             <ol className="entries">
               {chapter.ids.map((id) => (
                 <Entry key={id} id={id} flip={n++ % 2 === 1} />
@@ -183,7 +169,6 @@ export default function GuidePage() {
 
       <section className="guide-section guide-kit" id="tools">
         <header className="kit-head">
-          <span className="chapter-kicker">Appendix</span>
           <h2>The kit</h2>
           <p className="chapter-note">Every tool an AI cleanup plan can ask for.</p>
         </header>
