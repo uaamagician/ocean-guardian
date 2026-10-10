@@ -18,7 +18,10 @@ export default function MapPage() {
   const { reports, error: reportsError } = usePublishedReports();
   const { beaches, error: beachesError } = useAllBeaches();
   const { byBeach, unmatched, beachOfReport, tones } = useReportsByBeach(beaches, reports);
-  const [params, setParams] = useSearchParams();
+  const [params, setSearchParams] = useSearchParams();
+  // Opening and closing beaches swaps the URL in place, so Back leaves the map
+  // for wherever you came from instead of stepping through every beach clicked.
+  const setParams = (next) => setSearchParams(next, { replace: true });
   // Adding a beach: `placing` turns map clicks into a location pick for the form.
   const [placing, setPlacing] = useState(false);
   const [draft, setDraft] = useState(null);
