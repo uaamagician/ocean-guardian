@@ -1,7 +1,7 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { prefersReducedMotion } from "../lib/motion";
-import { gsap, ScrollTrigger } from "../lib/gsap";
 import FadeImg from "./FadeImg";
 import { Note } from "./Sketch";
 
@@ -56,106 +56,58 @@ const STOPS = [
 // Snapshots pinned to the page at slightly different angles.
 const TILTS = [-1.6, 1.2, -0.8, 1.6, -1.2];
 
-// Pinned horizontal scroll on wide screens, driven by GSAP ScrollTrigger: the
-// section pins while vertical scroll moves the track sideways, and each photo
-// drifts against its card for depth. Narrow screens and reduced-motion users
-// get a native swipeable row instead.
-function usePinnedTrack(sectionRef, trackRef, progressRef) {
-  const [pinned, setPinned] = useState(false);
+// A plain sideways row: scrolling the page always goes straight down, and the
+// photos move only when swiped or when the arrows are pressed. The progress
+// line and the arrows follow the row's own scroll position.
+function useTrack(trackRef, progressRef) {
+  const [ends, setEnds] = useState({ start: true, end: false });
 
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 900px)");
-    const update = () => setPinned(query.matches && !prefersReducedMotion());
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-
-  useLayoutEffect(() => {
-    if (!pinned) return undefined;
-    const section = sectionRef.current;
     const track = trackRef.current;
-    const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
-
-    const ctx = gsap.context(() => {
-      const slide = gsap.to(track, {
-        x: () => -distance(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          pin: true,
-          scrub: 0.3,
-          end: () => `+=${distance()}`,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            if (progressRef.current) progressRef.current.style.transform = `scaleX(${self.progress})`;
-          },
-        },
-      });
-
-      gsap.utils.toArray(".journey-photo img", section).forEach((img) => {
-        gsap.fromTo(
-          img,
-          { xPercent: -5 },
-          {
-            xPercent: 5,
-            ease: "none",
-            scrollTrigger: {
-              trigger: img.parentElement,
-              containerAnimation: slide,
-              start: "left right",
-              end: "right left",
-              scrub: true,
-            },
-          },
-        );
-      });
-    }, section);
-
-    // Reports, photos and the map above load after this runs and push the
-    // section down. Re-measure whenever the page height changes, or the pin
-    // starts early and the section covers the ones above it.
-    let lastHeight = document.body.scrollHeight;
-    let timer;
-    const observer = new ResizeObserver(() => {
-      const height = document.body.scrollHeight;
-      if (height === lastHeight) return;
-      lastHeight = height;
-      clearTimeout(timer);
-      timer = setTimeout(() => ScrollTrigger.refresh(), 150);
-    });
-    observer.observe(document.body);
-
-    return () => {
-      observer.disconnect();
-      clearTimeout(timer);
-      ctx.revert();
+    if (!track) return undefined;
+    const update = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      const progress = max > 0 ? track.scrollLeft / max : 1;
+      if (progressRef.current) progressRef.current.style.transform = `scaleX(${progress})`;
+      setEnds({ start: track.scrollLeft < 8, end: track.scrollLeft > max - 8 });
     };
-  }, [pinned, sectionRef, trackRef, progressRef]);
+    update();
+    track.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      track.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [trackRef, progressRef]);
 
-  return pinned;
+  const step = (direction) => {
+    const track = trackRef.current;
+    const card = track?.querySelector(".journey-stop");
+    if (!track || !card) return;
+    const distance = card.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 0);
+    track.scrollBy({ left: direction * distance, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  };
+
+  return { ends, step };
 }
 
 export default function Journey() {
-  const sectionRef = useRef(null);
   const trackRef = useRef(null);
   const progressRef = useRef(null);
-  const pinned = usePinnedTrack(sectionRef, trackRef, progressRef);
+  const { ends, step } = useTrack(trackRef, progressRef);
 
   return (
-    <section ref={sectionRef} className="journey" data-pinned={pinned} aria-label="Where plastic washes up">
-      <div className="journey-sticky">
-        <div ref={trackRef} className="journey-track">
+    <section className="journey" aria-label="Where plastic washes up">
+      <div className="journey-frame">
+        <div ref={trackRef} className="journey-track" tabIndex={0} aria-label="Photos, scroll sideways">
           <div className="journey-intro">
             <h2>
               <span className="serif-italic">Where it</span> washes up
             </h2>
             <p>The same currents connect every coast. Follow the plastic from the tropics to the open Pacific, and back to Taiwan.</p>
-            {pinned && (
-              <p className="journey-hint">
-                <Note arrow="before">keep scrolling</Note>
-              </p>
-            )}
+            <p className="journey-hint">
+              <Note arrow="before">swipe or use the arrows</Note>
+            </p>
           </div>
 
           {STOPS.map((stop, i) => (
@@ -182,11 +134,17 @@ export default function Journey() {
           </div>
         </div>
 
-        {pinned && (
+        <div className="journey-controls">
           <div className="journey-progress" aria-hidden="true">
             <span ref={progressRef} />
           </div>
-        )}
+          <button type="button" className="journey-arrow" onClick={() => step(-1)} disabled={ends.start} aria-label="Previous photo">
+            <ArrowLeft aria-hidden="true" />
+          </button>
+          <button type="button" className="journey-arrow" onClick={() => step(1)} disabled={ends.end} aria-label="Next photo">
+            <ArrowRight aria-hidden="true" />
+          </button>
+        </div>
       </div>
     </section>
   );

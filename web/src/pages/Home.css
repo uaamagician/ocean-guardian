@@ -858,40 +858,44 @@
   color: var(--ink);
 }
 
-.journey-sticky {
-  overflow: hidden;
+.journey-frame {
+  --edge: max(var(--space-5), calc((100vw - var(--content-width)) / 2));
+  padding: var(--space-8) 0 var(--space-7);
 }
 
-/* GSAP pins the whole section while the track slides. */
-.journey[data-pinned="true"] .journey-sticky {
-  height: 100vh;
-  height: 100dvh;
-  display: flex;
-  align-items: center;
-}
-
+/* A sideways row that starts on the page content's left edge. */
 .journey-track {
   display: flex;
   align-items: center;
   gap: var(--space-6);
-  padding: var(--space-8) var(--space-5);
+  padding: var(--space-5) var(--edge) var(--space-6);
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--space-5);
-  will-change: transform;
+  scroll-padding-inline: var(--edge);
+  scrollbar-width: none;
 }
 
-/* Start the track on the same left edge as the page content. */
-.journey[data-pinned="true"] .journey-track {
-  overflow: visible;
-  gap: var(--space-8);
-  padding: var(--nav-height) max(var(--space-6), calc((100vw - var(--content-width)) / 2)) 0;
+.journey-track::-webkit-scrollbar {
+  display: none;
+}
+
+.journey-track:focus-visible {
+  outline: 3px dashed var(--ink);
+  outline-offset: -6px;
+}
+
+@media (min-width: 900px) {
+  .journey-track {
+    gap: var(--space-8);
+  }
 }
 
 .journey-intro,
 .journey-end {
   flex: none;
-  width: min(85vw, 420px);
+  /* Narrow enough on phones that the first photo peeks in from the right. */
+  width: min(70vw, 420px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -951,25 +955,24 @@
   object-fit: cover;
 }
 
-.journey[data-pinned="true"] .journey-stop {
-  width: min(72vw, 1000px);
-  height: 68vh;
-  display: grid;
-  grid-template-columns: 1.55fr 1fr;
-  gap: var(--space-5);
-  padding: 14px;
-}
+@media (min-width: 900px) {
+  .journey-stop {
+    width: min(70vw, 920px);
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: var(--space-5);
+    padding: 14px;
+  }
 
-.journey[data-pinned="true"] .journey-photo {
-  aspect-ratio: auto;
-}
+  .journey-photo {
+    aspect-ratio: auto;
+    min-height: 400px;
+  }
 
-/* Wider than the frame so the ±5% parallax never shows an edge. */
-.journey[data-pinned="true"] .journey-photo img {
-  left: -6%;
-  width: 112%;
-  /* The global img reset caps width at 100%, which would expose the edge. */
-  max-width: none;
+  .journey-copy {
+    justify-content: flex-end;
+    padding: var(--space-4) var(--space-3) var(--space-3) 0;
+  }
 }
 
 .journey-copy {
@@ -977,11 +980,6 @@
   flex-direction: column;
   gap: var(--space-2);
   padding: var(--space-4) var(--space-2) 0;
-}
-
-.journey[data-pinned="true"] .journey-copy {
-  justify-content: flex-end;
-  padding: var(--space-4) var(--space-3) var(--space-3) 0;
 }
 
 .journey-region {
@@ -1022,14 +1020,19 @@
   align-self: flex-start;
 }
 
+/* A ruled progress line with the two arrow buttons at its end. */
+.journey-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--edge);
+}
+
 .journey-progress {
-  position: absolute;
-  left: var(--space-6);
-  right: var(--space-6);
-  bottom: var(--space-6);
+  flex: 1;
   height: 6px;
+  margin-right: var(--space-3);
   background: var(--rule-ink) center / 100% 6px no-repeat;
-  opacity: 0.6;
 }
 
 .journey-progress span {
@@ -1038,6 +1041,50 @@
   background: var(--buoy);
   border-radius: 4px;
   transform-origin: left;
+  transition: transform 0.15s linear;
+}
+
+.journey-arrow {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 2.5px solid var(--ink);
+  border-radius: 52% 48% 55% 45% / 48% 55% 45% 52%;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+  transition:
+    translate 0.15s,
+    box-shadow 0.15s,
+    background-color 0.2s,
+    opacity 0.2s;
+}
+
+.journey-arrow + .journey-arrow {
+  border-radius: 48% 52% 45% 55% / 55% 48% 52% 45%;
+}
+
+.journey-arrow svg {
+  width: 24px;
+  height: 24px;
+}
+
+@media (hover: hover) {
+  .journey-arrow:not(:disabled):hover {
+    background: var(--marker);
+  }
+}
+
+.journey-arrow:not(:disabled):active {
+  translate: 3px 3px;
+  box-shadow: 0 0 0 var(--ink);
+}
+
+.journey-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 /* ---------- Right now: live numbers and the next cleanups ---------- */
