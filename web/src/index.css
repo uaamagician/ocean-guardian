@@ -1568,3 +1568,10 @@ svg.lucide {
     animation: none !important;
   }
 }
+
+/* Beach maps (home preview and full map): the pointer has snapped onto a
+   nearby beach dot, so a click there opens it. */
+.reports-map.is-snapped,
+.reports-map.is-snapped .leaflet-interactive {
+  cursor: pointer;
+}

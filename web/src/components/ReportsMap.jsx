@@ -43,7 +43,7 @@ function radiusFor(zoom, reported, selected) {
 
 // ~15k beaches: drawn imperatively on one canvas layer. As React-Leaflet
 // components they'd be 15k React elements and the map would crawl.
-function BeachLayer({ beaches, tones, selectedId, onSelect }) {
+function BeachLayer({ beaches, tones, selectedId, onSelect, snap }) {
   const map = useMap();
   const markers = useRef(new Map());
   const onSelectRef = useRef(onSelect);
@@ -101,7 +101,114 @@ function BeachLayer({ beaches, tones, selectedId, onSelect }) {
     return () => map.off("zoomend", apply);
   }, [map, beaches, tones, selectedId]);
 
+  useSnap(map, markers, snap, onSelectRef);
+
   return null;
+}
+
+// How close (in screen pixels from a dot's edge) the pointer has to come for
+// the dot to catch it. A tap is less precise than a mouse, so it gets more.
+const SNAP_HOVER = 18;
+const SNAP_TAP = 26;
+const CELL = 48;
+
+// The dots stay small, but the pointer snaps to the nearest one when it comes
+// close: a ring marks it, its name shows, and a click there opens it. Off
+// while placing a new beach, so that click can land anywhere.
+function useSnap(map, markers, enabled, onSelectRef) {
+  useEffect(() => {
+    if (!enabled) return undefined;
+    const container = map.getContainer();
+    // Dots bucketed by layer-pixel position; layer pixels don't change while
+    // panning, so the index is rebuilt only when the zoom changes.
+    let grid = null;
+    let indexed = 0;
+    const build = () => {
+      grid = new Map();
+      indexed = markers.current.size;
+      for (const [id, marker] of markers.current) {
+        const p = map.latLngToLayerPoint(marker.getLatLng());
+        const key = `${Math.floor(p.x / CELL)},${Math.floor(p.y / CELL)}`;
+        if (!grid.has(key)) grid.set(key, []);
+        grid.get(key).push({ id, marker, p });
+      }
+    };
+    const nearest = (containerPoint, reach) => {
+      // Also rebuilt once the beach list arrives (the dots load after the map).
+      if (!grid || indexed !== markers.current.size) build();
+      const at = map.containerPointToLayerPoint(containerPoint);
+      const cx = Math.floor(at.x / CELL);
+      const cy = Math.floor(at.y / CELL);
+      let best = null;
+      let bestGap = reach;
+      for (let dx = -1; dx <= 1; dx += 1) {
+        for (let dy = -1; dy <= 1; dy += 1) {
+          for (const dot of grid.get(`${cx + dx},${cy + dy}`) ?? []) {
+            const gap = at.distanceTo(dot.p) - dot.marker.getRadius();
+            if (gap < bestGap) {
+              best = dot;
+              bestGap = gap;
+            }
+          }
+        }
+      }
+      return best;
+    };
+
+    const ring = L.circleMarker([0, 0], {
+      interactive: false,
+      radius: 10,
+      color: "#e8702a",
+      weight: 2.5,
+      dashArray: "5 4",
+      fill: false,
+    });
+    let current = null;
+    const show = (dot) => {
+      if (dot?.id === current?.id) return;
+      current?.marker.closeTooltip();
+      current = dot;
+      container.classList.toggle("is-snapped", Boolean(dot));
+      if (!dot) {
+        ring.remove();
+        return;
+      }
+      ring.setLatLng(dot.marker.getLatLng()).setRadius(dot.marker.getRadius() + 6).addTo(map);
+      dot.marker.openTooltip();
+    };
+
+    let frame = 0;
+    const onMove = (e) => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => show(nearest(e.containerPoint, SNAP_HOVER)));
+    };
+    const clear = () => {
+      cancelAnimationFrame(frame);
+      show(null);
+    };
+    // A click that missed every dot: open the one it snapped to, if any.
+    const onClick = (e) => {
+      const touch = e.originalEvent?.pointerType === "touch" || e.originalEvent?.sourceCapabilities?.firesTouchEvents;
+      const dot = nearest(e.containerPoint, touch ? SNAP_TAP : SNAP_HOVER);
+      if (dot) onSelectRef.current?.(dot.id);
+    };
+    const reset = () => {
+      grid = null;
+      clear();
+    };
+
+    map.on("mousemove", onMove);
+    map.on("mouseout dragstart zoomstart", clear);
+    map.on("zoomend viewreset", reset);
+    map.on("click", onClick);
+    return () => {
+      map.off("mousemove", onMove);
+      map.off("mouseout dragstart zoomstart", clear);
+      map.off("zoomend viewreset", reset);
+      map.off("click", onClick);
+      clear();
+    };
+  }, [map, markers, enabled, onSelectRef]);
 }
 
 export default function ReportsMap({
@@ -150,7 +257,13 @@ export default function ReportsMap({
           pathOptions={{ color: COMMUNITY_RING, weight: 3, dashArray: "4 4", fillColor: "#ffffff", fillOpacity: 0.9 }}
         />
       )}
-      <BeachLayer beaches={beaches} tones={beachTones} selectedId={selectedBeachId} onSelect={onSelectBeach} />
+      <BeachLayer
+        beaches={beaches}
+        tones={beachTones}
+        selectedId={selectedBeachId}
+        onSelect={onSelectBeach}
+        snap={!placing}
+      />
       {/* Reports that aren't near any known beach still get their own marker. */}
       {reports?.map((r) => {
         const tone = CATEGORIES[r.aiAnalysis?.category]?.tone ?? "none";
