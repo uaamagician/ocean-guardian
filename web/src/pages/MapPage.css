@@ -25,13 +25,13 @@
 .reports-map {
   width: 100%;
   height: 100%;
-  background: #c9dde3;
+  background: #cfd8cf;
 }
 
-/* Soften the chart a little so the condition markers carry the color, and
+/* Mute the busy OSM palette so the condition markers carry the color, and
    warm it toward an old paper sea chart to sit with the notebook pages. */
 .reports-map .leaflet-tile-pane {
-  filter: saturate(0.7) sepia(0.14) brightness(1.02) contrast(0.95);
+  filter: saturate(0.4) sepia(0.22) brightness(1.03) contrast(0.92);
 }
 
 .map-header {
