@@ -88,7 +88,7 @@ function WorldMap({ reports }) {
   const { beaches } = useBeaches();
   const { unmatched, tones } = useReportsByBeach(beaches, reports);
   return (
-    <section className="band band-paper">
+    <section className="band band-paper sand-drift">
       <div className="band-inner">
         <div className="band-split">
           <Reveal className="band-head">

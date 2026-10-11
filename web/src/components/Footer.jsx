@@ -15,8 +15,8 @@ export default function Footer() {
         </div>
         <p>
           Sea temperature: <a href="https://open-meteo.com/">Open-Meteo</a>. Coral bleaching:{" "}
-          <a href="https://coralreefwatch.noaa.gov/">NOAA Coral Reef Watch</a>. Map:{" "}
-          <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>. Photos via Wikimedia Commons, credited
+          <a href="https://coralreefwatch.noaa.gov/">NOAA Coral Reef Watch</a>. Map tiles: Esri. Beaches:{" "}
+          <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> and Wikidata. Photos via Wikimedia Commons, credited
           where they appear.
         </p>
       </div>

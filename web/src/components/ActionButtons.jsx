@@ -5,7 +5,7 @@ import { CalendarCheck, Camera, Megaphone } from "lucide-react";
 export default function ActionButtons({ light = false, className = "" }) {
   const secondary = light ? "btn btn-light" : "btn";
   return (
-    <div className={`action-buttons ${className}`}>
+    <div className={`action-buttons ${light ? "is-light" : ""} ${className}`}>
       <Link to="/report" className="btn btn-primary" viewTransition>
         <Camera aria-hidden="true" /> Report a beach
       </Link>

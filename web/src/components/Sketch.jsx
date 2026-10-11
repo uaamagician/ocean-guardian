@@ -129,6 +129,7 @@ export function Note({ arrow, className = "", children }) {
     <span className={`hand-note ${className}`}>
       {arrow === "before" && <Doodle name="arrow" className="hand-note-arrow" boil={false} />}
       <span>{children}</span>
+      {arrow === "after" && <Doodle name="arrow" className="hand-note-arrow-after" boil={false} />}
       {arrow === "down" && <Doodle name="arrowDown" className="hand-note-arrow-down" boil={false} />}
     </span>
   );

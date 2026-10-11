@@ -5,6 +5,10 @@ import { CATEGORIES, TONE_COLORS } from "../lib/labels";
 import { isCommunityBeach } from "../lib/beaches";
 
 const NO_REPORT_COLOR = "#23727a";
+
+const esri = (service) => `https://server.arcgisonline.com/ArcGIS/rest/services/${service}/MapServer/tile/{z}/{y}/{x}`;
+const ATTRIBUTION =
+  'Tiles &copy; Esri, GEBCO, NOAA, Maxar, Earthstar Geographics &middot; beaches from Wikidata and <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 const COMMUNITY_RING = "#e8702a";
 
 // While placing a new beach, the map takes clicks and shows a crosshair cursor.
@@ -240,12 +244,14 @@ export default function ReportsMap({
     >
       {/* Top-left holds the title card and the right side the detail panel. */}
       <ZoomControl position="bottomleft" />
-      {/* OSM's tile servers are fine for development traffic; move to a keyed provider before launch. */}
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, beaches from Wikidata and OpenStreetMap'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maxZoom={19}
-      />
+      {/* No local scripts on the map (the site is English only; OSM and street
+          maps label in the local language). Esri's ocean chart with English
+          labels and sea-floor relief while zoomed out, then unlabelled aerial
+          photos once you're looking at single beaches, where you can see the
+          sand itself. */}
+      <TileLayer url={esri("Ocean/World_Ocean_Base")} maxZoom={10} attribution={ATTRIBUTION} />
+      <TileLayer url={esri("Ocean/World_Ocean_Reference")} maxZoom={10} />
+      <TileLayer url={esri("World_Imagery")} minZoom={11} maxZoom={19} />
       <FocusOn lat={focus?.lat} lng={focus?.lng} />
       <FlyTo target={flyTo} />
       <PlaceHandler active={placing} onPlace={onPlace} />

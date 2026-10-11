@@ -848,6 +848,39 @@
   background-image: var(--paper-grain);
 }
 
+/* Where two stretches of sand meet, the darker one drifts over the lighter in
+   a soft dune line instead of a ruled edge. Same curve as the wave edges. */
+.sand-drift {
+  position: relative;
+}
+
+.sand-drift::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -17px;
+  height: 18px;
+  background: var(--sand);
+  -webkit-mask: var(--wave-edge) 0 0 / 240px 18px repeat-x;
+  mask: var(--wave-edge) 0 0 / 240px 18px repeat-x;
+  pointer-events: none;
+}
+
+/* Two water sections in a row are one stretch of sea: no shoreline between. */
+.band-dark:has(+ .band-dark)::after,
+.band-dark + .band-dark::before {
+  display: none;
+}
+
+.band-dark:has(+ .band-dark) {
+  padding-bottom: var(--space-6);
+}
+
+.band-dark + .band-dark {
+  padding-top: var(--space-6);
+}
+
 /* ---------- Journey: snapshots pinned to a kraft-paper board ---------- */
 
 .journey {

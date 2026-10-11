@@ -106,7 +106,7 @@ export default function Journey() {
             </h2>
             <p>The same currents connect every coast. Follow the plastic from the tropics to the open Pacific, and back to Taiwan.</p>
             <p className="journey-hint">
-              <Note arrow="before">swipe or use the arrows</Note>
+              <Note arrow="after">swipe for more</Note>
             </p>
           </div>
 
