@@ -106,7 +106,7 @@ export default function HistoryPage() {
         </div>
       </section>
 
-      <section className="band">
+      <section className="band paper-drift">
         <div className="band-inner">
           <Reveal className="band-head">
             <h2>Cleanups organized here</h2>

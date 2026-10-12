@@ -69,9 +69,15 @@
   --paper-grain:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='d'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.3' numOctaves='1' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .31 0 0 0 0 .17 0 0 0 10 -7.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23d)' opacity='.85'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='190'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='1' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 .96 0 0 0 10 -7.4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23l)' opacity='.7'/%3E%3C/svg%3E");
-  /* White foam along the crest of each wave edge (same curve as --wave-edge). */
-  --foam-edge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24' preserveAspectRatio='none'%3E%3Cpath d='M0 15 C 18 5, 34 6, 50 12 C 66 18, 86 21, 104 12 C 120 4, 142 6, 160 15' fill='none' stroke='%23ffffff' stroke-opacity='.75' stroke-width='3.2' stroke-linecap='round'/%3E%3Cpath d='M22 13 C 30 10, 38 10, 44 12 M118 9 C 126 7, 134 8, 140 10' fill='none' stroke='%23ffffff' stroke-opacity='.45' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
-  --wave-edge: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24' preserveAspectRatio='none'%3E%3Cpath d='M0 15 C 18 5, 34 6, 50 12 C 66 18, 86 21, 104 12 C 120 4, 142 6, 160 15 V24 H0 Z'/%3E%3C/svg%3E");
+  /* The shoreline where water meets sand, drawn by scripts/make-shore.py:
+     one long irregular curve that tiles with no seam. --wave-edge masks the
+     water (and the wet sand just above it); --foam-edge paints the wet sand,
+     the foam on the crest and the lace of bubbles behind it. The plain pair
+     has no wet sand, for water meeting a photo or the night-blue footer. */
+  --wave-edge: url("/shore/water.svg");
+  --foam-edge: url("/shore/foam.svg");
+  --wave-edge-plain: url("/shore/water-plain.svg");
+  --foam-edge-plain: url("/shore/foam-plain.svg");
   --nav-height: 72px;
 
   /* One set of curves for the whole site: ease-out for things arriving or
@@ -422,12 +428,16 @@ svg.lucide {
   pointer-events: none;
 }
 
-/* Dark bands meet the paper with a moving wave instead of a straight edge. */
+/* Water sections meet the sand with a shoreline instead of a straight edge.
+   The curve is a sum of sines whose periods all divide its 1200px width, so
+   it tiles with no seam or point (scripts/make-shore.py). The edge laps up
+   and back like a swash. */
 .wave-edge,
 .band-dark,
 .band-deep {
   position: relative;
   z-index: 1;
+  --shore: 46px;
 }
 
 .wave-edge::before,
@@ -440,37 +450,66 @@ svg.lucide {
   position: absolute;
   left: 0;
   right: 0;
-  height: 22px;
-  /* The water's colour, with a line of foam riding the crest. */
+  /* Overlaps the section by a few pixels so no hairline shows at any zoom. */
+  height: calc(var(--shore) + 4px);
   background-color: inherit;
   background-image: var(--foam-edge);
-  background-size: 160px 22px;
+  background-size: 1200px var(--shore);
   background-repeat: repeat-x;
-  -webkit-mask: var(--wave-edge) 0 0 / 160px 22px repeat-x;
-  mask: var(--wave-edge) 0 0 / 160px 22px repeat-x;
-  animation: wave-slide 9s linear infinite;
+  -webkit-mask: var(--wave-edge) 0 0 / 1200px var(--shore) repeat-x,
+    linear-gradient(#000, #000) 0 var(--shore) / 100% 4px no-repeat;
+  mask: var(--wave-edge) 0 0 / 1200px var(--shore) repeat-x,
+    linear-gradient(#000, #000) 0 var(--shore) / 100% 4px no-repeat;
+  animation:
+    shore-drift 120s linear infinite,
+    swash 7s ease-in-out infinite;
   pointer-events: none;
 }
 
 .wave-edge::before,
 .band-dark::before,
 .band-deep::before {
-  top: -21px;
+  top: calc(-1 * var(--shore));
 }
 
 .wave-edge::after,
 .band-dark::after,
 .band-deep::after {
-  bottom: -21px;
+  bottom: calc(-1 * var(--shore));
   scale: 1 -1;
-  animation-direction: reverse;
+  animation-name: shore-drift, swash-back;
+  animation-direction: reverse, normal;
+  animation-delay: 0s, -3.5s;
 }
 
-@keyframes wave-slide {
+/* A very slow drift along the coast, so the shoreline is never quite still. */
+@keyframes shore-drift {
   to {
-    background-position: 160px 0;
-    -webkit-mask-position: 160px 0;
-    mask-position: 160px 0;
+    background-position: 1200px 0;
+    -webkit-mask-position: 1200px 0, 0 var(--shore);
+    mask-position: 1200px 0, 0 var(--shore);
+  }
+}
+
+/* The swash: water runs a little way up the sand, then slides back. Only
+   ever moves toward its own section, so no gap opens behind it. */
+@keyframes swash {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  45% {
+    translate: 0 5px;
+  }
+}
+
+@keyframes swash-back {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  45% {
+    translate: 0 -5px;
   }
 }
 
@@ -1401,6 +1440,54 @@ svg.lucide {
 
 .footer.wave-edge::after {
   display: none;
+}
+
+/* Where two stretches of sand meet, the upper edge of the lower one drifts
+   over the other in a soft dune line instead of a ruled edge: the shoreline
+   curve again, flatter and longer. .sand-drift is the darker sand,
+   .paper-drift the paler one. */
+.sand-drift,
+.paper-drift {
+  position: relative;
+  --drift: var(--sand);
+}
+
+.paper-drift {
+  --drift: var(--paper);
+}
+
+.sand-drift::before,
+.paper-drift::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -24px;
+  height: 28px;
+  background-color: var(--drift);
+  background-image: var(--paper-grain);
+  -webkit-mask: var(--wave-edge) 300px 0 / 1800px 24px repeat-x,
+    linear-gradient(#000, #000) 0 24px / 100% 4px no-repeat;
+  mask: var(--wave-edge) 300px 0 / 1800px 24px repeat-x,
+    linear-gradient(#000, #000) 0 24px / 100% 4px no-repeat;
+  pointer-events: none;
+}
+
+/* A page that ends in water runs straight into the footer's deeper water:
+   one line of foam between them, not two shorelines. */
+.band-dark:last-child::after,
+.band-deep:last-child::after {
+  display: none;
+}
+
+/* Water running onto a photo or the footer rather than sand: water and foam
+   only, no wet-sand band. */
+.band-deep::after,
+.band-dark:has(+ .final-cta)::after,
+.app-main:has(.final-cta, .band-dark:last-child, .band-deep:last-child) + .footer.wave-edge::before {
+  background-image: var(--foam-edge-plain);
+  -webkit-mask-image: var(--wave-edge-plain), linear-gradient(#000, #000);
+  mask-image: var(--wave-edge-plain), linear-gradient(#000, #000);
 }
 
 .footer-inner > p {

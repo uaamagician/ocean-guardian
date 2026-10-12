@@ -343,6 +343,7 @@
 
 .spot {
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -355,6 +356,10 @@
   content: "";
   position: absolute;
   inset: 0;
+  z-index: -1;
+  /* Filled, so the turtle and bubbles pass behind the card, not over the
+     numbers. */
+  background: rgba(240, 249, 247, 0.92);
   border: 2px solid var(--ink);
   border-radius: var(--radius-md);
   filter: url(#rough-still);
@@ -848,25 +853,6 @@
   background-image: var(--paper-grain);
 }
 
-/* Where two stretches of sand meet, the darker one drifts over the lighter in
-   a soft dune line instead of a ruled edge. Same curve as the wave edges. */
-.sand-drift {
-  position: relative;
-}
-
-.sand-drift::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -17px;
-  height: 18px;
-  background: var(--sand);
-  -webkit-mask: var(--wave-edge) 0 0 / 240px 18px repeat-x;
-  mask: var(--wave-edge) 0 0 / 240px 18px repeat-x;
-  pointer-events: none;
-}
-
 /* Two water sections in a row are one stretch of sea: no shoreline between. */
 .band-dark:has(+ .band-dark)::after,
 .band-dark + .band-dark::before {
@@ -1352,7 +1338,8 @@
 .final-cta-credit {
   position: absolute;
   right: var(--space-4);
-  bottom: var(--space-3);
+  /* Clear of the footer's shoreline, which rises over the photo's bottom. */
+  bottom: calc(var(--shore, 46px) + var(--space-3));
   font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.6);
 }

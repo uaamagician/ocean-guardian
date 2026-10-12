@@ -48,17 +48,6 @@ export const HISTORY = [
   },
   {
     kind: "cleanup",
-    date: "2016-08-13",
-    place: "Taiping Island",
-    country: "South China Sea",
-    summary: "Coast guard officers and civilians cleaned the island's beach together.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/8/8f/%E8%BB%8D%E6%B0%91%E6%B7%A8%E7%81%98%E8%AD%B7%E5%A4%AA%E5%B9%B3.jpg",
-    credit: "Coast Guard Administration, Taiwan",
-    license: "Attribution",
-    source: "https://commons.wikimedia.org/wiki/File:%E8%BB%8D%E6%B0%91%E6%B7%A8%E7%81%98%E8%AD%B7%E5%A4%AA%E5%B9%B3.jpg",
-  },
-  {
-    kind: "cleanup",
     date: "2017-01-10",
     place: "Ha Long Bay, Quang Ninh",
     country: "Vietnam",
