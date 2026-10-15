@@ -183,37 +183,62 @@
   padding: var(--space-8) var(--space-4);
 }
 
-/* "Sea" sections: shallow water with sunlight netting the bottom, painted
-   (art/water) and tinted to the site's sea colours by scripts/tint-water.py.
-   Near the shore the painting fades to the plain sea colour, so it meets the
-   shoreline edges (index.css), which are drawn in that colour, without a seam. */
+/* "Sea" sections: clear water deepening away from the shore, with sunlight
+   netting the bottom. The net (art/water, made into a light-only layer by
+   scripts/caustics.py) spans the full width and repeats downward without a
+   seam; each stretch of sea starts it at a different depth so no two look
+   alike. Only right at the shore does it fade to clear shallow water, the
+   colour the shoreline edges (index.css) are drawn in. */
 .band-dark,
-.band-deep {
-  --water: var(--sea);
+.band-deep,
+.sea-run {
+  --water: var(--water-shallow);
+  --water-mid: var(--water-deep);
+  --net-y: 0px;
   background-color: var(--water);
   background-image:
-    var(--paper-grain),
-    linear-gradient(var(--water), transparent 110px, transparent calc(100% - 110px), var(--water)),
-    url("../assets/water/sea.webp");
+    linear-gradient(var(--water), transparent 70px, transparent calc(100% - 70px), var(--water)),
+    url("../assets/water/caustics.webp"),
+    linear-gradient(var(--water), var(--water-mid) 35%, var(--water-mid) 65%, var(--water));
   background-size:
-    auto,
-    auto,
     100% 100%,
-    cover;
+    max(100%, 1100px) auto,
+    100% 100%;
   background-position:
     0 0,
-    0 0,
-    0 0,
-    center;
+    center var(--net-y),
+    0 0;
+  background-repeat: no-repeat, repeat-y, no-repeat;
   color: var(--ink);
 }
 
 .band-deep {
-  --water: var(--sea-deep);
-  background-image:
-    var(--paper-grain),
-    linear-gradient(var(--water), transparent 110px, transparent calc(100% - 110px), var(--water)),
-    url("../assets/water/sea-deep.webp");
+  --water-mid: var(--water-deeper);
+  --net-y: -420px;
+}
+
+.why {
+  --net-y: -250px;
+}
+
+.hist-cta {
+  --net-y: -520px;
+}
+
+/* Two sea sections in a row are one stretch of water: the run paints it, the
+   sections inside stay clear, and only its outer shorelines show. */
+.sea-run {
+  position: relative;
+  --net-y: -120px;
+}
+
+.sea-run > .band-dark {
+  background: none;
+}
+
+.sea-run > .band-dark::before,
+.sea-run > .band-dark::after {
+  background-color: var(--water-shallow);
 }
 
 .band-inner {

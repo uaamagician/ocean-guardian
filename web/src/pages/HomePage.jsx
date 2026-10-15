@@ -373,8 +373,10 @@ export default function HomePage() {
       <Hero />
       <RightNow reports={reports} />
       <WorldMap reports={reports} />
-      <DebrisStats reports={reports} />
-      <LiveOcean />
+      <div className="sea-run">
+        <DebrisStats reports={reports} />
+        <LiveOcean />
+      </div>
       <HowItWorks reports={reports} />
       <CleanupPreview />
       <Journey />

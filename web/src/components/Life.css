@@ -205,6 +205,15 @@
   bottom: 8px;
 }
 
+/* On phones the text fills most of each section, so the swimmers sit a
+   little deeper (fainter) and never fight with the words above them. */
+@media (max-width: 699px) {
+  .turtle-path,
+  .fish-path {
+    opacity: 0.55;
+  }
+}
+
 /* The second fish heads the other way, so it faces left as drawn. */
 .fish-path-2 .fish {
   width: 64px;

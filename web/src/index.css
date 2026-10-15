@@ -14,6 +14,10 @@
   /* Shallow water, as in the hero illustration: the "sea" sections. */
   --sea: #d4ecea;
   --sea-deep: #c4e3e0;
+  /* The painted sea sections: clear and pale at the shore, deeper out. */
+  --water-shallow: #d3f0f1;
+  --water-deep: #a9dee5;
+  --water-deeper: #93d2dc;
   --driftwood: #8a6a3d;
   --tide: #2a6d8c;
   --buoy: #e85a30;
@@ -1472,8 +1476,8 @@ svg.lucide {
 
 /* A page that ends in water runs straight into the footer's deeper water:
    one line of foam between them, not two shorelines. */
-.band-dark:last-child::after,
-.band-deep:last-child::after {
+.band-dark:last-child:not(.sea-run > *)::after,
+.band-deep:last-child:not(.sea-run > *)::after {
   display: none;
 }
 
@@ -1481,7 +1485,7 @@ svg.lucide {
    only, no wet-sand band. */
 .band-deep::after,
 .band-dark:has(+ .final-cta)::after,
-.app-main:has(.final-cta, .band-dark:last-child, .band-deep:last-child) + .footer.wave-edge::before {
+.app-main:has(.final-cta, > * > .band-dark:last-child, > * > .band-deep:last-child) + .footer.wave-edge::before {
   background-image: var(--foam-edge-plain);
   -webkit-mask-image: var(--wave-edge-plain), linear-gradient(#000, #000);
   mask-image: var(--wave-edge-plain), linear-gradient(#000, #000);
