@@ -259,24 +259,26 @@
 }
 
 /* Doodles in the margins of a section. */
-.band-doodle {
+/* Margin pictures beside a heading, on wide screens only. (The second
+   selector outranks the drawn animals' own display: block.) */
+.band-doodle,
+.band-doodle:is(.layers, .life-still) {
   position: absolute;
   display: none;
 }
 
 @media (min-width: 900px) {
-  .band-doodle {
+  .band-doodle,
+  .band-doodle:is(.layers, .life-still) {
     display: block;
   }
 }
 
+/* The rays turn on their own (Life.css). */
 .live-sun {
-  top: -36px;
+  top: -40px;
   right: 2%;
-  width: 96px;
-  height: 96px;
-  color: var(--buoy);
-  animation: spin 40s linear infinite;
+  width: 108px;
 }
 
 .map-gull {

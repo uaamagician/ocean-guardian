@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { BLEACHING_LEVELS, FEATURED_SPOTS, fetchCoralStress, fetchSeaTemps } from "../lib/ocean";
 import { Reveal } from "./Motion";
-import { Doodle } from "./Sketch";
-import { SeaLife } from "./Life";
+import { SeaLife, Sun } from "./Life";
 import "../pages/Home.css";
 
 function useFeaturedConditions() {
@@ -31,7 +30,7 @@ export default function LiveOcean({ title = "The ocean right now" }) {
     <section className="band band-dark">
       <SeaLife />
       <div className="band-inner">
-        <Doodle name="sun" className="band-doodle live-sun" />
+        <Sun className="band-doodle live-sun" />
         <Reveal className="band-head">
           <h2>{title}</h2>
           <p>Sea temperature and coral bleaching alerts around Taiwan, updated daily.</p>

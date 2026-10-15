@@ -359,7 +359,7 @@ a.cl-title:hover {
 
 .cl-empty-doodle {
   width: 72px;
-  height: 72px;
+  height: auto;
   color: var(--buoy);
 }
 

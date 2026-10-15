@@ -13,115 +13,95 @@
   z-index: 1;
 }
 
+/* ---------- Layered pictures (see Life.jsx) ---------- */
+
+.layers {
+  position: relative;
+  display: block;
+}
+
+.layers .part {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  user-select: none;
+}
+
+/* ---------- The turtle ---------- */
+
 .turtle-path {
   position: absolute;
   top: 58%;
   left: 0;
-  width: 120px;
+  width: 116px;
   animation: turtle-swim 46s linear infinite;
   animation-delay: -12s;
 }
 
+/* Drawn head up: a quarter turn so it swims head first, to the right. */
 .turtle {
-  display: block;
-  width: 120px;
-  height: 90px;
-  overflow: visible;
-  filter: url(#rough-still);
-  opacity: 0.55;
+  width: 116px;
+  rotate: 90deg;
   animation: turtle-bob 2.6s ease-in-out infinite;
 }
 
-.turtle-shell {
-  fill: var(--seaglass);
-  stroke: var(--ink);
-  stroke-width: 2.4;
+.turtle .part-front-left {
+  animation: stroke-left 2.6s infinite;
 }
 
-.turtle-scutes {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 1.6;
-  stroke-linejoin: round;
-  opacity: 0.6;
-}
-
-.turtle-head,
-.turtle-flipper path,
-.turtle-tail {
-  fill: #a9d8c4;
-  stroke: var(--ink);
-  stroke-width: 2;
-  stroke-linejoin: round;
-}
-
-.turtle-eye {
-  fill: var(--ink);
-}
-
-/* Front flippers sweep together, the back ones paddle a little. */
-.turtle-flipper {
-  transform-box: view-box;
-}
-
-.turtle-flipper-front-top {
-  transform-origin: 72px 34px;
-  animation: stroke-top 2.6s infinite;
-}
-
-.turtle-flipper-front-bottom {
-  transform-origin: 72px 56px;
-  animation: stroke-bottom 2.6s infinite;
+.turtle .part-front-right {
+  animation: stroke-right 2.6s infinite;
 }
 
 /* The back flippers only steer: a small, slow sway. */
-.turtle-flipper-back-top {
-  transform-origin: 38px 38px;
+.turtle .part-back-left {
   animation: steer 2.6s ease-in-out infinite;
 }
 
-.turtle-flipper-back-bottom {
-  transform-origin: 38px 52px;
+.turtle .part-back-right {
   animation: steer 2.6s ease-in-out infinite reverse;
 }
 
-/* A sea turtle's front flippers sweep back hard (the push) and then glide
-   forward again, slower. Negative turns the top flipper toward the tail. */
-@keyframes stroke-top {
+/* The front flippers sweep back hard toward the tail (the push), then glide
+   forward again, slower. In the drawing the head is up, so "back" turns the
+   left flipper anticlockwise and the right one clockwise. */
+@keyframes stroke-left {
   0% {
-    rotate: 10deg;
+    rotate: 12deg;
     animation-timing-function: cubic-bezier(0.5, 0, 0.3, 1);
   }
   38% {
-    rotate: -32deg;
+    rotate: -26deg;
     animation-timing-function: ease-in-out;
   }
   100% {
-    rotate: 10deg;
+    rotate: 12deg;
   }
 }
 
-@keyframes stroke-bottom {
+@keyframes stroke-right {
   0% {
-    rotate: -10deg;
+    rotate: -12deg;
     animation-timing-function: cubic-bezier(0.5, 0, 0.3, 1);
   }
   38% {
-    rotate: 32deg;
+    rotate: 26deg;
     animation-timing-function: ease-in-out;
   }
   100% {
-    rotate: -10deg;
+    rotate: -12deg;
   }
 }
 
 @keyframes steer {
   0%,
   100% {
-    rotate: -6deg;
+    rotate: -8deg;
   }
   50% {
-    rotate: 6deg;
+    rotate: 8deg;
   }
 }
 
@@ -140,11 +120,111 @@
   0%,
   100% {
     translate: 0 0;
-    rotate: -4deg;
+    rotate: 86deg;
   }
   38% {
     translate: 10px -6px;
-    rotate: -2deg;
+    rotate: 88deg;
+  }
+}
+
+/* ---------- Fish ---------- */
+
+.fish {
+  width: 84px;
+}
+
+/* The tail beats from side to side; seen side on, it swings and narrows. */
+.fish .part-tail {
+  animation: tail-beat 0.7s ease-in-out infinite;
+}
+
+.fish .part-body {
+  transform-origin: 60% 50%;
+  animation: body-sway 1.4s ease-in-out infinite;
+}
+
+@keyframes tail-beat {
+  0%,
+  100% {
+    rotate: -12deg;
+    scale: 1 1;
+  }
+  50% {
+    rotate: 12deg;
+    scale: 0.82 1;
+  }
+}
+
+@keyframes body-sway {
+  0%,
+  100% {
+    rotate: -1.5deg;
+  }
+  50% {
+    rotate: 1.5deg;
+  }
+}
+
+.fish-path {
+  position: absolute;
+  left: 0;
+}
+
+/* Drawn facing left: mirrored to swim left to right. */
+.fish-path .fish {
+  scale: -1 1;
+}
+
+.fish-path-1 {
+  top: 22%;
+  animation: fish-swim 30s linear infinite;
+  animation-delay: -6s;
+}
+
+.fish-path-2 {
+  top: 80%;
+  animation: fish-swim-back 38s linear infinite;
+  animation-delay: -20s;
+}
+
+/* The second fish heads the other way, so it faces left as drawn. */
+.fish-path-2 .fish {
+  width: 64px;
+  scale: 1 1;
+}
+
+/* Swimming in short bursts and glides, drifting up and down a little. */
+@keyframes fish-swim {
+  0% {
+    translate: -120px 0;
+  }
+  30% {
+    translate: 30vw -14px;
+  }
+  45% {
+    translate: 40vw -8px;
+  }
+  75% {
+    translate: 75vw 10px;
+  }
+  100% {
+    translate: calc(100vw + 120px) 0;
+  }
+}
+
+@keyframes fish-swim-back {
+  0% {
+    translate: calc(100vw + 120px) 0;
+  }
+  35% {
+    translate: 62vw 12px;
+  }
+  50% {
+    translate: 52vw 6px;
+  }
+  100% {
+    translate: -120px -10px;
   }
 }
 
@@ -189,57 +269,71 @@
 
 .crab-path {
   position: absolute;
-  bottom: 14px;
+  bottom: 12px;
   left: 0;
   animation: crab-walk 26s linear infinite;
   animation-delay: 3s;
 }
 
 .crab {
-  display: block;
-  width: 70px;
-  height: 44px;
-  overflow: visible;
-  filter: url(#rough-still);
+  width: 74px;
 }
 
-.crab-body,
-.crab-claw {
-  fill: var(--buoy);
-  stroke: var(--ink);
-  stroke-width: 2;
-  stroke-linejoin: round;
+/* Legs on each side take turns, a quick scuttle; it only stops while the
+   crab stops to look around. */
+.crab .part-legs-left {
+  animation: scuttle 0.36s ease-in-out infinite;
 }
 
-.crab-arm,
-.crab-stalk,
-.crab-legs path {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 2.2;
-  stroke-linecap: round;
+.crab .part-legs-right {
+  animation: scuttle 0.36s ease-in-out infinite reverse;
 }
 
-.crab-eye {
-  fill: var(--ink);
+/* Claws held up, opening and closing in turn. */
+.crab .part-claw-left {
+  animation: claw-left 2.2s ease-in-out infinite;
 }
 
-/* Two sets of legs taking turns: a scuttle. */
-.crab-legs-a {
-  animation: legs 0.32s steps(1) infinite;
+.crab .part-claw-right {
+  animation: claw-right 2.2s ease-in-out infinite;
+  animation-delay: -1.1s;
 }
 
-.crab-legs-b {
-  opacity: 0;
-  animation: legs 0.32s steps(1) infinite reverse;
-}
-
-@keyframes legs {
-  0% {
-    opacity: 1;
+@keyframes scuttle {
+  0%,
+  100% {
+    rotate: -7deg;
   }
   50% {
-    opacity: 0;
+    rotate: 7deg;
+  }
+}
+
+@keyframes claw-left {
+  0%,
+  60%,
+  100% {
+    rotate: 0deg;
+  }
+  70% {
+    rotate: -14deg;
+  }
+  80% {
+    rotate: 4deg;
+  }
+}
+
+@keyframes claw-right {
+  0%,
+  60%,
+  100% {
+    rotate: 0deg;
+  }
+  70% {
+    rotate: 14deg;
+  }
+  80% {
+    rotate: -4deg;
   }
 }
 
@@ -261,6 +355,38 @@
   100% {
     translate: calc(100vw + 20px) 0;
   }
+}
+
+/* ---------- The sun, the shell and the starfish beside headings ---------- */
+
+.sun .part-rays {
+  animation: rays-turn 60s linear infinite;
+}
+
+.sun .part-disc {
+  animation: disc-glow 4s ease-in-out infinite;
+}
+
+@keyframes rays-turn {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes disc-glow {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.05;
+  }
+}
+
+.life-still {
+  display: block;
+  height: auto;
+  user-select: none;
 }
 
 /* ---------- Gulls over the hero ---------- */
@@ -343,5 +469,11 @@
   .crab-lane,
   .gulls {
     display: none;
+  }
+
+  .layers,
+  .layers .part,
+  .life-still {
+    animation: none;
   }
 }

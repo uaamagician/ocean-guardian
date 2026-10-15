@@ -1416,18 +1416,15 @@ svg.lucide {
 
 .footer-fish {
   position: absolute;
-  top: 22px;
+  top: 26px;
   left: 0;
-  width: 44px;
-  height: 44px;
-  color: var(--marker);
+  width: 64px;
   animation: swim 26s linear infinite;
 }
 
-/* The fish doodle is drawn facing left; mirror it so it swims head first. */
-.footer-fish .doodle {
+/* The fish is drawn facing left; mirror it so it swims head first. */
+.footer-fish .fish {
   width: 100%;
-  height: 100%;
   scale: -1 1;
   animation: bob 2.4s ease-in-out infinite;
 }
@@ -1549,7 +1546,7 @@ svg.lucide {
   .hero-zoom,
   .bob,
   .footer-fish,
-  .footer-fish .doodle,
+  .footer-fish .fish,
   .wave-edge::before,
   .wave-edge::after,
   .band-dark::before,

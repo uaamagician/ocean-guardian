@@ -33,7 +33,7 @@ const FACTS = [
 export function WhyItMatters() {
   return (
     <section className="band band-dark why">
-      <SeaLife />
+      <SeaLife fish={["orange", "blue"]} />
       <div className="band-inner">
         <Doodle name="bottle" className="band-doodle why-bottle bob" />
         <Reveal className="band-head">

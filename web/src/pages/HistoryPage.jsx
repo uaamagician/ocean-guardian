@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import { Link } from "react-router";
 import { Reveal } from "../components/Motion";
-import { Doodle, Footprints, Marked } from "../components/Sketch";
+import { Footprints, Marked } from "../components/Sketch";
+import { Shell, Starfish } from "../components/Life";
 import FadeImg from "../components/FadeImg";
 import EventCard from "../components/EventCard";
 import ActionButtons from "../components/ActionButtons";
@@ -77,7 +78,7 @@ export default function HistoryPage() {
       <div className="info-top" />
       <section className="band band-dark">
         <div className="band-inner">
-          <Doodle name="shell" className="band-doodle hist-shell bob" />
+          <Shell className="band-doodle hist-shell bob" />
           <Reveal className="band-head">
             <h2>
               Cleanups that <Marked kind="underline">came before</Marked>
@@ -115,7 +116,7 @@ export default function HistoryPage() {
           {past === undefined && <p className="report-meta">Loading…</p>}
           {past !== undefined && !past?.length && (
             <div className="cl-empty">
-              <Doodle name="starfish" className="cl-empty-doodle bob" />
+              <Starfish className="cl-empty-doodle bob" />
               <h3>The first page is still blank</h3>
               <p>No cleanup organized here has finished yet. Join one, or set one up, and it lands here afterward.</p>
               <Link to="/action" className="btn btn-primary" viewTransition>

@@ -1,11 +1,11 @@
-import { Doodle } from "./Sketch";
+import { Fish } from "./Life";
 
 export default function Footer() {
   return (
     <footer className="footer wave-edge">
       <span className="footer-sea" aria-hidden="true">
         <span className="footer-fish">
-          <Doodle name="fish" boil={false} />
+          <Fish colour="orange" />
         </span>
       </span>
       <div className="footer-inner">

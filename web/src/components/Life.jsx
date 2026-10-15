@@ -1,33 +1,79 @@
-// Small animals that wander through the page: a sea turtle and bubbles in the
-// water sections, a crab on the sand, gulls over the hero. All decorative:
-// hidden from screen readers and stilled for reduced motion (see Life.css).
+// Small animals that wander through the page: a sea turtle, fish and bubbles
+// in the water sections, a crab on the sand, gulls over the hero, plus the sun,
+// shell and starfish that sit beside headings. The animals are hand-drawn
+// pictures (art/creatures), cut apart by scripts/split-creatures.py so their
+// flippers, claws, legs and tails can move. All decorative: hidden from screen
+// readers and stilled for reduced motion (see Life.css).
+import turtleBody from "../assets/life/turtle-body.webp";
+import turtleFrontLeft from "../assets/life/turtle-front-left.webp";
+import turtleFrontRight from "../assets/life/turtle-front-right.webp";
+import turtleBackLeft from "../assets/life/turtle-back-left.webp";
+import turtleBackRight from "../assets/life/turtle-back-right.webp";
+import crabBody from "../assets/life/crab-body.webp";
+import crabClawLeft from "../assets/life/crab-claw-left.webp";
+import crabClawRight from "../assets/life/crab-claw-right.webp";
+import crabLegsLeft from "../assets/life/crab-legs-left.webp";
+import crabLegsRight from "../assets/life/crab-legs-right.webp";
+import fishBlueBody from "../assets/life/fish-blue-body.webp";
+import fishBlueTail from "../assets/life/fish-blue-tail.webp";
+import fishPinkBody from "../assets/life/fish-pink-body.webp";
+import fishPinkTail from "../assets/life/fish-pink-tail.webp";
+import fishOrangeBody from "../assets/life/fish-orange-body.webp";
+import fishOrangeTail from "../assets/life/fish-orange-tail.webp";
+import sunDisc from "../assets/life/sun-disc.webp";
+import sunRays from "../assets/life/sun-rays.webp";
+import shellImg from "../assets/life/shell.webp";
+import starfishImg from "../assets/life/starfish.webp";
 import "./Life.css";
 
+// One picture made of stacked layers on the same canvas. Each moving part
+// turns about its pivot: where it joins the body, as % of the canvas.
+function Layers({ className, ratio, layers }) {
+  return (
+    <span className={`layers ${className}`} style={{ aspectRatio: ratio }} aria-hidden="true">
+      {layers.map(([src, part, pivot]) => (
+        <img key={part} src={src} alt="" className={`part part-${part}`} style={pivot && { transformOrigin: pivot }} draggable="false" />
+      ))}
+    </span>
+  );
+}
+
+// Drawn head up; Life.css turns it to swim head first across the section.
+// The flippers sit under the shell so their roots never show.
 function Turtle() {
   return (
-    <svg className="turtle" viewBox="0 0 120 90" aria-hidden="true" focusable="false">
-      <g className="turtle-flipper turtle-flipper-front-top">
-        <path d="M70 32 C 78 18, 92 8, 102 6 C 98 16, 88 28, 76 36 Z" />
-      </g>
-      <g className="turtle-flipper turtle-flipper-front-bottom">
-        <path d="M70 58 C 78 72, 92 82, 102 84 C 98 74, 88 62, 76 54 Z" />
-      </g>
-      <g className="turtle-flipper turtle-flipper-back-top">
-        <path d="M38 34 C 32 26, 24 22, 18 22 C 22 30, 28 36, 36 40 Z" />
-      </g>
-      <g className="turtle-flipper turtle-flipper-back-bottom">
-        <path d="M38 56 C 32 64, 24 68, 18 68 C 22 60, 28 54, 36 50 Z" />
-      </g>
-      <path className="turtle-tail" d="M28 45 L18 42 L18 48 Z" />
-      <ellipse className="turtle-head" cx="94" cy="45" rx="11" ry="8.5" />
-      <circle className="turtle-eye" cx="99" cy="41" r="1.6" />
-      <circle className="turtle-eye" cx="99" cy="49" r="1.6" />
-      <ellipse className="turtle-shell" cx="58" cy="45" rx="31" ry="23" />
-      <path
-        className="turtle-scutes"
-        d="M46 45 L53 34 L65 34 L72 45 L65 56 L53 56 Z M53 34 L49 23 M65 34 L68 23 M72 45 L88 45 M65 56 L68 67 M53 56 L49 67 M46 45 L28 45"
-      />
-    </svg>
+    <Layers
+      className="turtle"
+      ratio="319 / 329"
+      layers={[
+        [turtleBackLeft, "back-left", "39% 83.3%"],
+        [turtleBackRight, "back-right", "59.4% 81.8%"],
+        [turtleFrontLeft, "front-left", "31.4% 37.4%"],
+        [turtleFrontRight, "front-right", "67.9% 35.9%"],
+        [turtleBody, "body"],
+      ]}
+    />
+  );
+}
+
+const FISH = {
+  blue: { ratio: "370 / 201", body: fishBlueBody, tail: fishBlueTail, pivot: "80.8% 49.8%" },
+  pink: { ratio: "374 / 201", body: fishPinkBody, tail: fishPinkTail, pivot: "81.3% 49.3%" },
+  orange: { ratio: "370 / 201", body: fishOrangeBody, tail: fishOrangeTail, pivot: "80.8% 49.8%" },
+};
+
+// A fish, drawn facing left; Life.css mirrors it when it swims right.
+export function Fish({ colour = "blue", className = "" }) {
+  const f = FISH[colour];
+  return (
+    <Layers
+      className={`fish ${className}`}
+      ratio={f.ratio}
+      layers={[
+        [f.tail, "tail", f.pivot],
+        [f.body, "body"],
+      ]}
+    />
   );
 }
 
@@ -40,14 +86,19 @@ const BUBBLES = [
   { left: "40%", size: 5, delay: 5.2, duration: 5.5 },
 ];
 
-// A turtle crossing the water and bubbles rising, behind a section's content.
-// Place it as the section's first child, before .band-inner.
-export function SeaLife() {
+// A turtle crossing the water, a fish or two and bubbles rising, behind a
+// section's content. Place it as the section's first child, before .band-inner.
+export function SeaLife({ fish = ["blue", "pink"] }) {
   return (
     <div className="sea-life" aria-hidden="true">
       <div className="turtle-path">
         <Turtle />
       </div>
+      {fish.map((colour, i) => (
+        <div key={colour} className={`fish-path fish-path-${i + 1}`}>
+          <Fish colour={colour} />
+        </div>
+      ))}
       {BUBBLES.map((b) => (
         <span
           key={b.left}
@@ -70,27 +121,42 @@ export function Crab() {
   return (
     <div className="crab-lane" aria-hidden="true">
       <div className="crab-path">
-        <svg className="crab" viewBox="0 0 90 56" focusable="false">
-          <g className="crab-legs crab-legs-a">
-            <path d="M30 34 L16 42 M32 38 L20 50 M36 40 L28 54" />
-            <path d="M60 34 L74 42 M58 38 L70 50 M54 40 L62 54" />
-          </g>
-          <g className="crab-legs crab-legs-b">
-            <path d="M31 36 L18 46 M34 39 L24 52" />
-            <path d="M59 36 L72 46 M56 39 L66 52" />
-          </g>
-          <path className="crab-arm" d="M30 28 C 22 24, 16 18, 14 12" />
-          <path className="crab-arm" d="M60 28 C 68 24, 74 18, 76 12" />
-          <path className="crab-claw" d="M14 12 C 6 10, 4 2, 10 0 C 12 4, 16 6, 18 6 C 18 10, 16 12, 14 12 Z" />
-          <path className="crab-claw" d="M76 12 C 84 10, 86 2, 80 0 C 78 4, 74 6, 72 6 C 72 10, 74 12, 76 12 Z" />
-          <path className="crab-stalk" d="M40 20 L38 11 M50 20 L52 11" />
-          <circle className="crab-eye" cx="38" cy="10" r="2.6" />
-          <circle className="crab-eye" cx="52" cy="10" r="2.6" />
-          <ellipse className="crab-body" cx="45" cy="30" rx="17" ry="12" />
-        </svg>
+        <Layers
+          className="crab"
+          ratio="393 / 335"
+          layers={[
+            [crabLegsLeft, "legs-left", "17.9% 79.1%"],
+            [crabLegsRight, "legs-right", "79.7% 70.4%"],
+            [crabClawLeft, "claw-left", "21.9% 46.3%"],
+            [crabClawRight, "claw-right", "79.4% 46%"],
+            [crabBody, "body"],
+          ]}
+        />
       </div>
     </div>
   );
+}
+
+// The sun beside a heading: its rays turn slowly around the disc.
+export function Sun({ className = "" }) {
+  return (
+    <Layers
+      className={`sun ${className}`}
+      ratio="365 / 377"
+      layers={[
+        [sunRays, "rays", "52.8% 47.2%"],
+        [sunDisc, "disc", "52.8% 47.2%"],
+      ]}
+    />
+  );
+}
+
+export function Shell({ className = "" }) {
+  return <img src={shellImg} alt="" aria-hidden="true" className={`life-still shell ${className}`} draggable="false" />;
+}
+
+export function Starfish({ className = "" }) {
+  return <img src={starfishImg} alt="" aria-hidden="true" className={`life-still starfish ${className}`} draggable="false" />;
 }
 
 // Below the title, over the water.
