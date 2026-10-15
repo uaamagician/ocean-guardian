@@ -188,6 +188,23 @@
   animation-delay: -20s;
 }
 
+/* In "Why it matters" the text runs most of the way down (no room for the
+   turtle there), so the section gets a little extra water at the bottom and
+   the fish keep to it, clear of the text. */
+.why {
+  padding-bottom: calc(var(--space-8) + 40px);
+}
+
+.why .fish-path-1 {
+  top: auto;
+  bottom: 50px;
+}
+
+.why .fish-path-2 {
+  top: auto;
+  bottom: 8px;
+}
+
 /* The second fish heads the other way, so it faces left as drawn. */
 .fish-path-2 .fish {
   width: 64px;

@@ -88,12 +88,14 @@ const BUBBLES = [
 
 // A turtle crossing the water, a fish or two and bubbles rising, behind a
 // section's content. Place it as the section's first child, before .band-inner.
-export function SeaLife({ fish = ["blue", "pink"] }) {
+export function SeaLife({ fish = ["blue", "pink"], turtle = true }) {
   return (
     <div className="sea-life" aria-hidden="true">
-      <div className="turtle-path">
-        <Turtle />
-      </div>
+      {turtle && (
+        <div className="turtle-path">
+          <Turtle />
+        </div>
+      )}
       {fish.map((colour, i) => (
         <div key={colour} className={`fish-path fish-path-${i + 1}`}>
           <Fish colour={colour} />

@@ -183,17 +183,37 @@
   padding: var(--space-8) var(--space-4);
 }
 
-/* "Sea" sections: pale shallow water between the stretches of sand. */
-.band-dark {
-  background-color: var(--sea);
-  background-image: var(--paper-grain);
+/* "Sea" sections: shallow water with sunlight netting the bottom, painted
+   (art/water) and tinted to the site's sea colours by scripts/tint-water.py.
+   Near the shore the painting fades to the plain sea colour, so it meets the
+   shoreline edges (index.css), which are drawn in that colour, without a seam. */
+.band-dark,
+.band-deep {
+  --water: var(--sea);
+  background-color: var(--water);
+  background-image:
+    var(--paper-grain),
+    linear-gradient(var(--water), transparent 110px, transparent calc(100% - 110px), var(--water)),
+    url("../assets/water/sea.webp");
+  background-size:
+    auto,
+    auto,
+    100% 100%,
+    cover;
+  background-position:
+    0 0,
+    0 0,
+    0 0,
+    center;
   color: var(--ink);
 }
 
 .band-deep {
-  background-color: var(--sea-deep);
-  background-image: var(--paper-grain);
-  color: var(--ink);
+  --water: var(--sea-deep);
+  background-image:
+    var(--paper-grain),
+    linear-gradient(var(--water), transparent 110px, transparent calc(100% - 110px), var(--water)),
+    url("../assets/water/sea-deep.webp");
 }
 
 .band-inner {
