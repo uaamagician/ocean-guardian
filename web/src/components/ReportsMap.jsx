@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
-import { CircleMarker, MapContainer, TileLayer, ZoomControl, useMap, useMapEvents } from "react-leaflet";
+import { CircleMarker, MapContainer, ZoomControl, useMap, useMapEvents } from "react-leaflet";
 import { CATEGORIES, TONE_COLORS } from "../lib/labels";
 import { isCommunityBeach } from "../lib/beaches";
+import { MutedTileLayer } from "../lib/mutedTiles";
 
 const NO_REPORT_COLOR = "#23727a";
 const COMMUNITY_RING = "#e8702a";
@@ -14,6 +15,16 @@ function PlaceHandler({ active, onPlace }) {
   useEffect(() => {
     map.getContainer().classList.toggle("is-placing", Boolean(active));
   }, [map, active]);
+  return null;
+}
+
+// OpenStreetMap, recoloured as each tile loads (see lib/mutedTiles.js).
+function MutedTiles({ url, attribution, maxZoom }) {
+  const map = useMap();
+  useEffect(() => {
+    const layer = new MutedTileLayer(url, { attribution, maxZoom }).addTo(map);
+    return () => layer.remove();
+  }, [map, url, attribution, maxZoom]);
   return null;
 }
 
@@ -241,7 +252,7 @@ export default function ReportsMap({
       {/* Top-left holds the title card and the right side the detail panel. */}
       <ZoomControl position="bottomleft" />
       {/* OSM's tile servers are fine for development traffic; move to a keyed provider before launch. */}
-      <TileLayer
+      <MutedTiles
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, beaches from Wikidata and OpenStreetMap'
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         maxZoom={19}
