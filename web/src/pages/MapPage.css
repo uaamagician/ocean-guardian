@@ -29,8 +29,12 @@
 }
 
 /* Mute the busy OSM palette so the condition markers carry the color, and
-   warm it toward an old paper sea chart to sit with the notebook pages. */
-.reports-map .leaflet-tile-pane {
+   warm it toward an old paper sea chart to sit with the notebook pages.
+   On each tile, not the tile pane: Leaflet gives every tile its own GPU
+   layer, and some browsers (Safari especially) paint those in their raw blue
+   first and only apply a filter on the pane seconds later. These filters work
+   pixel by pixel, so per tile looks exactly the same. */
+.reports-map .leaflet-tile {
   filter: saturate(0.4) sepia(0.22) brightness(1.03) contrast(0.92);
 }
 
