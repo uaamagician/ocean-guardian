@@ -1669,3 +1669,98 @@ svg.lucide {
 .reports-map.is-snapped .leaflet-interactive {
   cursor: pointer;
 }
+
+/* ---------- Ripples (lib/ripple.js) ---------- */
+
+/* A ring on the water from a click or tap, drawn the way light shows a real
+   ripple: a bright crest with a darker trough just outside it, brightest on
+   the side facing the light and fading round the far side. */
+.water-ring {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  margin: -65px 0 0 -65px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    transparent 68%,
+    rgba(255, 255, 255, 0.18) 75%,
+    rgba(255, 255, 255, 0.95) 81%,
+    rgba(255, 255, 255, 0.4) 85%,
+    rgba(16, 70, 90, 0.3) 90%,
+    rgba(16, 70, 90, 0) 98%
+  );
+  -webkit-mask-image: conic-gradient(from 300deg, #000, rgba(0, 0, 0, 0.45) 20%, rgba(0, 0, 0, 0.8) 40%, rgba(0, 0, 0, 0.25) 62%, #000 85%);
+  mask-image: conic-gradient(from 300deg, #000, rgba(0, 0, 0, 0.45) 20%, rgba(0, 0, 0, 0.8) 40%, rgba(0, 0, 0, 0.25) 62%, #000 85%);
+  opacity: 0;
+  animation: water-ring 1.7s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+/* Each later ring is smaller and fainter, as the energy spreads out. */
+.water-ring.is-second {
+  animation-name: water-ring-2;
+}
+
+.water-ring.is-third {
+  animation-name: water-ring-3;
+}
+
+@keyframes water-ring {
+  0% {
+    scale: 0.06;
+    opacity: 1;
+  }
+  65% {
+    opacity: 0.6;
+  }
+  100% {
+    scale: 1.9;
+    opacity: 0;
+  }
+}
+
+@keyframes water-ring-2 {
+  0% {
+    scale: 0.06;
+    opacity: 0.8;
+  }
+  100% {
+    scale: 1.45;
+    opacity: 0;
+  }
+}
+
+@keyframes water-ring-3 {
+  0% {
+    scale: 0.06;
+    opacity: 0.55;
+  }
+  100% {
+    scale: 1.05;
+    opacity: 0;
+  }
+}
+
+/* The first moment the pebble breaks the surface: a small flash of light. */
+.water-splash {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.5) 45%, rgba(255, 255, 255, 0));
+  animation: water-splash 0.55s ease-out forwards;
+}
+
+@keyframes water-splash {
+  0% {
+    scale: 0.3;
+    opacity: 1;
+  }
+  100% {
+    scale: 1.6;
+    opacity: 0;
+  }
+}

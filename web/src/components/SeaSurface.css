@@ -103,31 +103,6 @@
   inset: 0;
 }
 
-.sea-ring {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  margin: -20px 0 0 -20px;
-  border: 2.5px solid rgba(255, 255, 255, 0.95);
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 1px rgba(42, 109, 140, 0.18),
-    inset 0 0 0 1px rgba(42, 109, 140, 0.12);
-  opacity: 0;
-  animation: sea-ring 1.4s var(--ease-out) forwards;
-}
-
-@keyframes sea-ring {
-  0% {
-    scale: 0.2;
-    opacity: 1;
-  }
-  100% {
-    scale: 6;
-    opacity: 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .sea-net,
   .sea-swell {

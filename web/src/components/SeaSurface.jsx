@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { prefersReducedMotion } from "../lib/motion";
+import { dropRipple } from "../lib/ripple";
 import "./SeaSurface.css";
 
 // The moving water behind a sea section's content. It goes first inside the
@@ -19,15 +20,7 @@ export default function SeaSurface({ calm = false }) {
     const onDown = (e) => {
       if (e.target.closest("a, button, input, select, textarea, label, .leaflet-container")) return;
       const box = sea.getBoundingClientRect();
-      for (let i = 0; i < 3; i += 1) {
-        const ring = document.createElement("span");
-        ring.className = "sea-ring";
-        ring.style.left = `${e.clientX - box.left}px`;
-        ring.style.top = `${e.clientY - box.top}px`;
-        ring.style.animationDelay = `${i * 0.16}s`;
-        rings.append(ring);
-        ring.addEventListener("animationend", () => ring.remove());
-      }
+      dropRipple(rings, e.clientX - box.left, e.clientY - box.top);
     };
 
     sea.addEventListener("pointerdown", onDown);

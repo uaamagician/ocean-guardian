@@ -4,6 +4,7 @@ import { prefersReducedMotion } from "../lib/motion";
 import { Marked, Note } from "./Sketch";
 import ActionButtons from "./ActionButtons";
 import { Gulls } from "./Life";
+import { dropRipple } from "../lib/ripple";
 
 // A matched pair of illustrations: the same stretch of beach, clean and after
 // the tide. Only the debris changes, so the spotlight edge never shows a seam.
@@ -15,10 +16,11 @@ const EASE = 0.1;
 // The mask is a CSS radial-gradient driven by --x/--y, updated straight on the DOM
 // each frame. Re-encoding a canvas to a PNG mask per frame (and re-rendering React)
 // stalls on large screens.
-function useSpotlight(sectionRef, layerRef) {
+function useSpotlight(sectionRef, layerRef, lensRef) {
   useEffect(() => {
     const section = sectionRef.current;
     const layer = layerRef.current;
+    const lens = lensRef.current;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const target = { x: 0, y: 0 };
     const smooth = { x: 0, y: 0 };
@@ -32,15 +34,20 @@ function useSpotlight(sectionRef, layerRef) {
     const place = (x, y) => {
       layer.style.setProperty("--x", `${x}px`);
       layer.style.setProperty("--y", `${y}px`);
+      lens.style.translate = `${x}px ${y}px`;
     };
 
+    const last = { x: 0, y: 0 };
     const setFromClient = (clientX, clientY) => {
       // Relative to the layer itself: it shifts with the scroll parallax.
       const rect = layer.getBoundingClientRect();
       target.x = clientX - rect.left;
       target.y = clientY - rect.top;
+      last.x = clientX;
+      last.y = clientY;
       userMoved = true;
     };
+
 
     const onPointer = (e) => setFromClient(e.clientX, e.clientY);
     const onTouch = (e) => {
@@ -49,6 +56,9 @@ function useSpotlight(sectionRef, layerRef) {
     };
 
     const tick = (now) => {
+      // Re-aim at the pointer every frame: scrolling (and the parallax that
+      // follows it) moves the picture under a pointer that hasn't moved.
+      if (userMoved) setFromClient(last.x, last.y);
       if (!userMoved) {
         // Idle drift so touch visitors (no cursor) still see the reveal.
         const t = (now - start) / 1000;
@@ -83,7 +93,7 @@ function useSpotlight(sectionRef, layerRef) {
       window.removeEventListener("touchmove", onTouch);
       window.removeEventListener("touchstart", onTouch);
     };
-  }, [sectionRef, layerRef]);
+  }, [sectionRef, layerRef, lensRef]);
 }
 
 // As the hero scrolls away, the photo lags behind and the heading lifts and fades.
@@ -109,12 +119,7 @@ function useRipples(sectionRef, layerRef) {
     const section = sectionRef.current;
     const onDown = (e) => {
       const box = section.getBoundingClientRect();
-      const ring = document.createElement("span");
-      ring.className = "ripple";
-      ring.style.left = `${e.clientX - box.left}px`;
-      ring.style.top = `${e.clientY - box.top}px`;
-      layerRef.current.append(ring);
-      ring.addEventListener("animationend", () => ring.remove());
+      dropRipple(layerRef.current, e.clientX - box.left, e.clientY - box.top);
     };
     section.addEventListener("pointerdown", onDown);
     return () => section.removeEventListener("pointerdown", onDown);
@@ -125,7 +130,8 @@ export default function Hero() {
   const sectionRef = useRef(null);
   const layerRef = useRef(null);
   const rippleRef = useRef(null);
-  useSpotlight(sectionRef, layerRef);
+  const lensRef = useRef(null);
+  useSpotlight(sectionRef, layerRef, lensRef);
   useScrollAway(sectionRef);
   useRipples(sectionRef, rippleRef);
 
@@ -139,6 +145,7 @@ export default function Hero() {
           style={{ backgroundImage: `url("${BG_TRASH}")` }}
           aria-hidden="true"
         />
+        <div ref={lensRef} className="hero-lens" aria-hidden="true" />
         <div className="hero-shimmer" aria-hidden="true" />
       </div>
       <div className="hero-ripples" ref={rippleRef} aria-hidden="true" />
