@@ -3,6 +3,7 @@ import { BLEACHING_LEVELS, FEATURED_SPOTS, fetchCoralStress, fetchSeaTemps } fro
 import { Reveal } from "./Motion";
 import { SeaLife, Sun } from "./Life";
 import "../pages/Home.css";
+import SeaSurface from "./SeaSurface";
 
 function useFeaturedConditions() {
   const [temps, setTemps] = useState(null);
@@ -28,6 +29,7 @@ export default function LiveOcean({ title = "The ocean right now" }) {
   const { temps, corals } = useFeaturedConditions();
   return (
     <section className="band band-dark">
+      <SeaSurface />
       <SeaLife />
       <div className="band-inner">
         <Sun className="band-doodle live-sun" />

@@ -22,6 +22,7 @@ import usePublishedReports from "../lib/usePublishedReports";
 import { useBeaches, useReportsByBeach } from "../lib/beaches";
 import useSectionMotion from "../lib/useSectionMotion";
 import "./Home.css";
+import SeaSurface from "../components/SeaSurface";
 
 // Live numbers and the next cleanups, straight under the hero.
 function RightNow({ reports }) {
@@ -292,7 +293,8 @@ function LatestPlan({ record }) {
 function CleanupPreview() {
   const latest = useLatestPlan();
   return (
-    <section className="band band-dark">
+    <section className="band band-dark sea-calm">
+      <SeaSurface calm />
       <div className="band-inner">
         <div className="band-split">
           <Reveal className="band-head">
@@ -330,7 +332,8 @@ function CleanupPreview() {
 function HistoryTeaser() {
   const picks = HISTORY_PHOTOS.slice(-3).reverse();
   return (
-    <section className="band band-deep">
+    <section className="band band-deep sea-calm">
+      <SeaSurface calm />
       <div className="band-inner">
         <div className="band-split">
           <Reveal className="band-head">
@@ -374,6 +377,7 @@ export default function HomePage() {
       <RightNow reports={reports} />
       <WorldMap reports={reports} />
       <div className="sea-run">
+        <SeaSurface />
         <DebrisStats reports={reports} />
         <LiveOcean />
       </div>

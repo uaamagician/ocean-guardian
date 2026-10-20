@@ -13,6 +13,7 @@ import "./Home.css";
 import "./Events.css";
 import "./ActionPage.css";
 import "./HistoryPage.css";
+import SeaSurface from "../components/SeaSurface";
 
 const formatDate = (iso) =>
   new Date(`${iso}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -77,6 +78,7 @@ export default function HistoryPage() {
     <div ref={rootRef}>
       <div className="info-top" />
       <section className="band band-dark">
+        <SeaSurface />
         <div className="band-inner">
           <Shell className="band-doodle hist-shell bob" />
           <Reveal className="band-head">
@@ -136,7 +138,8 @@ export default function HistoryPage() {
         </div>
       </section>
 
-      <section className="band band-dark hist-cta">
+      <section className="band band-dark sea-calm hist-cta">
+        <SeaSurface calm />
         <div className="band-inner">
           <Reveal className="band-head">
             <h2>Add the next page</h2>

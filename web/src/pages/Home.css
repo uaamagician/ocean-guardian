@@ -183,46 +183,26 @@
   padding: var(--space-8) var(--space-4);
 }
 
-/* "Sea" sections: clear water deepening away from the shore, with sunlight
-   netting the bottom. The net (art/water, made into a light-only layer by
-   scripts/caustics.py) spans the full width and repeats downward without a
-   seam; each stretch of sea starts it at a different depth so no two look
-   alike. Only right at the shore does it fade to clear shallow water, the
-   colour the shoreline edges (index.css) are drawn in. */
+/* "Sea" sections: clear water at the shore, deepening further out. The
+   light on the water and its movement live in SeaSurface (components), which
+   each sea section starts with. Calm stretches (.sea-calm) are paler, open
+   water, so the page does not show the same sunlit net again and again. */
 .band-dark,
 .band-deep,
 .sea-run {
   --water: var(--water-shallow);
   --water-mid: var(--water-deep);
-  --net-y: 0px;
   background-color: var(--water);
-  background-image:
-    linear-gradient(var(--water), transparent 70px, transparent calc(100% - 70px), var(--water)),
-    url("../assets/water/caustics.webp"),
-    linear-gradient(var(--water), var(--water-mid) 35%, var(--water-mid) 65%, var(--water));
-  background-size:
-    100% 100%,
-    max(100%, 1100px) auto,
-    100% 100%;
-  background-position:
-    0 0,
-    center var(--net-y),
-    0 0;
-  background-repeat: no-repeat, repeat-y, no-repeat;
+  background-image: linear-gradient(var(--water), var(--water-mid) 35%, var(--water-mid) 65%, var(--water));
   color: var(--ink);
 }
 
-.band-deep {
-  --water-mid: var(--water-deeper);
-  --net-y: -420px;
+.sea-calm {
+  --water-mid: var(--water-calm);
 }
 
 .why {
   --net-y: -250px;
-}
-
-.hist-cta {
-  --net-y: -520px;
 }
 
 /* Two sea sections in a row are one stretch of water: the run paints it, the

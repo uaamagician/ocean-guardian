@@ -1,0 +1,191 @@
+/* ---------- The moving water behind sea sections (SeaSurface.jsx) ---------- */
+
+.sea-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Clear shallow water right at the shore, so the light fades in from the
+     shoreline edges rather than starting on a line. */
+  -webkit-mask-image: linear-gradient(transparent, #000 80px, #000 calc(100% - 80px), transparent);
+  mask-image: linear-gradient(transparent, #000 80px, #000 calc(100% - 80px), transparent);
+}
+
+/* Section content sits above the water. */
+.sea-surface ~ .band-inner {
+  z-index: 1;
+}
+
+/* A sea run paints one surface for both of its sections. */
+.sea-run > .band-dark > .sea-surface {
+  display: none;
+}
+
+/* Sunlight netting the bottom: two copies of the same net, offset, drifting
+   against each other and trading brightness, so the lines seem to wobble and
+   flow the way caustics do. The net repeats downward without a seam
+   (scripts/caustics.py); each section starts it at its own --net-y. */
+.sea-net {
+  position: absolute;
+  inset: -40px;
+  background: url("../assets/water/caustics.webp") center var(--net-y, 0px) / max(100%, 1100px) auto repeat-y;
+  will-change: translate, opacity;
+}
+
+.sea-net-a {
+  animation: net-a 9s ease-in-out infinite alternate;
+}
+
+.sea-net-b {
+  background-position: center calc(var(--net-y, 0px) + 170px);
+  transform-origin: 30% 40%;
+  animation: net-b 12s ease-in-out infinite alternate;
+}
+
+@keyframes net-a {
+  from {
+    translate: -16px 8px;
+    opacity: 0.9;
+  }
+  to {
+    translate: 18px -12px;
+    opacity: 0.35;
+  }
+}
+
+@keyframes net-b {
+  from {
+    translate: 14px -10px;
+    scale: 1.04;
+    opacity: 0.25;
+  }
+  to {
+    translate: -12px 14px;
+    scale: 1;
+    opacity: 0.8;
+  }
+}
+
+/* Sparkles where the sun catches a ripple. */
+.sea-glint {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  background:
+    linear-gradient(#fff, #fff) center / 2px 100% no-repeat,
+    linear-gradient(#fff, #fff) center / 100% 2px no-repeat,
+    radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 2px, rgba(255, 255, 255, 0) 6px);
+  border-radius: 50%;
+  opacity: 0;
+  animation: glint 4.8s ease-in-out infinite;
+}
+
+@keyframes glint {
+  0%,
+  70%,
+  100% {
+    opacity: 0;
+    scale: 0.3;
+    rotate: 0deg;
+  }
+  80% {
+    opacity: 1;
+    scale: 1.15;
+    rotate: 45deg;
+  }
+  90% {
+    opacity: 0.4;
+    scale: 0.7;
+  }
+}
+
+/* Calm water: a few pale swells passing slowly through. */
+.sea-swell {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(100% + 640px);
+  background: url("../assets/water/swell.svg") 0 60px / 640px 420px repeat;
+  opacity: 0.85;
+  animation: swell 46s linear infinite;
+  will-change: translate;
+}
+
+@keyframes swell {
+  to {
+    translate: -640px 0;
+  }
+}
+
+/* The light that follows the mouse across the water. */
+.sea-glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 460px;
+  height: 460px;
+  margin: -230px 0 0 -230px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.25) 40%, rgba(255, 255, 255, 0) 68%);
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out);
+  will-change: translate;
+}
+
+.sea-surface.is-lit .sea-glow {
+  opacity: 1;
+}
+
+.is-calm .sea-glow {
+  mix-blend-mode: normal;
+}
+
+.sea-surface.is-calm.is-lit .sea-glow {
+  opacity: 0.55;
+}
+
+/* Rings from a click or tap, like a pebble dropped in. */
+.sea-ripples {
+  position: absolute;
+  inset: 0;
+}
+
+.sea-ring {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 2.5px solid rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgba(42, 109, 140, 0.18),
+    inset 0 0 0 1px rgba(42, 109, 140, 0.12);
+  opacity: 0;
+  animation: sea-ring 1.4s var(--ease-out) forwards;
+}
+
+@keyframes sea-ring {
+  0% {
+    scale: 0.2;
+    opacity: 1;
+  }
+  100% {
+    scale: 6;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sea-net,
+  .sea-glint,
+  .sea-swell {
+    animation: none;
+  }
+
+  .sea-glint {
+    display: none;
+  }
+}

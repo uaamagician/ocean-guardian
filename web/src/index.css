@@ -17,7 +17,7 @@
   /* The painted sea sections: clear and pale at the shore, deeper out. */
   --water-shallow: #d3f0f1;
   --water-deep: #a9dee5;
-  --water-deeper: #93d2dc;
+  --water-calm: #e6f7f7;
   --driftwood: #8a6a3d;
   --tide: #2a6d8c;
   --buoy: #e85a30;

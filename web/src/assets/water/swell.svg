@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420" viewBox="0 0 640 420" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Faint swells on calm water, kept inside the tile so it repeats cleanly. -->
+  <g stroke-opacity=".75" stroke-width="2.6">
+    <path d="M40 70 C 62 58, 84 58, 104 68 C 124 78, 146 78, 168 66"/>
+    <path d="M330 40 C 348 31, 366 31, 382 39 C 398 47, 416 47, 434 38"/>
+    <path d="M462 182 C 488 168, 514 168, 538 180 C 562 192, 588 192, 612 178"/>
+    <path d="M118 236 C 136 226, 154 226, 170 234"/>
+    <path d="M250 318 C 276 304, 302 304, 326 316 C 350 328, 376 328, 400 314"/>
+    <path d="M520 372 C 536 363, 552 363, 566 371"/>
+  </g>
+  <g stroke-opacity=".45" stroke-width="1.8">
+    <path d="M56 84 C 74 76, 92 76, 108 83"/>
+    <path d="M480 198 C 500 189, 520 189, 538 197"/>
+    <path d="M268 334 C 288 325, 308 325, 326 333"/>
+    <path d="M206 140 C 220 133, 234 133, 246 139"/>
+  </g>
+</svg>

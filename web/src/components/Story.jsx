@@ -4,6 +4,7 @@ import { CountUp, Reveal } from "./Motion";
 import { Doodle, Marked, Note } from "./Sketch";
 import ActionButtons from "./ActionButtons";
 import { SeaLife } from "./Life";
+import SeaSurface from "./SeaSurface";
 
 // The numbers behind the project, each with its source.
 const FACTS = [
@@ -33,6 +34,7 @@ const FACTS = [
 export function WhyItMatters() {
   return (
     <section className="band band-dark why">
+      <SeaSurface />
       <SeaLife fish={["orange", "blue"]} turtle={false} />
       <div className="band-inner">
         <Doodle name="bottle" className="band-doodle why-bottle bob" />
