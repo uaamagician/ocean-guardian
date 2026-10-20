@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { prefersReducedMotion } from "../lib/motion";
-import { dropRipple } from "../lib/ripple";
+import { dropRipple, scatter } from "../lib/ripple";
 import "./SeaSurface.css";
 
 // The moving water behind a sea section's content. It goes first inside the
@@ -16,11 +16,15 @@ export default function SeaSurface({ calm = false }) {
     const sea = surface?.parentElement;
     if (!sea || prefersReducedMotion() || getComputedStyle(surface).display === "none") return undefined;
     const rings = surface.querySelector(".sea-ripples");
+    const water = surface.querySelector(".sea-water");
     // Not when pressing a link or a button: that click is about something else.
     const onDown = (e) => {
       if (e.target.closest("a, button, input, select, textarea, label, .leaflet-container")) return;
       const box = sea.getBoundingClientRect();
-      dropRipple(rings, e.clientX - box.left, e.clientY - box.top);
+      const x = e.clientX - box.left;
+      const y = e.clientY - box.top;
+      dropRipple(rings, x, y);
+      scatter(water, x, y, { push: true });
     };
 
     sea.addEventListener("pointerdown", onDown);
@@ -29,14 +33,16 @@ export default function SeaSurface({ calm = false }) {
 
   return (
     <div ref={ref} className={`sea-surface ${calm ? "is-calm" : "is-sunlit"}`} aria-hidden="true">
-      {calm ? (
-        <div className="sea-swell" />
-      ) : (
-        <>
-          <div className="sea-net sea-net-a" />
-          <div className="sea-net sea-net-b" />
-        </>
-      )}
+      <div className="sea-water">
+        {calm ? (
+          <div className="sea-swell" />
+        ) : (
+          <>
+            <div className="sea-net sea-net-a" />
+            <div className="sea-net sea-net-b" />
+          </>
+        )}
+      </div>
       <div className="sea-ripples" />
     </div>
   );

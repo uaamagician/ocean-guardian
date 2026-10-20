@@ -22,6 +22,18 @@
   display: none;
 }
 
+/* Holds the moving lines. A tap pushes them aside: a hole opens around the
+   tap and fills back in as the ripple spreads (lib/ripple.js scatter()). */
+.sea-water {
+  position: absolute;
+  inset: 0;
+}
+
+.sea-water.is-scattering {
+  -webkit-mask-image: radial-gradient(circle at var(--hx) var(--hy), rgba(0, 0, 0, var(--hk)) calc(var(--hr) * 0.55), #000 var(--hr));
+  mask-image: radial-gradient(circle at var(--hx) var(--hy), rgba(0, 0, 0, var(--hk)) calc(var(--hr) * 0.55), #000 var(--hr));
+}
+
 /* Sunlight netting the bottom: two copies of the same net, offset, drifting
    against each other and trading brightness, so the lines seem to wobble and
    flow the way caustics do. The net repeats downward without a seam

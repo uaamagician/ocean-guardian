@@ -29,12 +29,13 @@
   --x: -999px;
   --y: -999px;
   --spot: radial-gradient(
-    circle 120px at var(--x) var(--y),
+    circle 160px at var(--x) var(--y),
     rgba(0, 0, 0, 1) 0%,
-    rgba(0, 0, 0, 1) 40%,
-    rgba(0, 0, 0, 0.75) 60%,
-    rgba(0, 0, 0, 0.4) 75%,
-    rgba(0, 0, 0, 0.12) 88%,
+    rgba(0, 0, 0, 0.95) 18%,
+    rgba(0, 0, 0, 0.75) 36%,
+    rgba(0, 0, 0, 0.48) 54%,
+    rgba(0, 0, 0, 0.24) 70%,
+    rgba(0, 0, 0, 0.08) 85%,
     rgba(0, 0, 0, 0) 100%
   );
   z-index: 30;
@@ -1383,9 +1384,23 @@
   /* Only over the water: the shoreline traced from hero/clean.webp, sized and
      placed exactly like the photo (cover, centred) so it lines up at any
      screen size. The sand stays still. */
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1706' height='960' viewBox='0 0 1706 960'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='26'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' d='M-60 -60 H1766 V100 C1600 165 1500 225 1400 285 C1300 345 1150 365 1000 370 C850 368 700 365 600 405 C520 455 420 525 300 540 C180 548 80 540 -60 532 Z'/%3E%3C/svg%3E") center / cover no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1706' height='960' viewBox='0 0 1706 960'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='26'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' d='M-60 -60 H1766 V100 C1600 165 1500 225 1400 285 C1300 345 1150 365 1000 370 C850 368 700 365 600 405 C520 455 420 525 300 540 C180 548 80 540 -60 532 Z'/%3E%3C/svg%3E") center / cover no-repeat;
+  --water-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1706' height='960' viewBox='0 0 1706 960'%3E%3Cfilter id='b' x='-10%25' y='-10%25' width='120%25' height='120%25'%3E%3CfeGaussianBlur stdDeviation='26'/%3E%3C/filter%3E%3Cpath filter='url(%23b)' d='M-60 -60 H1766 V100 C1600 165 1500 225 1400 285 C1300 345 1150 365 1000 370 C850 368 700 365 600 405 C520 455 420 525 300 540 C180 548 80 540 -60 532 Z'/%3E%3C/svg%3E");
+  -webkit-mask: var(--water-shape) center / cover no-repeat;
+  mask: var(--water-shape) center / cover no-repeat;
   mix-blend-mode: overlay;
+}
+
+/* A tap on the water pushes the light lines aside: a hole opens around the
+   tap, grows with the ripple and fills back in (lib/ripple.js scatter()). */
+.hero-shimmer.is-scattering {
+  -webkit-mask:
+    var(--water-shape) center / cover no-repeat,
+    radial-gradient(circle at var(--hx) var(--hy), rgba(0, 0, 0, var(--hk)) calc(var(--hr) * 0.55), #000 var(--hr));
+  -webkit-mask-composite: source-in;
+  mask:
+    var(--water-shape) center / cover no-repeat,
+    radial-gradient(circle at var(--hx) var(--hy), rgba(0, 0, 0, var(--hk)) calc(var(--hr) * 0.55), #000 var(--hr));
+  mask-composite: intersect;
 }
 
 .hero-shimmer::before,
@@ -1395,14 +1410,14 @@
   inset: -600px;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520'%3E%3Cfilter id='c' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.011 0.016' numOctaves='2' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 -7 0 0 0 1.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E");
   background-size: 520px 520px;
-  animation: caustics 22s linear infinite;
+  animation: caustics 28s linear infinite;
   will-change: translate;
 }
 
 .hero-shimmer::after {
   background-size: 760px 760px;
   opacity: 0.7;
-  animation-duration: 31s;
+  animation-duration: 39s;
   animation-direction: reverse;
 }
 
@@ -1411,7 +1426,8 @@
     translate: 0 0;
   }
   to {
-    translate: 520px 260px;
+    /* A whole tile (520px) each way, so the loop restarts without a jump. */
+    translate: 520px 520px;
   }
 }
 
@@ -1424,7 +1440,7 @@
     translate: 0 0;
   }
   to {
-    translate: -760px 380px;
+    translate: -760px 760px;
   }
 }
 
