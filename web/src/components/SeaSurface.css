@@ -67,84 +67,34 @@
   }
 }
 
-/* Sparkles where the sun catches a ripple. */
-.sea-glint {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  margin: -7px 0 0 -7px;
-  background:
-    linear-gradient(#fff, #fff) center / 2px 100% no-repeat,
-    linear-gradient(#fff, #fff) center / 100% 2px no-repeat,
-    radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 2px, rgba(255, 255, 255, 0) 6px);
-  border-radius: 50%;
-  opacity: 0;
-  animation: glint 4.8s ease-in-out infinite;
-}
-
-@keyframes glint {
-  0%,
-  70%,
-  100% {
-    opacity: 0;
-    scale: 0.3;
-    rotate: 0deg;
-  }
-  80% {
-    opacity: 1;
-    scale: 1.15;
-    rotate: 45deg;
-  }
-  90% {
-    opacity: 0.4;
-    scale: 0.7;
-  }
-}
-
-/* Calm water: a few pale swells passing slowly through. */
+/* Calm water: a few long, low swells drifting slowly along and lifting a
+   little, far apart, each fading out at its ends. */
 .sea-swell {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: -10px;
+  bottom: -10px;
   left: 0;
-  width: calc(100% + 640px);
-  background: url("../assets/water/swell.svg") 0 60px / 640px 420px repeat;
-  opacity: 0.85;
-  animation: swell 46s linear infinite;
-  will-change: translate;
+  width: calc(100% + 1400px);
+  background: url("../assets/water/swell.svg") 0 40px / 1400px 720px repeat;
+  animation:
+    swell 90s linear infinite,
+    swell-lift 7s ease-in-out infinite alternate;
+  will-change: translate, transform;
 }
 
 @keyframes swell {
   to {
-    translate: -640px 0;
+    translate: -1400px 0;
   }
 }
 
-/* The light that follows the mouse across the water. */
-.sea-glow {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 460px;
-  height: 460px;
-  margin: -230px 0 0 -230px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.25) 40%, rgba(255, 255, 255, 0) 68%);
-  mix-blend-mode: soft-light;
-  opacity: 0;
-  transition: opacity 0.5s var(--ease-out);
-  will-change: translate;
-}
-
-.sea-surface.is-lit .sea-glow {
-  opacity: 1;
-}
-
-.is-calm .sea-glow {
-  mix-blend-mode: normal;
-}
-
-.sea-surface.is-calm.is-lit .sea-glow {
-  opacity: 0.55;
+@keyframes swell-lift {
+  from {
+    transform: translateY(-5px);
+  }
+  to {
+    transform: translateY(5px);
+  }
 }
 
 /* Rings from a click or tap, like a pebble dropped in. */
@@ -180,12 +130,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .sea-net,
-  .sea-glint,
   .sea-swell {
     animation: none;
-  }
-
-  .sea-glint {
-    display: none;
   }
 }
