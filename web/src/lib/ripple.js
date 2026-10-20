@@ -14,6 +14,6 @@ export function dropRipple(layer, x, y) {
   };
   add("water-splash", 0);
   add("water-ring", 0);
-  add("water-ring is-second", 0.2);
-  add("water-ring is-third", 0.42);
+  add("water-ring is-second", 0.14);
+  add("water-ring is-third", 0.28);
 }

@@ -42,61 +42,6 @@
   mask-image: var(--spot);
 }
 
-/* The spotlight seen through a drop of water: a glossy rim where light
-   catches the curve (bright where the sun is, darker on the far side, the
-   gleam slowly travelling round) and a small glare near the top. It rides
-   on the same coordinates as the mask above (Hero.jsx). */
-.hero-lens {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 32;
-  width: 196px;
-  height: 196px;
-  margin: -98px 0 0 -98px;
-  border-radius: 50%;
-  pointer-events: none;
-  will-change: translate;
-}
-
-.hero-lens::before,
-.hero-lens::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-}
-
-.hero-lens::before {
-  inset: 0;
-  background: radial-gradient(
-    closest-side,
-    transparent 80%,
-    rgba(255, 255, 255, 0.2) 85%,
-    rgba(255, 255, 255, 0.95) 90%,
-    rgba(255, 255, 255, 0.35) 94%,
-    rgba(16, 70, 90, 0.28) 97%,
-    rgba(16, 70, 90, 0) 100%
-  );
-  -webkit-mask-image: conic-gradient(#000, rgba(0, 0, 0, 0.2) 22%, rgba(0, 0, 0, 0.55) 45%, rgba(0, 0, 0, 0.12) 70%, #000);
-  mask-image: conic-gradient(#000, rgba(0, 0, 0, 0.2) 22%, rgba(0, 0, 0, 0.55) 45%, rgba(0, 0, 0, 0.12) 70%, #000);
-  animation: lens-gleam 9s linear infinite;
-}
-
-.hero-lens::after {
-  left: 20%;
-  top: 14%;
-  width: 30%;
-  height: 13%;
-  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0));
-  rotate: -32deg;
-}
-
-@keyframes lens-gleam {
-  to {
-    rotate: 360deg;
-  }
-}
-
 /* The illustration is light, so the heading is inked on top of it; a pale
    wash behind the title keeps it crisp over the foam. */
 .hero-shade {
@@ -1494,8 +1439,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero-shimmer::before,
-  .hero-shimmer::after,
-  .hero-lens::before {
+  .hero-shimmer::after {
     animation: none;
   }
 }
