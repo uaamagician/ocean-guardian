@@ -1,38 +1,66 @@
-// Drops a pebble at (x, y) inside `layer`: a quick splash of light, then
-// glossy rings spreading out (styled as .water-splash / .water-ring in
-// index.css). Plain DOM nodes that remove themselves when they finish, in a
-// layer React never renders into.
+// Drops a pebble at (x, y) inside `layer`: a small glint where it lands, then
+// a few ripples spreading out. Real ripples seen from above are never neat
+// full circles: the light catches them in broken arcs, so each ring here is a
+// run of uneven arcs with gaps, wobbled by the hand-drawn #rough filter
+// (components/Sketch.jsx), a pale crest with a faint shadow outside it. The
+// gaps fall in a different place on every tap. Plain DOM nodes that remove
+// themselves when done (styled in index.css), in a layer React never renders
+// into.
+
+const SVG = "http://www.w3.org/2000/svg";
+
+// Break a circle of radius r into a few arcs of uneven length.
+function brokenDash(r) {
+  const around = 2 * Math.PI * r;
+  const parts = [];
+  let used = 0;
+  while (used < around * 0.92) {
+    const arc = around * (0.12 + Math.random() * 0.22);
+    const gap = around * (0.04 + Math.random() * 0.1);
+    parts.push(arc.toFixed(1), gap.toFixed(1));
+    used += arc + gap;
+  }
+  return parts.join(" ");
+}
+
+function ring(svg, r, crest, shadow) {
+  const dash = brokenDash(r);
+  const turn = Math.random() * 360;
+  const add = (radius, stroke, width) => {
+    const c = document.createElementNS(SVG, "circle");
+    c.setAttribute("cx", "50");
+    c.setAttribute("cy", "50");
+    c.setAttribute("r", radius);
+    c.setAttribute("fill", "none");
+    c.setAttribute("stroke", stroke);
+    c.setAttribute("stroke-width", width);
+    c.setAttribute("stroke-linecap", "round");
+    c.setAttribute("stroke-dasharray", dash);
+    c.setAttribute("transform", `rotate(${turn.toFixed(1)} 50 50)`);
+    svg.append(c);
+  };
+  add(r + 1.8, `rgba(16, 70, 90, ${shadow})`, 1.3);
+  add(r, `rgba(255, 255, 255, ${crest})`, 1.7);
+}
+
 export function dropRipple(layer, x, y) {
-  const add = (className, delay) => {
-    const el = document.createElement("span");
-    el.className = className;
+  const place = (el) => {
     el.style.left = `${x}px`;
     el.style.top = `${y}px`;
-    if (delay) el.style.animationDelay = `${delay}s`;
     layer.append(el);
     el.addEventListener("animationend", () => el.remove());
   };
-  add("water-splash", 0);
-  add("water-ring", 0);
-  add("water-ring is-second", 0.14);
-  add("water-ring is-third", 0.28);
-}
 
-// The tap pushes the water: everything moving on it (the light lines, the
-// swells) swells outward from (x, y) for a moment, overshoots a touch on the
-// way back and settles, like the surface lifting round a dropped pebble.
-export function push(el, x, y) {
-  if (!el) return;
-  el.style.transformOrigin = `${x}px ${y}px`;
-  // Easing per step (the whole animation runs linear), so the swell really
-  // peaks about 0.3 s in rather than being squeezed into the first instant.
-  el.animate(
-    [
-      { transform: "scale(1)", easing: "cubic-bezier(0.2, 0.8, 0.3, 1)" },
-      { transform: "scale(1.045)", offset: 0.22, easing: "ease-in-out" },
-      { transform: "scale(0.993)", offset: 0.6, easing: "ease-in-out" },
-      { transform: "scale(1)" },
-    ],
-    { duration: 1400 },
-  );
+  const glint = document.createElement("span");
+  glint.className = "water-glint";
+  place(glint);
+
+  const svg = document.createElementNS(SVG, "svg");
+  svg.setAttribute("viewBox", "0 0 100 100");
+  svg.setAttribute("class", "water-ripple");
+  svg.setAttribute("aria-hidden", "true");
+  ring(svg, 44, 0.9, 0.16);
+  ring(svg, 33, 0.7, 0.12);
+  ring(svg, 22, 0.5, 0.08);
+  place(svg);
 }

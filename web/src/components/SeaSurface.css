@@ -22,8 +22,7 @@
   display: none;
 }
 
-/* Holds the moving lines, so a tap can push them all outward at once
-   (lib/ripple.js push()). */
+/* Holds the moving lines. */
 .sea-water {
   position: absolute;
   inset: 0;

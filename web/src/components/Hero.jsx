@@ -4,7 +4,7 @@ import { prefersReducedMotion } from "../lib/motion";
 import { Marked, Note } from "./Sketch";
 import ActionButtons from "./ActionButtons";
 import { Gulls } from "./Life";
-import { dropRipple, push } from "../lib/ripple";
+import { dropRipple } from "../lib/ripple";
 
 // A matched pair of illustrations: the same stretch of beach, clean and after
 // the tide. Only the debris changes, so the spotlight edge never shows a seam.
@@ -137,7 +137,6 @@ function useRipples(sectionRef, layerRef) {
     if (prefersReducedMotion()) return undefined;
     const section = sectionRef.current;
     const picture = section.querySelector(".hero-trash");
-    const shimmer = section.querySelector(".hero-shimmer");
     const onDown = (e) => {
       // The picture drifts with the scroll parallax, so test against it.
       const pic = picture.getBoundingClientRect();
@@ -146,7 +145,6 @@ function useRipples(sectionRef, layerRef) {
       if (!inWater(px, py, pic.width, pic.height)) return;
       const box = section.getBoundingClientRect();
       dropRipple(layerRef.current, e.clientX - box.left, e.clientY - box.top);
-      push(shimmer, px, py);
     };
     section.addEventListener("pointerdown", onDown);
     return () => section.removeEventListener("pointerdown", onDown);
