@@ -7,8 +7,8 @@ import { Gulls } from "./Life";
 
 // A matched pair of illustrations: the same stretch of beach, clean and after
 // the tide. Only the debris changes, so the spotlight edge never shows a seam.
-const BG_CLEAN = "/hero/clean.jpg";
-const BG_TRASH = "/hero/trash-dim.jpg";
+const BG_CLEAN = "/hero/clean.webp";
+const BG_TRASH = "/hero/trash-dim.webp";
 
 const EASE = 0.1;
 
