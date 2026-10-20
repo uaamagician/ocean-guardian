@@ -1390,18 +1390,6 @@
   mix-blend-mode: overlay;
 }
 
-/* A tap on the water pushes the light lines aside: a hole opens around the
-   tap, grows with the ripple and fills back in (lib/ripple.js scatter()). */
-.hero-shimmer.is-scattering {
-  -webkit-mask:
-    var(--water-shape) center / cover no-repeat,
-    radial-gradient(circle at var(--hx) var(--hy), rgba(0, 0, 0, var(--hk)) calc(var(--hr) * 0.55), #000 var(--hr));
-  -webkit-mask-composite: source-in;
-  mask:
-    var(--water-shape) center / cover no-repeat,
-    radial-gradient(circle at var(--hx) var(--hy), rgba(0, 0, 0, var(--hk)) calc(var(--hr) * 0.55), #000 var(--hr));
-  mask-composite: intersect;
-}
 
 .hero-shimmer::before,
 .hero-shimmer::after {

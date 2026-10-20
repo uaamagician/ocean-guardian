@@ -4,7 +4,7 @@ import { prefersReducedMotion } from "../lib/motion";
 import { Marked, Note } from "./Sketch";
 import ActionButtons from "./ActionButtons";
 import { Gulls } from "./Life";
-import { dropRipple, scatter } from "../lib/ripple";
+import { dropRipple, push } from "../lib/ripple";
 
 // A matched pair of illustrations: the same stretch of beach, clean and after
 // the tide. Only the debris changes, so the spotlight edge never shows a seam.
@@ -146,7 +146,7 @@ function useRipples(sectionRef, layerRef) {
       if (!inWater(px, py, pic.width, pic.height)) return;
       const box = section.getBoundingClientRect();
       dropRipple(layerRef.current, e.clientX - box.left, e.clientY - box.top);
-      scatter(shimmer, px, py);
+      push(shimmer, px, py);
     };
     section.addEventListener("pointerdown", onDown);
     return () => section.removeEventListener("pointerdown", onDown);

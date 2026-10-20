@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { prefersReducedMotion } from "../lib/motion";
-import { dropRipple, scatter } from "../lib/ripple";
+import { dropRipple, push } from "../lib/ripple";
 import "./SeaSurface.css";
 
 // The moving water behind a sea section's content. It goes first inside the
@@ -24,7 +24,7 @@ export default function SeaSurface({ calm = false }) {
       const x = e.clientX - box.left;
       const y = e.clientY - box.top;
       dropRipple(rings, x, y);
-      scatter(water, x, y, { push: true });
+      push(water, x, y);
     };
 
     sea.addEventListener("pointerdown", onDown);
