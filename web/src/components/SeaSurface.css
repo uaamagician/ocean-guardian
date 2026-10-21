@@ -22,96 +22,69 @@
   display: none;
 }
 
-/* Holds the moving lines. */
-.sea-water {
-  position: absolute;
-  inset: 0;
-}
-
-/* Sunlight netting the bottom: two copies of the same net, offset, drifting
-   against each other and trading brightness, so the lines seem to wobble and
-   flow the way caustics do. The net repeats downward without a seam
+/* Sunlight netting the bottom: two copies of the same net, set apart, slowly
+   trading brightness so the lines seem to shift and flow. Neither copy moves,
+   so the water never slides about. The net repeats downward without a seam
    (scripts/caustics.py); each section starts it at its own --net-y. */
 .sea-net {
   position: absolute;
-  inset: -40px;
+  inset: 0;
   background: url("../assets/water/caustics.webp") center var(--net-y, 0px) / max(100%, 1100px) auto repeat-y;
-  will-change: translate, opacity;
 }
 
 .sea-net-a {
-  animation: net-a 9s ease-in-out infinite alternate;
+  animation: trade-a 9s ease-in-out infinite alternate;
 }
 
 .sea-net-b {
   background-position: center calc(var(--net-y, 0px) + 170px);
-  transform-origin: 30% 40%;
-  animation: net-b 12s ease-in-out infinite alternate;
+  animation: trade-b 9s ease-in-out infinite alternate;
 }
 
-@keyframes net-a {
+@keyframes trade-a {
   from {
-    translate: -16px 8px;
     opacity: 0.9;
   }
   to {
-    translate: 18px -12px;
-    opacity: 0.35;
+    opacity: 0.3;
   }
 }
 
-@keyframes net-b {
+@keyframes trade-b {
   from {
-    translate: 14px -10px;
-    scale: 1.04;
     opacity: 0.25;
   }
   to {
-    translate: -12px 14px;
-    scale: 1;
     opacity: 0.8;
   }
 }
 
-/* Calm water: a few long, low swells drifting slowly along and lifting a
-   little, far apart, each fading out at its ends. */
+/* Calm water: a few long, low swells, far apart, each fading at its ends.
+   Two sets in different places take turns showing, so swells seem to rise
+   and settle without the surface moving. */
 .sea-swell {
   position: absolute;
-  top: -10px;
-  bottom: -10px;
-  left: 0;
-  width: calc(100% + 1400px);
-  background: url("../assets/water/swell.svg") 0 40px / 1400px 720px repeat;
-  animation:
-    swell 90s linear infinite,
-    swell-lift 7s ease-in-out infinite alternate;
-  will-change: translate, transform;
-}
-
-@keyframes swell {
-  to {
-    translate: -1400px 0;
-  }
-}
-
-@keyframes swell-lift {
-  from {
-    transform: translateY(-5px);
-  }
-  to {
-    transform: translateY(5px);
-  }
-}
-
-/* Rings from a click or tap, like a pebble dropped in. */
-.sea-ripples {
-  position: absolute;
   inset: 0;
+  background: url("../assets/water/swell.svg") 0 40px / 1400px 720px repeat;
+}
+
+.sea-swell-a {
+  animation: trade-a 11s ease-in-out infinite alternate;
+}
+
+.sea-swell-b {
+  background-position: 640px 330px;
+  animation: trade-b 11s ease-in-out infinite alternate;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sea-net,
   .sea-swell {
     animation: none;
+  }
+
+  .sea-net-b,
+  .sea-swell-b {
+    opacity: 0.4;
   }
 }

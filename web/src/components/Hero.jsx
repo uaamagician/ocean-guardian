@@ -4,7 +4,6 @@ import { prefersReducedMotion } from "../lib/motion";
 import { Marked, Note } from "./Sketch";
 import ActionButtons from "./ActionButtons";
 import { Gulls } from "./Life";
-import { dropRipple } from "../lib/ripple";
 
 // A matched pair of illustrations: the same stretch of beach, clean and after
 // the tide. Only the debris changes, so the spotlight edge never shows a seam.
@@ -109,55 +108,11 @@ function useScrollAway(sectionRef) {
   }, [sectionRef]);
 }
 
-// The waterline in the picture (hero/clean.webp, measured on its 1706 x 960
-// layout): x along the image, then how far down the water reaches there.
-const SHORE = [
-  [0, 590], [150, 600], [300, 600], [420, 580], [520, 520], [600, 460], [700, 420], [850, 410],
-  [1000, 425], [1150, 420], [1300, 390], [1400, 340], [1500, 280], [1600, 220], [1706, 160],
-];
-
-// Is a point on the picture (in its own pixels on screen) in the water? The
-// picture covers the hero and is centred, like background-size: cover.
-function inWater(x, y, width, height) {
-  const scale = Math.max(width / 1706, height / 960);
-  const ix = (x - (width - 1706 * scale) / 2) / scale;
-  const iy = (y - (height - 960 * scale) / 2) / scale;
-  const i = SHORE.findIndex(([sx]) => sx >= ix);
-  if (i <= 0) return iy < SHORE[i < 0 ? SHORE.length - 1 : 0][1];
-  const [x0, y0] = SHORE[i - 1];
-  const [x1, y1] = SHORE[i];
-  return iy < y0 + ((y1 - y0) * (ix - x0)) / (x1 - x0);
-}
-
-// Tapping the water in the hero sends out rings, like a pebble dropped in the
-// shallows; the sand stays still. The rings are plain DOM nodes in a layer
-// React never renders into.
-function useRipples(sectionRef, layerRef) {
-  useEffect(() => {
-    if (prefersReducedMotion()) return undefined;
-    const section = sectionRef.current;
-    const picture = section.querySelector(".hero-trash");
-    const onDown = (e) => {
-      // The picture drifts with the scroll parallax, so test against it.
-      const pic = picture.getBoundingClientRect();
-      const px = e.clientX - pic.left;
-      const py = e.clientY - pic.top;
-      if (!inWater(px, py, pic.width, pic.height)) return;
-      const box = section.getBoundingClientRect();
-      dropRipple(layerRef.current, e.clientX - box.left, e.clientY - box.top);
-    };
-    section.addEventListener("pointerdown", onDown);
-    return () => section.removeEventListener("pointerdown", onDown);
-  }, [sectionRef, layerRef]);
-}
-
 export default function Hero() {
   const sectionRef = useRef(null);
   const layerRef = useRef(null);
-  const rippleRef = useRef(null);
   useSpotlight(sectionRef, layerRef);
   useScrollAway(sectionRef);
-  useRipples(sectionRef, rippleRef);
 
   return (
     <section ref={sectionRef} className="hero">
@@ -171,7 +126,6 @@ export default function Hero() {
         />
         <div className="hero-shimmer" aria-hidden="true" />
       </div>
-      <div className="hero-ripples" ref={rippleRef} aria-hidden="true" />
       <Gulls />
       <div className="hero-shade" aria-hidden="true" />
 
