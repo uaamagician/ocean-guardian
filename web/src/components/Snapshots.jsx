@@ -2,15 +2,14 @@ import { Sparkles, Waves } from "lucide-react";
 import usePhotoUrls from "../lib/usePhotoUrls";
 import { topItems } from "../lib/cleanup";
 import FadeImg from "./FadeImg";
+import { commonsCredit, creditLine } from "../lib/commonsReports";
 import { Doodle } from "./Sketch";
 
 // The photos people took at a beach, pinned on top of each other like
 // snapshots: the newest on top, one photo per report.
 export function Snapshots({ reports, max = 3, className = "" }) {
-  const paths = reports
-    .map((r) => r.photos?.[0])
-    .filter(Boolean)
-    .slice(0, max);
+  const shown = reports.filter((r) => r.photos?.[0]).slice(0, max);
+  const paths = shown.map((r) => r.photos[0]);
   const urls = usePhotoUrls(paths);
   if (paths.length === 0) {
     return (
@@ -23,7 +22,7 @@ export function Snapshots({ reports, max = 3, className = "" }) {
   return (
     <div className={`snaps ${className}`} data-count={paths.length}>
       {paths.map((p, i) => (
-        <span key={p} className="snap" style={{ "--i": i }}>
+        <span key={p} className="snap" style={{ "--i": i }} title={commonsCredit(shown[i]) ? creditLine(commonsCredit(shown[i])) : undefined}>
           {urls[i] && <FadeImg src={urls[i]} alt="" loading="lazy" />}
         </span>
       ))}
@@ -48,10 +47,12 @@ export function AiSaw({ reports, max = 4 }) {
 
 // A single square photo of a beach, for list rows.
 export function Thumb({ reports }) {
-  const path = reports.map((r) => r.photos?.[0]).find(Boolean);
+  const first = reports.find((r) => r.photos?.[0]);
+  const path = first?.photos[0];
   const [url] = usePhotoUrls(path ? [path] : []);
+  const credit = commonsCredit(first);
   return (
-    <span className="thumb" aria-hidden="true">
+    <span className="thumb" aria-hidden="true" title={credit ? creditLine(credit) : undefined}>
       {url ? <FadeImg src={url} alt="" loading="lazy" /> : <Waves />}
     </span>
   );

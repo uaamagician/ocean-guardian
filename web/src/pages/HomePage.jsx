@@ -23,6 +23,7 @@ import { useBeaches, useReportsByBeach } from "../lib/beaches";
 import useSectionMotion from "../lib/useSectionMotion";
 import "./Home.css";
 import SeaSurface from "../components/SeaSurface";
+import { commonsCredit } from "../lib/commonsReports";
 
 // Live numbers and the next cleanups, straight under the hero.
 function RightNow({ reports }) {
@@ -198,11 +199,13 @@ function DebrisStats({ reports }) {
 
 function LatestCard({ report }) {
   const [cover] = usePhotoUrls(report.photos?.slice(0, 1) ?? []);
+  const credit = commonsCredit(report);
   return (
     <Link to={`/map?r=${report.id}`} className="latest-card" viewTransition>
       <span className="latest-photo">{cover && <FadeImg src={cover} alt="" loading="lazy" decoding="async" />}</span>
       <Level category={report.aiAnalysis?.category} />
       <span className="report-meta">{formatTime(report.createdAt)}</span>
+      {credit && <span className="latest-credit">Photo: {credit.artist}, via Wikimedia Commons</span>}
       {report.aiAnalysis?.items?.length > 0 && (
         <ul className="report-items">
           {report.aiAnalysis.items.slice(0, 3).map((item) => (

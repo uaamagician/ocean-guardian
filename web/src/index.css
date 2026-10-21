@@ -1669,3 +1669,31 @@ svg.lucide {
 .reports-map.is-snapped .leaflet-interactive {
   cursor: pointer;
 }
+
+/* Reports made from Wikimedia Commons photos credit the photographer. */
+.report-credit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+.report-credit a {
+  color: inherit;
+}
+
+.commons-tag {
+  padding: 1px 8px;
+  border: 1.5px solid var(--tide);
+  border-radius: 999px;
+  color: var(--tide);
+  font-weight: 600;
+}
+
+.latest-credit {
+  font-size: 0.6875rem;
+  color: var(--ink-soft);
+}

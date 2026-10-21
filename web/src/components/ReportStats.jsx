@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import { Link } from "react-router";
-import usePublishedReports from "../lib/usePublishedReports";
+import usePublishedReports, { distanceKm } from "../lib/usePublishedReports";
 import { useBeaches, useReportsByBeach } from "../lib/beaches";
 import { MIN_REPORTS_FOR_PLAN, topItems } from "../lib/cleanup";
 import { CATEGORIES, TONE_COLORS } from "../lib/labels";
 import { coastOf } from "../lib/regions";
+import { commonsCredit } from "../lib/commonsReports";
 import "./ReportStats.css";
 
 const LEVELS = ["clean", "light", "moderate", "heavy"];
@@ -41,11 +42,28 @@ export default function ReportStats() {
     const trash = reports.filter((r) => r.type === "trash" && r.aiAnalysis && r.aiAnalysis.category in WEIGHT);
     if (trash.length === 0) return { trash };
 
+    // A report away from any listed beach still belongs to a country: take it
+    // from the closest beach within 100 km.
+    const countryNear = (loc) => {
+      let best = null;
+      let bestKm = 100;
+      for (const b of beaches) {
+        if (Math.abs(b.lat - loc.lat) > 1 || Math.abs(b.lng - loc.lng) > 1.5) continue;
+        const km = distanceKm(loc, b);
+        if (km < bestKm) {
+          best = b;
+          bestKm = km;
+        }
+      }
+      return best?.country ?? null;
+    };
+
     // By stretch of coast.
     const coasts = new Map();
     for (const r of trash) {
       const beach = byId.get(beachOfReport.get(r.id));
-      const coast = coastOf(r.location.lat, r.location.lng, beach?.country);
+      const country = commonsCredit(r)?.country ?? beach?.country ?? countryNear(r.location);
+      const coast = coastOf(r.location.lat, r.location.lng, country);
       if (!coasts.has(coast)) coasts.set(coast, []);
       coasts.get(coast).push(r);
     }
@@ -70,8 +88,10 @@ export default function ReportStats() {
       .slice(0, 5);
 
     const first = trash.reduce((a, r) => (r.createdAt.toMillis() < a.createdAt.toMillis() ? r : a));
+    const fromCommons = trash.filter((r) => commonsCredit(r)).length;
     return {
       trash,
+      fromCommons,
       beachCount: new Set(trash.map((r) => beachOfReport.get(r.id)).filter(Boolean)).size,
       since: first.createdAt.toDate().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
       coasts: [...coasts.entries()].sort((a, b) => b[1].length - a[1].length),
@@ -100,6 +120,12 @@ export default function ReportStats() {
             So far, <strong>{stats.trash.length}</strong> beach {stats.trash.length === 1 ? "report" : "reports"} from{" "}
             <strong>{stats.beachCount}</strong> {stats.beachCount === 1 ? "beach" : "beaches"}, since {stats.since}.
           </p>
+          {stats.fromCommons > 0 && (
+            <p className="data-note">
+              {stats.trash.length - stats.fromCommons} sent in by visitors and {stats.fromCommons} from freely licensed
+              Wikimedia Commons photos, each rated by the same AI at the place it was taken.
+            </p>
+          )}
 
           <div className="stats-grid">
             <div className="stats-block stats-coasts">

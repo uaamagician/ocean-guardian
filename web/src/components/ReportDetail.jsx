@@ -1,6 +1,7 @@
 import usePhotoUrls from "../lib/usePhotoUrls";
 import FadeImg from "./FadeImg";
 import { CATEGORIES, STATUS, TYPES, formatTime } from "../lib/labels";
+import { commonsCredit } from "../lib/commonsReports";
 
 export function Level({ category }) {
   const level = CATEGORIES[category] ?? { label: "Not analyzed", tone: "none" };
@@ -15,6 +16,7 @@ export function Level({ category }) {
 export default function ReportDetail({ report, showStatus = false }) {
   const photoUrls = usePhotoUrls(report.photos ?? []);
   const analysis = report.aiAnalysis;
+  const credit = commonsCredit(report);
 
   return (
     <article className="report">
@@ -32,6 +34,16 @@ export default function ReportDetail({ report, showStatus = false }) {
             <FadeImg key={url} src={url} alt={`Report photo ${i + 1}`} loading="lazy" />
           ))}
         </div>
+      )}
+
+      {credit && (
+        <p className="report-credit">
+          <span className="commons-tag">Wikimedia Commons photo</span>
+          Photo: {credit.artist}, {credit.license}, via{" "}
+          <a href={credit.page} target="_blank" rel="noreferrer">
+            Wikimedia Commons
+          </a>
+        </p>
       )}
 
       {analysis?.items?.length > 0 && (
