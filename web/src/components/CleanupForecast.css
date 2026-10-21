@@ -1,5 +1,30 @@
 /* ---------- Cleanup forecast (CleanupForecast.jsx) ---------- */
 
+/* Look up any beach or town, or use where you are. */
+.forecast-find {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.forecast-find .map-search {
+  flex: 1 1 320px;
+  max-width: 520px;
+  margin: 0;
+}
+
+.forecast-near {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.forecast-near svg {
+  width: 16px;
+  height: 16px;
+}
+
 /* The coasts, as tabs on a notebook's edge. */
 .spot-tabs {
   display: flex;
@@ -31,6 +56,10 @@
   font-weight: 400;
   font-size: 0.7rem;
   color: var(--ink-soft);
+}
+
+.spot-tab.is-picked {
+  background: var(--marker);
 }
 
 .spot-tab.is-on {
@@ -228,9 +257,11 @@
     display: none;
   }
 
+  /* Every tide is labelled with its own time, so the hour marks and the
+     "now" note give way at this size; the dashed line still marks now. */
   .tide-hour,
   .tide-now text {
-    font-size: 22px;
+    display: none;
   }
 }
 

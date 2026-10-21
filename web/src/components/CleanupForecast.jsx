@@ -1,4 +1,9 @@
 import { useEffect, useState } from "react";
+import { LocateFixed } from "lucide-react";
+import MapSearch from "./MapSearch";
+import { useBeaches } from "../lib/beaches";
+import { getPosition } from "../lib/reports";
+import { coastOf } from "../lib/regions";
 import { FEATURED_SPOTS, describeUv } from "../lib/ocean";
 import { bestLowTide, clock, compass, dayName, fetchCleanupForecast, isDaylight, localNow, verdict } from "../lib/forecast";
 import "./CleanupForecast.css";
@@ -43,7 +48,38 @@ function TideLine({ day, tide, now }) {
   const marks = [
     ...day.lows.map((p) => ({ ...p, kind: "low" })),
     ...day.highs.map((p) => ({ ...p, kind: "high" })),
-  ];
+  ].map((m) => {
+    const mx = x(hours(m.time));
+    const my = y(m.level);
+    return { ...m, mx, my, ty: m.kind === "low" ? my + 22 : my - 12 };
+  });
+
+  // The sunset note goes beside the sun, or up top, wherever it won't sit on
+  // a tide label. Boxes are rough: about 8.6 units a letter at this size.
+  const sunsetText = `sunset ${clock(day.sunset)}`;
+  const box = (cx, ty, text, anchor) => {
+    const w = text.length * 8.6;
+    const left = anchor === "end" ? cx - w : anchor === "middle" ? cx - w / 2 : cx;
+    return { left, right: left + w, top: ty - 15, bottom: ty + 4 };
+  };
+  const taken = marks.map((m) => box(m.mx, m.ty, `${m.kind} ${clock(m.time)}`, "middle"));
+  const clashes = (b) => taken.some((t) => b.left < t.right && b.right > t.left && b.top < t.bottom && b.bottom > t.top);
+  const sunsetSpot =
+    [
+      [set - 18, H - 24, "end"],
+      [set + 18, H - 24, "start"],
+      [set - 8, top - 16, "end"],
+      [set + 8, top - 16, "start"],
+    ].find(([sx, sy, anchor]) => !clashes(box(sx, sy, sunsetText, anchor))) ?? [set - 8, top - 16, "end"];
+  taken.push(box(sunsetSpot[0], sunsetSpot[1], sunsetText, sunsetSpot[2]));
+  // "now" sits at the top of its line, on whichever side is free (or not at all).
+  const nowSpot =
+    nowX == null
+      ? null
+      : [
+          [nowX + 5, 6, "start"],
+          [nowX - 5, 6, "end"],
+        ].find(([nx, ny, anchor]) => !clashes(box(nx, ny, "now", anchor)));
 
   return (
     <svg className="tide-line" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Tide today: ${marks.map((m) => `${m.kind} at ${clock(m.time)}`).join(", ")}; sunset ${clock(day.sunset)}`}>
@@ -60,29 +96,26 @@ function TideLine({ day, tide, now }) {
       <g className="tide-sunset">
         <line x1={set} x2={set} y1={top - 10} y2={H - 18} />
         <path d={`M${set - 13} ${H - 18} a13 13 0 0 1 26 0`} />
-        <text x={set - 18} y={H - 24} textAnchor="end">
-          sunset {clock(day.sunset)}
+        <text x={sunsetSpot[0]} y={sunsetSpot[1]} textAnchor={sunsetSpot[2]}>
+          {sunsetText}
         </text>
       </g>
-      {marks.map((m) => {
-        const mx = x(hours(m.time));
-        const my = y(m.level);
-        const lit = isDaylight(day, m.time);
-        return (
-          <g key={m.time} className={`tide-mark is-${m.kind} ${lit ? "" : "is-dark"}`}>
-            <circle cx={mx} cy={my} r="5" />
-            <text x={mx} y={m.kind === "low" ? my + 22 : my - 12} textAnchor="middle">
-              {m.kind} {clock(m.time)}
-            </text>
-          </g>
-        );
-      })}
+      {marks.map((m) => (
+        <g key={m.time} className={`tide-mark is-${m.kind} ${isDaylight(day, m.time) ? "" : "is-dark"}`}>
+          <circle cx={m.mx} cy={m.my} r="5" />
+          <text x={m.mx} y={m.ty} textAnchor="middle">
+            {m.kind} {clock(m.time)}
+          </text>
+        </g>
+      ))}
       {nowX != null && (
         <g className="tide-now">
-          <line x1={nowX} x2={nowX} y1="4" y2={H - 18} />
-          <text x={nowX + 5} y="10">
-            now
-          </text>
+          <line x1={nowX} x2={nowX} y1="10" y2={H - 18} />
+          {nowSpot && (
+            <text x={nowSpot[0]} y={nowSpot[1]} textAnchor={nowSpot[2]}>
+              now
+            </text>
+          )}
         </g>
       )}
     </svg>
@@ -183,10 +216,36 @@ function TideTable({ days }) {
   );
 }
 
+// Where a picked beach or place is, said the way the tabs say it.
+const regionFor = (lat, lng, country, fallback) => {
+  const coast = coastOf(lat, lng, country);
+  return coast === "Elsewhere" ? fallback ?? "" : coast;
+};
+
 export default function CleanupForecast() {
+  const { beaches } = useBeaches();
   const [index, setIndex] = useState(0);
+  // A beach or place someone searched for, or where they are now.
+  const [picked, setPicked] = useState(null);
+  const [locating, setLocating] = useState({ busy: false, error: "" });
   const [state, setState] = useState({ data: null, error: false });
-  const spot = FEATURED_SPOTS[index];
+  const spot = picked ?? FEATURED_SPOTS[index];
+
+  const nearMe = async () => {
+    setLocating({ busy: true, error: "" });
+    try {
+      const here = await getPosition();
+      setPicked({ name: "Near you", region: regionFor(here.lat, here.lng, null, "Your location"), lat: here.lat, lng: here.lng });
+      setLocating({ busy: false, error: "" });
+    } catch (err) {
+      setLocating({
+        busy: false,
+        error: /turned off/.test(err.message)
+          ? "Location is turned off for this site. Search for a beach or town instead."
+          : "Couldn't find where you are. Search for a beach or town instead.",
+      });
+    }
+  };
 
   useEffect(() => {
     let live = true;
@@ -200,6 +259,7 @@ export default function CleanupForecast() {
     };
   }, [spot]);
 
+
   const { data, error } = state;
   return (
     <section className="info-section forecast" id="forecast">
@@ -209,15 +269,37 @@ export default function CleanupForecast() {
         and finish before sunset.
       </p>
 
+      <div className="forecast-find">
+        <MapSearch
+          beaches={beaches}
+          onBeach={(b) => setPicked({ name: b.name, region: regionFor(b.lat, b.lng, b.country, b.country), lat: b.lat, lng: b.lng })}
+          onPlace={(p) => setPicked({ name: p.name, region: regionFor(p.lat, p.lng, null, p.detail.split(",").slice(-1)[0]?.trim()), lat: p.lat, lng: p.lng })}
+        />
+        <button type="button" className="btn btn-small forecast-near" onClick={nearMe} disabled={locating.busy}>
+          <LocateFixed aria-hidden="true" />
+          {locating.busy ? "Finding you…" : "Near me"}
+        </button>
+      </div>
+      {locating.error && <p className="report-meta">{locating.error}</p>}
+
       <div className="spot-tabs" role="tablist" aria-label="Coast">
+        {picked && (
+          <button type="button" role="tab" aria-selected className="spot-tab is-on is-picked">
+            {picked.name}
+            <small>{picked.region || "Your search"}</small>
+          </button>
+        )}
         {FEATURED_SPOTS.map((s, i) => (
           <button
             key={s.name}
             type="button"
             role="tab"
-            aria-selected={i === index}
-            className={`spot-tab ${i === index ? "is-on" : ""}`}
-            onClick={() => setIndex(i)}
+            aria-selected={!picked && i === index}
+            className={`spot-tab ${!picked && i === index ? "is-on" : ""}`}
+            onClick={() => {
+              setPicked(null);
+              setIndex(i);
+            }}
           >
             {s.name}
             <small>{s.region}</small>
@@ -226,8 +308,11 @@ export default function CleanupForecast() {
       </div>
 
       {error && <p className="report-meta">Couldn't load the forecast. Try again in a minute.</p>}
+      {data && data.tide[0].length < 2 && (
+        <p className="report-meta">No sea data here. Try a beach or a town on the coast.</p>
+      )}
       {!data && !error && <p className="report-meta">Loading the forecast…</p>}
-      {data && (
+      {data && data.tide[0].length >= 2 && (
         <>
           <Today spot={spot} day={data.days[0]} tide={data.tide[0]} now={localNow(data.offset)} />
           <TideTable days={data.days} />
