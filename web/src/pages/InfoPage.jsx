@@ -1,5 +1,6 @@
-import { Link } from "react-router";
 import LiveOcean from "../components/LiveOcean";
+import CleanupForecast from "../components/CleanupForecast";
+import ReportStats from "../components/ReportStats";
 import { BLEACHING_LEVELS } from "../lib/ocean";
 import "./Home.css";
 import "./InfoPage.css";
@@ -19,13 +20,17 @@ export default function InfoPage() {
       <header className="info-header">
         <div className="info-header-inner">
           <h1>Ocean data</h1>
-          <p>Live sea temperature and coral bleaching alerts around Taiwan, and how to read them.</p>
+          <p>When to go, what the sea is doing, and what the reports so far add up to.</p>
         </div>
       </header>
+
+      <CleanupForecast />
 
       <div id="conditions">
         <LiveOcean title="Sea temperature around Taiwan" />
       </div>
+
+      <ReportStats />
 
       <section className="info-section" id="bleaching">
         <h2>Reading a bleaching alert</h2>
@@ -60,29 +65,6 @@ export default function InfoPage() {
         </p>
       </section>
 
-      <section className="info-section" id="background">
-        <h2>Background</h2>
-        <div className="info-facts">
-          <article>
-            <h3>The ocean takes most of the heat</h3>
-            <p>
-              The ocean has absorbed more than 90% of the extra heat trapped by greenhouse gases, which means warmer
-              water and more frequent coral bleaching.
-            </p>
-            <small>Source: IPCC Sixth Assessment Report</small>
-          </article>
-          <article>
-            <h3>Most beach debris starts on land</h3>
-            <p>
-              Plastic reaches the coast through rivers, storm drains and activity along the shore. Every single-use item
-              skipped is one less for the tide to bring back.
-            </p>
-            <Link to="/report" className="btn btn-small" viewTransition>
-              Report a beach
-            </Link>
-          </article>
-        </div>
-      </section>
 
     </div>
   );

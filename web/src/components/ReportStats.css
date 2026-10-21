@@ -1,0 +1,184 @@
+/* ---------- What the reports show (ReportStats.jsx) ---------- */
+
+/* The headline, written as a sentence in the margin rather than a dashboard. */
+.stats-tally {
+  font-family: var(--font-hand);
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.stats-tally strong {
+  padding: 0 0.12em;
+  background: linear-gradient(100deg, transparent 2%, var(--marker) 5%, var(--marker) 95%, transparent 98%) 0 72% / 100% 55% no-repeat;
+}
+
+.stats-grid {
+  display: grid;
+  gap: var(--space-7);
+}
+
+@media (min-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stats-coasts {
+    grid-column: 1 / -1;
+  }
+}
+
+.stats-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.stats-block h3 {
+  font-family: var(--font-hand);
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+/* By coast: a ruled table, debris levels as hand-coloured bars. */
+.coast-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.coast-table th,
+.coast-table td {
+  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.coast-table thead th {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.coast-table tbody tr {
+  background: var(--rule-ink) top left / 100% 6px no-repeat;
+}
+
+.coast-table tbody th {
+  font-family: var(--font-display);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.coast-table .num {
+  font-variant-numeric: tabular-nums;
+}
+
+.coast-table td:nth-child(3) {
+  width: 40%;
+}
+
+.coast-table .level-bar {
+  height: 16px;
+}
+
+/* Reports a month: columns shaded in pencil. */
+.month-bars {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  align-items: end;
+  gap: var(--space-3);
+  height: 180px;
+  margin: 0;
+  padding: 0 0 4px;
+  list-style: none;
+  background: var(--rule-ink) bottom left / 100% 6px no-repeat;
+}
+
+.month-bars li {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  gap: 4px;
+}
+
+.month-bar {
+  width: 70%;
+  min-height: 3px;
+  border: 2px solid var(--tide);
+  border-bottom: 0;
+  border-radius: 6px 9px 0 0;
+  background: repeating-linear-gradient(-55deg, var(--tide) 0 2px, transparent 2px 6px);
+  filter: url(#rough-still);
+}
+
+.month-count {
+  font-family: var(--font-hand);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.month-name {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+/* Beaches that need a cleanup: a short to-do list. */
+.needs-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.needs-list li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  background: var(--rule-ink) bottom left / 100% 6px no-repeat;
+}
+
+.needs-name {
+  display: flex;
+  flex-direction: column;
+}
+
+.needs-name small {
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+}
+
+.needs-go {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.needs-go a:not(.btn) {
+  color: var(--tide);
+}
+
+.needs-more {
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+}
+
+@media (max-width: 600px) {
+  .needs-list li {
+    grid-template-columns: auto 1fr;
+  }
+
+  .needs-go {
+    grid-column: 2;
+  }
+
+  .coast-table td:nth-child(4),
+  .coast-table thead th:nth-child(4) {
+    display: none;
+  }
+}
