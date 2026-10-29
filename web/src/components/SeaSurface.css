@@ -22,69 +22,36 @@
   display: none;
 }
 
-/* Sunlight netting the bottom: two copies of the same net, set apart, slowly
-   trading brightness so the lines seem to shift and flow. Neither copy moves,
-   so the water never slides about. The net repeats downward without a seam
-   (scripts/caustics.py); each section starts it at its own --net-y. */
+/* Sunlight netting the bottom: one net, standing still, slowly brightening
+   and dimming. It repeats downward without a seam (scripts/caustics.py);
+   each section starts it at its own --net-y. */
 .sea-net {
   position: absolute;
   inset: 0;
   background: url("../assets/water/caustics.webp") center var(--net-y, 0px) / max(100%, 1100px) auto repeat-y;
+  animation: breathe 8s ease-in-out infinite alternate;
 }
 
-.sea-net-a {
-  animation: trade-a 9s ease-in-out infinite alternate;
-}
-
-.sea-net-b {
-  background-position: center calc(var(--net-y, 0px) + 170px);
-  animation: trade-b 9s ease-in-out infinite alternate;
-}
-
-@keyframes trade-a {
-  from {
-    opacity: 0.9;
-  }
-  to {
-    opacity: 0.3;
-  }
-}
-
-@keyframes trade-b {
-  from {
-    opacity: 0.25;
-  }
-  to {
-    opacity: 0.8;
-  }
-}
-
-/* Calm water: a few long, low swells, far apart, each fading at its ends.
-   Two sets in different places take turns showing, so swells seem to rise
-   and settle without the surface moving. */
+/* Calm water: a few long, low swells, far apart, each fading at its ends. */
 .sea-swell {
   position: absolute;
   inset: 0;
   background: url("../assets/water/swell.svg") 0 40px / 1400px 720px repeat;
+  animation: breathe 10s ease-in-out infinite alternate;
 }
 
-.sea-swell-a {
-  animation: trade-a 11s ease-in-out infinite alternate;
-}
-
-.sea-swell-b {
-  background-position: 640px 330px;
-  animation: trade-b 11s ease-in-out infinite alternate;
+@keyframes breathe {
+  from {
+    opacity: 0.9;
+  }
+  to {
+    opacity: 0.55;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sea-net,
   .sea-swell {
     animation: none;
-  }
-
-  .sea-net-b,
-  .sea-swell-b {
-    opacity: 0.4;
   }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { gsap } from "../lib/gsap";
 import { prefersReducedMotion } from "../lib/motion";
-import { Marked, Note } from "./Sketch";
+import { Marked } from "./Sketch";
 import ActionButtons from "./ActionButtons";
 import { Gulls } from "./Life";
 
@@ -141,9 +141,6 @@ export default function Hero() {
             </Marked>
           </span>
         </h1>
-        <p className="hero-hint hero-anim hero-fade" style={{ animationDelay: "0.55s" }}>
-          <Note arrow="down">Move your cursor, or drag a finger, to see what the tide brought in</Note>
-        </p>
       </div>
 
       <div className="hero-bottom">

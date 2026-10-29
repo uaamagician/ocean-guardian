@@ -36,6 +36,13 @@ def save(im, mask, name, longest):
     layer = layer.resize((round(im.width * s), round(im.height * s)), Image.LANCZOS)
     layer.save(os.path.join(OUT, name + ".webp"), quality=90, method=6)
 
+# A moving part reaches a little way in under the body (it is drawn beneath
+# it), so when it turns no gap or pale seam opens at the joint.
+TUCK = 12
+
+def tucked(part, body):
+    return part | (ndimage.binary_dilation(part, disk(TUCK)) & body)
+
 def pct(pt, im):
     return [round(100 * pt[0] / im.width, 1), round(100 * pt[1] / im.height, 1)]
 
@@ -83,7 +90,7 @@ full = nearest_fill(fg, seeds)
 meta["turtle"] = {"size": [im.width, im.height], "parts": {}}
 for k, name in enumerate(names, 1):
     m = full == k
-    save(im, m, f"turtle-{name}", 240)
+    save(im, m if name == "body" else tucked(m, full == 1), f"turtle-{name}", 240)
     if name != "body":
         meta["turtle"]["parts"][name] = pct(pivot(m, full == 1), im)
 print("turtle", names)
@@ -121,7 +128,7 @@ names = ["body", "claw-left", "claw-right", "legs-left", "legs-right"]
 meta["crab"] = {"size": [im.width, im.height], "parts": {}}
 for k, name in enumerate(names, 1):
     m = full == k
-    save(im, m, f"crab-{name}", 240)
+    save(im, m if name == "body" else tucked(m, full == 1), f"crab-{name}", 240)
     if name != "body":
         meta["crab"]["parts"][name] = pct(pivot(m, full == 1), im)
 print("crab", [(nm, int((full == k).sum())) for k, nm in enumerate(names, 1)])
@@ -142,7 +149,7 @@ for colour in ("blue", "pink", "orange"):
     tail = keep
     body = fg & ~tail
     save(im, body, f"fish-{colour}-body", 200)
-    save(im, tail, f"fish-{colour}-tail", 200)
+    save(im, tucked(tail, body), f"fish-{colour}-tail", 200)
     meta[f"fish-{colour}"] = {"size": [im.width, im.height], "parts": {"tail": pct((joint, ys.mean()), im)}}
     print("fish", colour, joint, w)
 
