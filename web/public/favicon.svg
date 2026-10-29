@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <circle cx="16" cy="16" r="14" fill="#FF5B23"/>
-  <circle cx="16" cy="16" r="6" fill="#EEF3F1"/>
-  <path d="M2 16h8M22 16h8M16 2v8M16 22v8" stroke="#EEF3F1" stroke-width="3"/>
+  <!-- The Ocean Guardian mark from the header: a wave inside a ring. The pale
+       fill keeps it readable on light and dark browser tabs alike. -->
+  <circle cx="16" cy="16" r="13.5" fill="#fffaf0" stroke="#2a6d8c" stroke-width="2.8"/>
+  <path d="M5 18c2.2 0 2.2-2 4.4-2s2.2 2 4.4 2 2.2-2 4.4-2 2.2 2 4.4 2 2.2-2 4.4-2" fill="none" stroke="#2a6d8c" stroke-width="2.8" stroke-linecap="round"/>
 </svg>
