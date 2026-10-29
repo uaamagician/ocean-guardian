@@ -96,7 +96,6 @@
 .hero-line-2 {
   margin-top: 0.1em;
   font-weight: 800;
-  font-variation-settings: "INFM" 100;
   letter-spacing: -0.02em;
 }
 
@@ -241,7 +240,6 @@
 .band-head h2 {
   font-size: var(--text-3xl);
   font-weight: 700;
-  font-variation-settings: "INFM" 80;
   line-height: 1.1;
   text-wrap: balance;
 }
@@ -422,7 +420,6 @@
 .spot-temp {
   font-family: var(--font-display);
   font-weight: 700;
-  font-variation-settings: "INFM" 100;
   font-size: 3.4rem;
   line-height: 1;
   margin-top: var(--space-3);
@@ -521,7 +518,6 @@
 .stat-big strong {
   font-family: var(--font-display);
   font-weight: 800;
-  font-variation-settings: "INFM" 100;
   font-size: 5rem;
   line-height: 1;
   color: var(--tide);
@@ -952,7 +948,6 @@
 
 .journey-intro h2 {
   font-size: var(--text-3xl);
-  font-variation-settings: "INFM" 100;
   line-height: 1;
 }
 
@@ -1039,7 +1034,6 @@
 
 .journey-copy h3 {
   font-size: clamp(1.7rem, 3vw, 2.6rem);
-  font-variation-settings: "INFM" 100;
   line-height: 1.05;
 }
 
@@ -1154,7 +1148,6 @@
 
 .right-now-head h2 {
   font-size: var(--text-2xl);
-  font-variation-settings: "INFM" 100;
 }
 
 .now-stats {
@@ -1200,7 +1193,6 @@
   font-family: var(--font-display);
   font-size: 2.4rem;
   font-weight: 800;
-  font-variation-settings: "INFM" 100;
   line-height: 1.05;
   color: var(--tide);
   font-variant-numeric: tabular-nums;
@@ -1266,7 +1258,6 @@
   font-family: var(--font-display);
   font-size: clamp(2.2rem, 3.4vw, 3rem);
   font-weight: 800;
-  font-variation-settings: "INFM" 100;
   line-height: 1.05;
   color: var(--tide);
   font-variant-numeric: tabular-nums;
@@ -1330,7 +1321,6 @@
 
 .final-cta h2 {
   font-size: clamp(2.5rem, 6vw, 5rem);
-  font-variation-settings: "INFM" 100;
   line-height: 1.05;
 }
 

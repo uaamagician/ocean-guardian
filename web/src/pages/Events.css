@@ -41,7 +41,6 @@
 
 .event-hero h1 {
   font-size: var(--text-3xl);
-  font-variation-settings: "INFM" 100;
   line-height: 1.05;
   text-wrap: balance;
   max-width: 18em;
@@ -682,7 +681,6 @@
   font-family: var(--font-display);
   font-size: var(--text-xl);
   font-weight: 700;
-  font-variation-settings: "INFM" 100;
 }
 
 .create-form {

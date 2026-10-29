@@ -16,7 +16,6 @@
 
 .cl-header h1 {
   font-size: var(--text-2xl);
-  font-variation-settings: "INFM" 100;
 }
 
 /* Tabs sit on a ruled line, like dividers in a binder. */

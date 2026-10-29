@@ -107,7 +107,6 @@
 .tl-note h3 {
   margin-top: var(--space-2);
   font-size: var(--text-xl);
-  font-variation-settings: "INFM" 100;
 }
 
 .tl-country {

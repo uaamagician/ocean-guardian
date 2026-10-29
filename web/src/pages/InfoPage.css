@@ -23,7 +23,6 @@
 
 .info-header h1 {
   font-size: var(--text-2xl);
-  font-variation-settings: "INFM" 100;
 }
 
 .info-header p {
@@ -46,7 +45,6 @@
 
 .info-section h2 {
   font-size: var(--text-xl);
-  font-variation-settings: "INFM" 100;
 }
 
 .info-lead {

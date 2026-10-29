@@ -36,10 +36,11 @@
   --lv-none: #8d9ca1;
 
   /* PingFang TC only renders the Chinese text in older reports. */
-  /* Everything is lettered by hand: Shantell Sans for text, Caveat for notes. */
-  --font-body: "Shantell Sans", system-ui, "PingFang TC", sans-serif;
-  --font-display: "Shantell Sans", system-ui, sans-serif;
-  --font-hand: "Caveat", "Shantell Sans", cursive;
+  /* Clean, readable type for everything people read; the hand-drawn feel
+     lives in the drawings, the doodles and the Caveat notes in the margins. */
+  --font-body: "Figtree", system-ui, "PingFang TC", sans-serif;
+  --font-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --font-hand: "Caveat", cursive;
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -133,7 +134,6 @@ body {
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: 1.65;
-  font-variation-settings: "INFM" 15;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -142,9 +142,8 @@ h2,
 h3 {
   font-family: var(--font-display);
   font-weight: 700;
-  font-variation-settings: "INFM" 60;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
   margin: 0;
 }
 
