@@ -62,11 +62,6 @@
   rotate: 1.4deg;
 }
 
-@media (hover: hover) {
-  .tl-photo:hover {
-    rotate: 0deg;
-  }
-}
 
 .tl-photo img {
   width: 100%;

@@ -383,11 +383,6 @@
   rotate: -0.6deg;
 }
 
-@media (hover: hover) {
-  .spot:hover {
-    rotate: 0deg;
-  }
-}
 
 .spot-name {
   font-family: var(--font-display);
@@ -659,6 +654,14 @@
   .step-arrow {
     display: block;
   }
+}
+
+.latest-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
 }
 
 /* The four newest reports, wrapping onto a second row on narrow screens

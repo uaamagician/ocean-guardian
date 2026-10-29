@@ -1,0 +1,42 @@
+/* ---------- All beach reports (ReportsPage.jsx) ---------- */
+
+.reports-page {
+  max-width: calc(var(--content-width) + 2 * var(--space-4));
+  margin: 0 auto;
+  padding: calc(var(--nav-height) + var(--space-6)) var(--space-4) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.reports-head h1 {
+  font-size: var(--text-2xl);
+}
+
+.reports-head p {
+  max-width: 40em;
+  margin-top: var(--space-2);
+  color: var(--ink-soft);
+}
+
+.reports-head a {
+  color: var(--tide);
+}
+
+.reports-page .toolbar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reports-grid {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.reports-more {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  justify-content: center;
+}

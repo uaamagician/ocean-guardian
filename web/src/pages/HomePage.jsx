@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router";
 import { ClipboardList, Sparkles, Users } from "lucide-react";
 import Hero from "../components/Hero";
 import ReportsMap from "../components/ReportsMap";
-import { Level } from "../components/ReportDetail";
-import usePhotoUrls from "../lib/usePhotoUrls";
 import FadeImg from "../components/FadeImg";
 import LiveOcean from "../components/LiveOcean";
 import Journey from "../components/Journey";
@@ -17,13 +15,13 @@ import { useLatestPlan, usePlanCount } from "../lib/cleanup";
 import { useUpcomingEvents } from "../lib/events";
 import { HISTORY_PHOTOS } from "../lib/history";
 import { TOOL_BY_ID } from "../lib/guide";
-import { CATEGORIES, TONE_COLORS, formatTime } from "../lib/labels";
+import { CATEGORIES, TONE_COLORS } from "../lib/labels";
 import usePublishedReports from "../lib/usePublishedReports";
 import { useBeaches, useReportsByBeach } from "../lib/beaches";
 import useSectionMotion from "../lib/useSectionMotion";
 import "./Home.css";
 import SeaSurface from "../components/SeaSurface";
-import { commonsCredit } from "../lib/commonsReports";
+import ReportCard from "../components/ReportCard";
 
 // Live numbers and the next cleanups, straight under the hero.
 function RightNow({ reports }) {
@@ -197,26 +195,6 @@ function DebrisStats({ reports }) {
   );
 }
 
-function LatestCard({ report }) {
-  const [cover] = usePhotoUrls(report.photos?.slice(0, 1) ?? []);
-  const credit = commonsCredit(report);
-  return (
-    <Link to={`/map?r=${report.id}`} className="latest-card" viewTransition>
-      <span className="latest-photo">{cover && <FadeImg src={cover} alt="" loading="lazy" decoding="async" />}</span>
-      <Level category={report.aiAnalysis?.category} />
-      <span className="report-meta">{formatTime(report.createdAt)}</span>
-      {credit && <span className="latest-credit">Photo: {credit.artist}, via Wikimedia Commons</span>}
-      {report.aiAnalysis?.items?.length > 0 && (
-        <ul className="report-items">
-          {report.aiAnalysis.items.slice(0, 3).map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      )}
-    </Link>
-  );
-}
-
 function HowItWorks({ reports }) {
   const latest = (reports ?? []).slice(0, 4);
   return (
@@ -252,10 +230,15 @@ function HowItWorks({ reports }) {
         </ol>
         {latest.length > 0 && (
           <>
-            <h3>Latest reports</h3>
+            <div className="latest-head">
+              <h3>Latest reports</h3>
+              <Link to="/reports" className="btn-text" viewTransition>
+                See all reports
+              </Link>
+            </div>
             <div className="latest">
               {latest.map((r) => (
-                <LatestCard key={r.id} report={r} />
+                <ReportCard key={r.id} report={r} />
               ))}
             </div>
           </>

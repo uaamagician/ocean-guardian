@@ -15,6 +15,7 @@ import CreateEventPage from "./pages/CreateEventPage.jsx";
 import EventPage from "./pages/EventPage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import HistoryPage from "./pages/HistoryPage.jsx";
+import ReportsPage from "./pages/ReportsPage";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
       { path: "events/:eventId", element: <EventPage /> },
       { path: "me", element: <ProfilePage /> },
       { path: "history", element: <HistoryPage /> },
+      { path: "reports", element: <ReportsPage /> },
     ],
   },
 ]);

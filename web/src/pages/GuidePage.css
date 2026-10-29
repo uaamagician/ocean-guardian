@@ -155,11 +155,6 @@
   rotate: 1.2deg;
 }
 
-@media (hover: hover) {
-  .entry:hover .entry-print {
-    rotate: 0deg;
-  }
-}
 
 .entry-print img {
   display: block;
