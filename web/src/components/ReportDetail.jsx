@@ -23,7 +23,7 @@ export default function ReportDetail({ report, showStatus = false }) {
       <div className="report-head">
         {analysis ? <Level category={analysis.category} /> : <strong>{STATUS[report.status]}</strong>}
         <span className="report-meta">
-          {TYPES[report.type]}, {formatTime(report.createdAt)}
+          {TYPES[report.type]}, {report.takenAt ? `photo taken ${formatTime(report.takenAt)}` : formatTime(report.createdAt)}
           {showStatus && analysis && `, ${STATUS[report.status].toLowerCase()}`}
         </span>
       </div>

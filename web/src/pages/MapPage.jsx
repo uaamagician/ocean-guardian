@@ -7,18 +7,27 @@ import OceanConditions from "../components/OceanConditions";
 import BeachPanel from "../components/BeachPanel";
 import AddBeachForm from "../components/AddBeachForm";
 import MapSearch from "../components/MapSearch";
-import usePublishedReports from "../lib/usePublishedReports";
-import { useAllBeaches, useReportsByBeach } from "../lib/beaches";
+import usePublishedReports, { useNearbyReports } from "../lib/usePublishedReports";
+import { BEACH_RADIUS_KM, useAllBeaches, useReportsByBeach } from "../lib/beaches";
 import { CATEGORIES } from "../lib/labels";
 import "./MapPage.css";
 
 const LEGEND = ["clean", "light", "moderate", "heavy"];
 
 export default function MapPage() {
-  const { reports, error: reportsError } = usePublishedReports();
+  const { reports: latest, error: reportsError } = usePublishedReports();
   const { beaches, error: beachesError } = useAllBeaches();
-  const { byBeach, unmatched, beachOfReport, tones } = useReportsByBeach(beaches, reports);
   const [params, setSearchParams] = useSearchParams();
+  // The map loads the newest reports; an open beach adds every report around
+  // it, so its history goes back to the first one however many came since.
+  const openBeach = beaches?.find((b) => b.id === params.get("b"));
+  const nearby = useNearbyReports(openBeach, BEACH_RADIUS_KM * 2);
+  const reports = useMemo(() => {
+    if (!latest || nearby.length === 0) return latest;
+    const ids = new Set(latest.map((r) => r.id));
+    return [...latest, ...nearby.filter((r) => !ids.has(r.id))];
+  }, [latest, nearby]);
+  const { byBeach, unmatched, beachOfReport, tones } = useReportsByBeach(beaches, reports);
   // Opening and closing beaches swaps the URL in place, so Back leaves the map
   // for wherever you came from instead of stepping through every beach clicked.
   const setParams = (next) => setSearchParams(next, { replace: true });

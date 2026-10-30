@@ -62,7 +62,7 @@ function summarize(reports) {
     for (const item of new Set(a.items ?? [])) items.set(item, (items.get(item) ?? 0) + 1);
     uncertain.push(...(a.uncertainItems ?? []));
   }
-  const dates = reports.map((r) => r.createdAt.toDate());
+  const dates = reports.map((r) => (r.takenAt ?? r.createdAt).toDate());
   return [
     `${reports.length} reports between ${dates.at(-1).toISOString().slice(0, 10)} and ${dates[0].toISOString().slice(0, 10)}.`,
     `Debris level per report (newest first): ${reports.map((r) => r.aiAnalysis?.category).join(", ")}.`,
@@ -200,15 +200,21 @@ exports.planCleanup = onCall(
     const { beachId, name, location } = validate(request.data);
     const db = getFirestore();
 
+    // Every report in a band of latitude around the beach, however old, then
+    // trimmed to the radius. Newest first by when the photo was taken, so an
+    // old photo sent in today doesn't stand in for the beach as it is now.
+    const band = RADIUS_KM / 111;
     const snap = await db
       .collection("reports")
       .where("status", "==", "published")
-      .orderBy("createdAt", "desc")
-      .limit(500)
+      .where("location.lat", ">=", location.lat - band)
+      .where("location.lat", "<=", location.lat + band)
       .get();
+    const when = (r) => (r.takenAt ?? r.createdAt).toMillis();
     const reports = snap.docs
       .map((d) => ({ id: d.id, ...d.data() }))
-      .filter((r) => r.type === "trash" && r.aiAnalysis && distanceKm(location, r.location) <= RADIUS_KM);
+      .filter((r) => r.type === "trash" && r.aiAnalysis && distanceKm(location, r.location) <= RADIUS_KM)
+      .sort((x, y) => when(y) - when(x));
 
     if (reports.length < MIN_REPORTS) {
       return { status: "needs_reports", reportCount: reports.length, minReports: MIN_REPORTS };

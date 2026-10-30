@@ -7,7 +7,7 @@ import { MAX_PHOTOS, fromReportDoc, getPosition, resizePhoto, submitReport } fro
 import { TYPES } from "../lib/labels";
 import ReportDetail from "../components/ReportDetail";
 import LocationPicker from "../components/LocationPicker";
-import { photoLocation } from "../lib/photoLocation";
+import { readPhotoExif } from "../lib/photoExif";
 import "./ReportPage.css";
 
 function useGeoPosition() {
@@ -164,10 +164,10 @@ export default function ReportPage() {
     const added = [];
     for (const file of files.slice(0, room)) {
       try {
-        // Resizing drops the EXIF data, so read the location first.
-        const spot = fromLibrary ? await photoLocation(file) : null;
+        // Resizing drops the EXIF data, so read where and when it was taken first.
+        const { spot, takenAt } = fromLibrary ? await readPhotoExif(file) : { spot: null, takenAt: null };
         const blob = await resizePhoto(file);
-        added.push({ id: crypto.randomUUID(), blob, url: URL.createObjectURL(blob), fromLibrary, spot });
+        added.push({ id: crypto.randomUUID(), blob, url: URL.createObjectURL(blob), fromLibrary, spot, takenAt });
       } catch (err) {
         setPhotoError(err.message);
       }
@@ -191,6 +191,11 @@ export default function ReportPage() {
   const spot =
     source === "map" ? pinned : source === "photo" ? photoSpot : location.status === "ok" ? location.value : null;
 
+  // An older photo dates the report to when it was taken, so the beach's
+  // history shows it in the right place rather than as today's condition.
+  const takenAt = photos.reduce((t, p) => (p.takenAt && (!t || p.takenAt < t) ? p.takenAt : t), null);
+  const takenEarlier = takenAt && Date.now() - takenAt.getTime() > 2 * 86400e3;
+
   const pin = (ll) => {
     setPinned({ lat: ll.lat, lng: ll.lng });
     setChoice("map");
@@ -208,6 +213,7 @@ export default function ReportPage() {
         type,
         photos: photos.map((p) => p.blob),
         location: spot,
+        takenAt,
         onProgress: (done, total) => setSubmitting({ done, total }),
       });
       setReportId(id);
@@ -261,6 +267,13 @@ export default function ReportPage() {
         busy={photoBusy}
         error={photoError}
       />
+
+      {takenEarlier && (
+        <p className="report-meta taken-note">
+          Taken {takenAt.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}. The report
+          goes into the beach's history on that date.
+        </p>
+      )}
 
       <LocationPicker
         source={source}

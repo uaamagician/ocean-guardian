@@ -31,11 +31,14 @@ export const TONE_COLORS = {
   none: "#8d9ca1",
 };
 
+// The year shows only when it isn't this one, which matters for old photos.
 export function formatTime(timestamp) {
   if (!timestamp) return "";
-  return timestamp.toDate().toLocaleString("en-US", {
+  const date = timestamp.toDate();
+  return date.toLocaleString("en-US", {
     month: "short",
     day: "numeric",
+    ...(date.getFullYear() !== new Date().getFullYear() && { year: "numeric" }),
     hour: "numeric",
     minute: "2-digit",
   });

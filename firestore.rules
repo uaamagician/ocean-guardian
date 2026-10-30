@@ -39,14 +39,19 @@ service cloud.firestore {
       // aiAnalysis and the final status are written only by the analyzeReport
       // function through the Admin SDK, which bypasses these rules.
       allow create: if request.auth != null
-        && request.resource.data.keys().hasOnly(["type", "photos", "location", "reporterId", "createdAt", "status"])
+        && request.resource.data.keys().hasOnly(["type", "photos", "location", "takenAt", "reporterId", "createdAt", "status"])
         && request.resource.data.keys().hasAll(["type", "photos", "location", "reporterId", "createdAt", "status"])
         && request.resource.data.type in ["trash", "coral"]
         && request.resource.data.reporterId == request.auth.uid
         && request.resource.data.status == "processing"
         && request.resource.data.createdAt == request.time
         && isValidPhotos(request.resource.data.photos)
-        && isValidLocation(request.resource.data.location);
+        && isValidLocation(request.resource.data.location)
+        // When the photo was taken, from its EXIF data; optional.
+        && (!("takenAt" in request.resource.data)
+          || (request.resource.data.takenAt is timestamp
+            && request.resource.data.takenAt <= request.time + duration.value(1, "d")
+            && request.resource.data.takenAt > timestamp.date(2001, 1, 1)));
 
       allow update, delete: if false;
     }

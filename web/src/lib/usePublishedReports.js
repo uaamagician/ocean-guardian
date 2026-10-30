@@ -4,6 +4,8 @@ import { db } from "../firebase";
 import { fromReportDoc } from "./reports";
 
 // The status filter is required: rules only allow reading published reports.
+// This is the newest 500, enough for the map and the home page; a beach's full
+// history comes from useNearbyReports.
 const publishedReports = query(
   collection(db, "reports"),
   where("status", "==", "published"),
@@ -26,6 +28,35 @@ export default function usePublishedReports() {
     [],
   );
   return state;
+}
+
+// Every published report around a point, however old: a band of latitude
+// (Firestore filters on one range field), trimmed to `km` by distance.
+export function useNearbyReports(point, km) {
+  const lat = point?.lat;
+  const lng = point?.lng;
+  const [state, setState] = useState({ key: null, reports: [] });
+  const key = lat == null ? null : `${lat},${lng},${km}`;
+  useEffect(() => {
+    if (key === null) return undefined;
+    const band = km / 111;
+    const nearby = query(
+      collection(db, "reports"),
+      where("status", "==", "published"),
+      where("location.lat", ">=", lat - band),
+      where("location.lat", "<=", lat + band),
+    );
+    return onSnapshot(
+      nearby,
+      (snap) =>
+        setState({
+          key,
+          reports: snap.docs.map(fromReportDoc).filter((r) => distanceKm({ lat, lng }, r.location) <= km),
+        }),
+      (err) => console.error(err),
+    );
+  }, [key, lat, lng, km]);
+  return state.key === key ? state.reports : [];
 }
 
 export function distanceKm(a, b) {

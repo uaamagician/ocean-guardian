@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { collection, doc, limit, onSnapshot, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { distanceKm } from "./usePublishedReports";
-import { ensureSignedIn } from "./reports";
+import { ensureSignedIn, reportTime } from "./reports";
 import { CATEGORIES } from "./labels";
 
 // A report counts toward a beach if it was taken within this distance of it.
@@ -99,6 +99,9 @@ export function useReportsByBeach(beaches, reports) {
       if (!byBeach.has(beach.id)) byBeach.set(beach.id, []);
       byBeach.get(beach.id).push(r);
     }
+    // Newest first by when the photo was taken, so an old photo sent in today
+    // joins the beach's history instead of passing for its current state.
+    for (const list of byBeach.values()) list.sort((a, b) => reportTime(b).toMillis() - reportTime(a).toMillis());
     // Each beach is colored by its most recent report.
     const tones = new Map();
     for (const [id, list] of byBeach) tones.set(id, CATEGORIES[list[0].aiAnalysis?.category]?.tone ?? "none");

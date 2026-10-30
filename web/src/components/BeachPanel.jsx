@@ -13,7 +13,8 @@ import {
   Waves,
   Wind,
 } from "lucide-react";
-import ReportDetail, { Level } from "./ReportDetail";
+import { Level } from "./ReportDetail";
+import BeachTimeline from "./BeachTimeline";
 import FadeImg from "./FadeImg";
 import CleanupPlan from "./CleanupPlan";
 import useWikiSummary from "../lib/useWikiSummary";
@@ -30,6 +31,7 @@ import {
   localClock,
 } from "../lib/ocean";
 import { formatTime } from "../lib/labels";
+import { reportTime } from "../lib/reports";
 
 // Runs fetcher(lat, lng); results for a previous beach read as still loading.
 function useAt(fetcher, lat, lng) {
@@ -245,7 +247,7 @@ function DebrisSummary({ reports, onOpenPlan }) {
       </div>
       <p>
         Based on the latest of {reports.length} report{reports.length > 1 ? "s" : ""} within {BEACH_RADIUS_KM} km,
-        sent {formatTime(latest.createdAt)}.
+        {latest.takenAt ? " photo taken" : " sent"} {formatTime(reportTime(latest))}.
       </p>
       {items.length > 0 && (
         <>
@@ -265,33 +267,6 @@ function DebrisSummary({ reports, onOpenPlan }) {
         Crew, time and gear for a cleanup
       </button>
     </section>
-  );
-}
-
-function Reports({ reports, focusReportId, onSelectReport }) {
-  if (reports.length === 0) {
-    return <p className="report-meta">No reports within {BEACH_RADIUS_KM} km of this beach yet.</p>;
-  }
-  return (
-    <ol className="history">
-      {reports.map((r) => (
-        <li key={r.id}>
-          <button
-            type="button"
-            aria-expanded={r.id === focusReportId}
-            onClick={() => onSelectReport(r.id === focusReportId ? null : r.id)}
-          >
-            <Level category={r.aiAnalysis?.category} />
-            <span className="report-meta">{formatTime(r.createdAt)}</span>
-          </button>
-          {r.id === focusReportId && (
-            <div className="history-detail">
-              <ReportDetail report={r} />
-            </div>
-          )}
-        </li>
-      ))}
-    </ol>
   );
 }
 
@@ -375,7 +350,9 @@ export default function BeachPanel({ beach, reports, allReports, focusReportId, 
           </>
         )}
         {tab === "cleanup" && <CleanupPlan beach={beach} allReports={allReports} />}
-        {tab === "reports" && <Reports reports={reports} focusReportId={focusReportId} onSelectReport={onSelectReport} />}
+        {tab === "reports" && (
+          <BeachTimeline reports={reports} focusReportId={focusReportId} onSelectReport={onSelectReport} />
+        )}
         {tab === "about" && <About beach={beach} />}
       </div>
       <div className="bp-footer">

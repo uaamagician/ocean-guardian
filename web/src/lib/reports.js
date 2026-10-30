@@ -1,5 +1,5 @@
 import { signInAnonymously } from "firebase/auth";
-import { collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { Timestamp, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { auth, db, storage } from "../firebase";
 import { isEnglish } from "./english";
@@ -9,6 +9,10 @@ export const MAX_PHOTOS = 4;
 
 // A few early reports were analyzed before the AI was asked to answer in
 // English; their Chinese text is left out rather than shown.
+// When the beach looked like this: the photo's capture time when it had one,
+// otherwise when the report was sent.
+export const reportTime = (report) => report.takenAt ?? report.createdAt;
+
 export function fromReportDoc(snap) {
   const report = { id: snap.id, ...snap.data() };
   const a = report.aiAnalysis;
@@ -97,7 +101,7 @@ export function getPosition() {
 }
 
 // Upload photos first, then create the doc; creating it triggers analyzeReport.
-export async function submitReport({ type, photos, location, onProgress }) {
+export async function submitReport({ type, photos, location, takenAt, onProgress }) {
   const user = await ensureSignedIn();
   const reportRef = doc(collection(db, "reports"));
 
@@ -116,6 +120,7 @@ export async function submitReport({ type, photos, location, onProgress }) {
     type,
     photos: paths,
     location: { lat: location.lat, lng: location.lng },
+    ...(takenAt && { takenAt: Timestamp.fromDate(takenAt) }),
     reporterId: user.uid,
     createdAt: serverTimestamp(),
     status: "processing",
