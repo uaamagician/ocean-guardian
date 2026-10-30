@@ -22,6 +22,25 @@ import {
 } from "../lib/events";
 import "./Events.css";
 
+// The join card sticks beside the work order. When it's taller than the screen
+// (its options open), a fixed top would hide its bottom until the page ends, so
+// it scrolls along with the page first and sticks once its bottom is in view.
+// Used as a ref callback, since the card only appears once the event loads.
+function stickyFit(el) {
+  if (!el) return undefined;
+  const fit = () => {
+    const nav = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--nav-height")) || 72;
+    el.style.setProperty("--stick-top", `${Math.min(nav + 16, window.innerHeight - el.offsetHeight - 16)}px`);
+  };
+  const observer = new ResizeObserver(fit);
+  observer.observe(el);
+  window.addEventListener("resize", fit);
+  return () => {
+    observer.disconnect();
+    window.removeEventListener("resize", fit);
+  };
+}
+
 function Roster({ signups, contacts }) {
   if (!signups?.length) return <p className="report-meta">Nobody has signed up yet.</p>;
   return (
@@ -156,7 +175,7 @@ export default function EventPage() {
           )}
         </div>
 
-        <aside className="event-side">
+        <aside className="event-side" ref={stickyFit}>
           <div className="join-card">
             <div className="join-count">
               <strong>{joined}</strong>

@@ -96,7 +96,7 @@
 
   .event-side {
     position: sticky;
-    top: calc(var(--nav-height) + var(--space-4));
+    top: var(--stick-top, calc(var(--nav-height) + var(--space-4)));
     order: 2;
   }
 }
