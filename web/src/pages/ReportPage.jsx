@@ -6,6 +6,8 @@ import { db } from "../firebase";
 import { MAX_PHOTOS, fromReportDoc, getPosition, resizePhoto, submitReport } from "../lib/reports";
 import { TYPES } from "../lib/labels";
 import ReportDetail from "../components/ReportDetail";
+import LocationPicker from "../components/LocationPicker";
+import { photoLocation } from "../lib/photoLocation";
 import "./ReportPage.css";
 
 function useGeoPosition() {
@@ -30,10 +32,10 @@ function PhotoPicker({ photos, onAdd, onRemove, busy, error }) {
   const libraryRef = useRef(null);
   const remaining = MAX_PHOTOS - photos.length;
 
-  const handleChange = (e) => {
+  const handleChange = (e, fromLibrary) => {
     const files = Array.from(e.target.files ?? []);
     e.target.value = "";
-    if (files.length) onAdd(files);
+    if (files.length) onAdd(files, fromLibrary);
   };
 
   return (
@@ -44,7 +46,7 @@ function PhotoPicker({ photos, onAdd, onRemove, busy, error }) {
         accept="image/*"
         capture="environment"
         className="visually-hidden"
-        onChange={handleChange}
+        onChange={(e) => handleChange(e, false)}
         tabIndex={-1}
       />
       <input
@@ -53,7 +55,7 @@ function PhotoPicker({ photos, onAdd, onRemove, busy, error }) {
         accept="image/*"
         multiple
         className="visually-hidden"
-        onChange={handleChange}
+        onChange={(e) => handleChange(e, true)}
         tabIndex={-1}
       />
       {photos.length === 0 ? (
@@ -100,28 +102,6 @@ function PhotoPicker({ photos, onAdd, onRemove, busy, error }) {
   );
 }
 
-function LocationStatus({ state, onRetry }) {
-  if (state.status === "locating") return <p className="location">Finding your location…</p>;
-  if (state.status === "error") {
-    return (
-      <div className="location">
-        <p className="error-text">{state.message}</p>
-        <button type="button" className="btn-text" onClick={onRetry}>
-          Locate again
-        </button>
-      </div>
-    );
-  }
-  return (
-    <p className="location">
-      Location found, accurate to about {Math.round(state.value.accuracy)} m.{" "}
-      <button type="button" className="btn-text" onClick={onRetry}>
-        Locate again
-      </button>
-    </p>
-  );
-}
-
 function Submitted({ reportId, onAgain }) {
   const [report, setReport] = useState(null);
   useEffect(
@@ -163,6 +143,8 @@ export default function ReportPage() {
   const [photoBusy, setPhotoBusy] = useState(false);
   const [photoError, setPhotoError] = useState("");
   const [location, relocate] = useGeoPosition();
+  const [choice, setChoice] = useState(null);
+  const [pinned, setPinned] = useState(null);
   const [submitting, setSubmitting] = useState(null);
   const [submitError, setSubmitError] = useState("");
   const [reportId, setReportId] = useState(null);
@@ -174,7 +156,7 @@ export default function ReportPage() {
   }, [photos]);
   useEffect(() => () => photosRef.current.forEach((p) => URL.revokeObjectURL(p.url)), []);
 
-  const addPhotos = async (files) => {
+  const addPhotos = async (files, fromLibrary) => {
     setPhotoError("");
     const room = MAX_PHOTOS - photos.length;
     if (files.length > room) setPhotoError(`Up to ${MAX_PHOTOS} photos. ${files.length - room} of the ones you picked weren't added.`);
@@ -182,8 +164,10 @@ export default function ReportPage() {
     const added = [];
     for (const file of files.slice(0, room)) {
       try {
+        // Resizing drops the EXIF data, so read the location first.
+        const spot = fromLibrary ? await photoLocation(file) : null;
         const blob = await resizePhoto(file);
-        added.push({ id: crypto.randomUUID(), blob, url: URL.createObjectURL(blob) });
+        added.push({ id: crypto.randomUUID(), blob, url: URL.createObjectURL(blob), fromLibrary, spot });
       } catch (err) {
         setPhotoError(err.message);
       }
@@ -200,7 +184,19 @@ export default function ReportPage() {
     });
   };
 
-  const canSubmit = photos.length > 0 && location.status === "ok" && !photoBusy && !submitting;
+  // Until the reporter picks, a library photo's own location wins over where
+  // they are standing now.
+  const photoSpot = photos.find((p) => p.spot)?.spot ?? null;
+  const source = choice === "photo" && !photoSpot ? "here" : (choice ?? (photoSpot ? "photo" : "here"));
+  const spot =
+    source === "map" ? pinned : source === "photo" ? photoSpot : location.status === "ok" ? location.value : null;
+
+  const pin = (ll) => {
+    setPinned({ lat: ll.lat, lng: ll.lng });
+    setChoice("map");
+  };
+
+  const canSubmit = photos.length > 0 && spot && !photoBusy && !submitting;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -211,7 +207,7 @@ export default function ReportPage() {
       const id = await submitReport({
         type,
         photos: photos.map((p) => p.blob),
-        location: location.value,
+        location: spot,
         onProgress: (done, total) => setSubmitting({ done, total }),
       });
       setReportId(id);
@@ -228,6 +224,8 @@ export default function ReportPage() {
     setPhotos([]);
     setPhotoError("");
     setReportId(null);
+    setChoice(null);
+    setPinned(null);
     relocate();
   };
 
@@ -237,7 +235,7 @@ export default function ReportPage() {
     <form className="page" onSubmit={handleSubmit}>
       <div className="section">
         <h1>Report a beach</h1>
-        <p className="page-intro">Photograph the beach in front of you. AI checks it for debris and adds it to the map everyone can see.</p>
+        <p className="page-intro">Photograph the beach, then check where it goes on the map. AI checks it for debris and adds it to the map everyone can see.</p>
       </div>
 
       <fieldset className="type-toggle">
@@ -264,7 +262,19 @@ export default function ReportPage() {
         error={photoError}
       />
 
-      <LocationStatus state={location} onRetry={relocate} />
+      <LocationPicker
+        source={source}
+        spot={spot}
+        gps={location}
+        onRetry={() => {
+          setChoice("here");
+          relocate();
+        }}
+        photoSpot={photoSpot}
+        photoWithoutSpot={!photoSpot && photos.some((p) => p.fromLibrary)}
+        onChoose={setChoice}
+        onPin={pin}
+      />
 
       <div className="section">
         <button type="submit" className="btn btn-primary" disabled={!canSubmit}>

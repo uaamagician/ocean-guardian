@@ -206,3 +206,43 @@
     background-position: 0 0;
   }
 }
+
+/* Where the report goes: a choice of source and a small map to check it on. */
+.where {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.where-title {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.where .location,
+.where-warn {
+  margin: 0;
+}
+
+.where-warn {
+  padding: var(--space-2) var(--space-3);
+  border-left: 3px solid var(--buoy);
+  background: var(--surface);
+  font-size: var(--text-sm);
+}
+
+.where .map-search {
+  position: relative;
+  z-index: 500;
+}
+
+.where-map.leaflet-container {
+  height: 240px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-md);
+  cursor: crosshair;
+}
+
+.where-toggle span {
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
