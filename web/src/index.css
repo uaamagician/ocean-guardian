@@ -583,14 +583,31 @@ svg.lucide {
   transition: rotate 0.5s var(--ease-spring);
 }
 
-.nav-wordmark {
+/* The wordmark: set in capitals and spaced out, a heavy "Ocean" beside a
+   light "Guardian" in the logo's sea blue. Used in the nav, footer and
+   certificate alike. */
+.nav-wordmark,
+.footer-sign,
+.cert-brand > span {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.3rem;
+  font-size: 0.95rem;
   line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   white-space: nowrap;
+}
+
+.wordmark-strong {
+  font-weight: 800;
+}
+
+.wordmark-light {
+  font-weight: 400;
+  color: var(--tide);
+}
+
+.nav-wordmark {
   transition: rotate 0.3s var(--ease-spring);
-  letter-spacing: -0.01em;
 }
 
 @media (hover: hover) {
@@ -756,7 +773,7 @@ svg.lucide {
   }
 
   .nav-wordmark {
-    font-size: 1.9rem;
+    font-size: 1.05rem;
   }
 
   .nav-cta {
@@ -1011,7 +1028,8 @@ svg.lucide {
   }
 
   .nav-wordmark {
-    font-size: 1.1rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
   }
 }
 
@@ -1025,7 +1043,7 @@ svg.lucide {
   }
 
   .nav-wordmark {
-    font-size: 1rem;
+    font-size: 0.78rem;
   }
 }
 
@@ -1448,10 +1466,12 @@ svg.lucide {
 }
 
 .footer-sign {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.1rem;
   color: #ffffff;
-  font-weight: 700;
+}
+
+.footer-sign .wordmark-light {
+  color: #9fd3d9;
 }
 
 .footer.wave-edge::after {

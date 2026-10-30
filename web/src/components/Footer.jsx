@@ -10,7 +10,7 @@ export default function Footer() {
       </span>
       <div className="footer-inner">
         <div>
-          <p className="footer-sign">Ocean Guardian</p>
+          <p className="footer-sign"><span className="wordmark-strong">Ocean</span> <span className="wordmark-light">Guardian</span></p>
           <p>A Google Solution Challenge project for SDG 14, Life Below Water.</p>
         </div>
         <p>

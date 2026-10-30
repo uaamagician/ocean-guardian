@@ -61,7 +61,7 @@ export default function Nav() {
       <nav className="nav" aria-label="Main">
         <Link to="/" className="nav-logo" aria-label="Ocean Guardian home" viewTransition>
           <Logo />
-          <span className="nav-wordmark">Ocean Guardian</span>
+          <span className="nav-wordmark"><span className="wordmark-strong">Ocean</span> <span className="wordmark-light">Guardian</span></span>
         </Link>
 
         <div className="nav-pill" ref={pillRef}>

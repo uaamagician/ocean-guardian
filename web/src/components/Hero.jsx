@@ -131,7 +131,7 @@ export default function Hero() {
 
       <div className="hero-heading">
         <h1>
-          <span className="hero-line-1 serif-italic hero-anim hero-reveal" style={{ animationDelay: "0.1s" }}>
+          <span className="hero-line-1 hero-anim hero-reveal" style={{ animationDelay: "0.1s" }}>
             Beautiful shores
           </span>
           <span className="hero-line-2 hero-anim hero-reveal" style={{ animationDelay: "0.22s" }}>

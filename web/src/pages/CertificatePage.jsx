@@ -27,7 +27,9 @@ function Sheet({ event, name, organizing }) {
           <circle cx="16" cy="16" r="13" />
           <path d="M5 18c2.2 0 2.2-2 4.4-2s2.2 2 4.4 2 2.2-2 4.4-2 2.2 2 4.4 2 2.2-2 4.4-2" strokeLinecap="round" />
         </svg>
-        Ocean Guardian
+        <span>
+          <span className="wordmark-strong">Ocean</span> <span className="wordmark-light">Guardian</span>
+        </span>
       </header>
       <h1 className="cert-title">Certificate of Thanks</h1>
       <p className="cert-to">presented to</p>
