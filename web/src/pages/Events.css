@@ -1050,3 +1050,167 @@
   font-size: var(--text-sm);
   font-weight: 600;
 }
+
+/* ---------- Taiwan's coastal cleanup registration ---------- */
+
+.tw-reg {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 2px dashed var(--tide);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.tw-reg h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.tw-reg h2 svg {
+  width: 20px;
+  height: 20px;
+  color: var(--lv-clean);
+}
+
+.tw-reg p {
+  margin: 0;
+}
+
+.tw-reg.is-done {
+  border-style: solid;
+  border-color: var(--line);
+}
+
+.tw-due {
+  align-self: flex-start;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--tide) 12%, white);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.tw-due.is-late {
+  background: color-mix(in srgb, var(--buoy) 14%, white);
+  color: #a3401c;
+}
+
+.tw-rows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tw-row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-sm);
+}
+
+.tw-n {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--paper);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+.tw-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tw-label small {
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+}
+
+.tw-value strong {
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.tw-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  font: inherit;
+}
+
+.tw-copy {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: none;
+  color: var(--tide);
+  cursor: pointer;
+}
+
+.tw-copy svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* On phones the answer drops under its question. */
+@media (max-width: 560px) {
+  .tw-row {
+    grid-template-columns: 28px minmax(0, 1fr) 32px;
+  }
+
+  .tw-value {
+    grid-column: 2;
+  }
+
+  .tw-row > :last-child {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+}
+
+.tw-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+}
+
+.tw-actions .btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.tw-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tw-note {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--tide);
+  background: var(--surface);
+  font-size: var(--text-sm);
+}

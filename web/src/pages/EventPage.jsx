@@ -5,6 +5,8 @@ import WorkOrder from "../components/WorkOrder";
 import SignupForm from "../components/SignupForm";
 import SignInGate from "../components/SignInGate";
 import { CertificateLink, ResultsForm, ResultsView, ThankVolunteers } from "../components/CleanupResults";
+import TaiwanRegistration from "../components/TaiwanRegistration";
+import { isInTaiwan } from "../lib/regions";
 import { AiSaw, Snapshots } from "../components/Snapshots";
 import { planInputs } from "../lib/cleanup";
 import usePublishedReports from "../lib/usePublishedReports";
@@ -189,6 +191,9 @@ export default function EventPage() {
             </p>
           )}
           {event.results && !cancelled && <ResultsView event={event} evidence={evidence} />}
+          {isOrganizer && !cancelled && !started && isInTaiwan(event.location.lat, event.location.lng) && (
+            <TaiwanRegistration event={event} signups={signups} user={user} />
+          )}
           <WorkOrder event={event} signups={signups} />
 
           {isOrganizer && started && !cancelled && (
@@ -213,6 +218,9 @@ export default function EventPage() {
               <h3>Thank your volunteers</h3>
               <ThankVolunteers event={event} contacts={contacts} />
             </section>
+          )}
+          {isOrganizer && started && !cancelled && isInTaiwan(event.location.lat, event.location.lng) && (
+            <TaiwanRegistration event={event} signups={signups} user={user} />
           )}
 
           {isOrganizer && (

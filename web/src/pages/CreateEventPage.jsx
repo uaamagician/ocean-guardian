@@ -11,6 +11,8 @@ import { TOOL_BY_ID } from "../lib/guide";
 import { isGoogleUser, useUser } from "../lib/auth";
 import { ENGLISH_ONLY, englishName, hasCjk } from "../lib/english";
 import SignInGate from "../components/SignInGate";
+import { isInTaiwan } from "../lib/regions";
+import { LEAD_DAYS } from "../components/TaiwanRegistration";
 import "./Events.css";
 
 const span = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
@@ -107,6 +109,14 @@ function EventForm({ beach, record, user }) {
           </label>
         </div>
         {!inFuture && <p className="error-text">Pick a date and time in the future.</p>}
+        {isInTaiwan(beach.lat, beach.lng) && (
+          <p className="tw-note">
+            In Taiwan, register the cleanup on the Ministry of Environment's coastal platform about {LEAD_DAYS} days
+            ahead, so the local cleaning team can collect the bags.
+            {inFuture && startsAt.getTime() - now < LEAD_DAYS * 86400e3 && " This date is sooner than that, so register as soon as it's created."}{" "}
+            Once the cleanup is created, its page lists every answer the form asks for, ready to copy.
+          </p>
+        )}
 
         <label className="field">
           <span>
