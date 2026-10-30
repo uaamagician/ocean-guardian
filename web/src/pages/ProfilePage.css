@@ -62,3 +62,13 @@
 .profile-past .event-card {
   opacity: 0.7;
 }
+
+.joined-after {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+}

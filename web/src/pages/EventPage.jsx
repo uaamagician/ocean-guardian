@@ -4,6 +4,7 @@ import { Ban, CalendarDays, MapPin } from "lucide-react";
 import WorkOrder from "../components/WorkOrder";
 import SignupForm from "../components/SignupForm";
 import SignInGate from "../components/SignInGate";
+import { CertificateLink, ResultsForm, ResultsView, ThankVolunteers } from "../components/CleanupResults";
 import { AiSaw, Snapshots } from "../components/Snapshots";
 import { planInputs } from "../lib/cleanup";
 import usePublishedReports from "../lib/usePublishedReports";
@@ -15,6 +16,7 @@ import {
   cancelEvent,
   headcount,
   kidCount,
+  resultLine,
   useContacts,
   useEvent,
   useMyContact,
@@ -39,6 +41,32 @@ function stickyFit(el) {
     observer.disconnect();
     window.removeEventListener("resize", fit);
   };
+}
+
+// The join card once the cleanup has started: thanks and a certificate for
+// those who took part, the results for everyone.
+function AfterCleanup({ event, joined, isOrganizer }) {
+  const results = event.results;
+  if (!joined && !isOrganizer) {
+    return (
+      <p className="report-meta">
+        This cleanup has already happened.{results && ` The crew collected ${resultLine(results)}.`}
+      </p>
+    );
+  }
+  return (
+    <div className="after-cleanup">
+      <strong>{isOrganizer ? "Thanks for organizing" : "Thanks for joining"}</strong>
+      <p className="report-meta">
+        {results
+          ? `Together you collected ${resultLine(results)}.`
+          : isOrganizer
+            ? "Share how it went below, and everyone who came gets the results with their certificate."
+            : "The organizer hasn't shared the results yet. Your certificate is ready either way."}
+      </p>
+      <CertificateLink eventId={event.id} label={isOrganizer ? "Organizer certificate" : "Your certificate"} />
+    </div>
+  );
 }
 
 function Roster({ signups, contacts }) {
@@ -80,6 +108,7 @@ export default function EventPage() {
   const contacts = useContacts(eventId, isOrganizer);
   const myContact = useMyContact(eventId, uid);
   const [cancelling, setCancelling] = useState(false);
+  const [editingResults, setEditingResults] = useState(false);
   // Read once per visit; whether the cleanup has started doesn't need a live clock.
   const [now] = useState(() => Date.now());
 
@@ -159,7 +188,32 @@ export default function EventPage() {
               <Ban aria-hidden="true" /> This cleanup was cancelled by the organizer.
             </p>
           )}
+          {event.results && !cancelled && <ResultsView event={event} evidence={evidence} />}
           <WorkOrder event={event} signups={signups} />
+
+          {isOrganizer && started && !cancelled && (
+            <section className="event-organizer-tools">
+              <h2>{event.results ? "Results" : "Share how it went"}</h2>
+              {event.results && !editingResults ? (
+                <p className="report-meta">
+                  Shared: {resultLine(event.results)}, {event.results.attendees} people.{" "}
+                  <button type="button" className="btn-text" onClick={() => setEditingResults(true)}>
+                    Edit
+                  </button>
+                </p>
+              ) : (
+                <>
+                  <p className="report-meta">
+                    Volunteers see this on the cleanup page and on their certificates. Add photos of the beach
+                    afterward for the before-and-after.
+                  </p>
+                  <ResultsForm event={event} signups={signups} onDone={() => setEditingResults(false)} />
+                </>
+              )}
+              <h3>Thank your volunteers</h3>
+              <ThankVolunteers event={event} contacts={contacts} />
+            </section>
+          )}
 
           {isOrganizer && (
             <section className="event-organizer-tools">
@@ -187,8 +241,10 @@ export default function EventPage() {
             <div className="wo-bar">
               <span style={{ width: `${Math.min(100, (joined / event.capacity) * 100)}%` }} />
             </div>
-            {cancelled || started ? (
-              <p className="report-meta">{cancelled ? "Sign-ups are closed." : "This cleanup has already started."}</p>
+            {cancelled ? (
+              <p className="report-meta">Sign-ups are closed.</p>
+            ) : started ? (
+              <AfterCleanup event={event} joined={Boolean(mySignup)} isOrganizer={isOrganizer} />
             ) : !ready ? (
               <p className="report-meta">Loading…</p>
             ) : !signedIn ? (

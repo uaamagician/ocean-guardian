@@ -6,7 +6,8 @@ import SignInGate from "../components/SignInGate";
 import { Avatar } from "../components/UserMenu";
 import { isGoogleUser, signOutUser, useUser } from "../lib/auth";
 import { englishName } from "../lib/english";
-import { kidCount, useMyEvents, useMySignups } from "../lib/events";
+import { kidCount, resultLine, useMyEvents, useMySignups } from "../lib/events";
+import { CertificateLink } from "../components/CleanupResults";
 import { TOOL_BY_ID } from "../lib/guide";
 import "./Events.css";
 import "./ProfilePage.css";
@@ -36,6 +37,12 @@ function JoinedList({ events, now }) {
           `, bringing ${e.mySignup.bringing.map((t) => TOOL_BY_ID[t]?.name.toLowerCase()).filter(Boolean).join(", ")}`}
         .
       </p>
+      {e.status !== "cancelled" && e.startsAt.toMillis() <= now && (
+        <div className="joined-after">
+          <span>{e.results ? `Results are in: ${resultLine(e.results)}, ${e.results.attendees} people.` : "Waiting for the organizer's results."}</span>
+          <CertificateLink eventId={e.id} label="Certificate" />
+        </div>
+      )}
     </li>
   );
   return (

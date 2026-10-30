@@ -17,7 +17,8 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { ref, uploadBytes } from "firebase/storage";
+import { auth, db, storage } from "../firebase";
 import { isGoogleUser } from "./auth";
 
 // Organizing and joining need a Google account (enforced by the rules too).
@@ -238,6 +239,30 @@ export function useMyEvents(uid) {
     ["organized", uid],
     toList,
   );
+}
+
+// After the cleanup the organizer records how it went: the "after" photos,
+// what was collected and who came. Volunteers see it on the event page and on
+// their certificate. `keep` are photos already saved; `photos` are new blobs.
+export async function saveResults(eventId, { bags, weightKg, attendees, note, keep, photos }) {
+  const user = requireGoogleUser();
+  const added = await Promise.all(
+    photos.map(async (blob, i) => {
+      const path = `events/${eventId}/${user.uid}/${Date.now()}_${i}.jpg`;
+      await uploadBytes(ref(storage, path), blob, { contentType: "image/jpeg" });
+      return path;
+    }),
+  );
+  await updateDoc(doc(db, "events", eventId), {
+    results: { bags, weightKg, attendees, note: note.trim(), photos: [...keep, ...added], postedAt: serverTimestamp() },
+  });
+}
+
+// "12 bags, 40 kg": what a cleanup collected, in a few words.
+export function resultLine(results) {
+  const parts = [`${results.bags} ${results.bags === 1 ? "bag" : "bags"}`];
+  if (results.weightKg) parts.push(`${results.weightKg} kg`);
+  return parts.join(", ");
 }
 
 export function cancelEvent(eventId) {

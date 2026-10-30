@@ -22,7 +22,7 @@
       "runtimeArgs": [
         "emulators:start",
         "--only",
-        "auth,firestore",
+        "auth,firestore,storage",
         "--project",
         "ocean-guardian-65ee0"
       ],

@@ -116,11 +116,37 @@ service cloud.firestore {
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt == request.time
         && request.resource.data.status == "open";
-      // The organizer can only cancel; everything else is fixed once people have signed up.
+      // Photos the organizer took after the cleanup, under their own folder.
+      function isResultPhoto(path) {
+        return path is string && path.matches("events/" + eventId + "/" + request.auth.uid + "/[^/]+");
+      }
+      function isValidResults(r) {
+        return r is map
+          && r.keys().hasOnly(["bags", "weightKg", "attendees", "note", "photos", "postedAt"])
+          && r.keys().hasAll(["bags", "weightKg", "attendees", "note", "photos", "postedAt"])
+          && r.bags is int && r.bags >= 0 && r.bags <= 5000
+          && (r.weightKg == null || (r.weightKg is number && r.weightKg >= 0 && r.weightKg <= 100000))
+          && r.attendees is int && r.attendees >= 0 && r.attendees <= 2000
+          && r.note is string && r.note.size() <= 600
+          && r.photos is list && r.photos.size() <= 4
+          && (r.photos.size() < 1 || isResultPhoto(r.photos[0]))
+          && (r.photos.size() < 2 || isResultPhoto(r.photos[1]))
+          && (r.photos.size() < 3 || isResultPhoto(r.photos[2]))
+          && (r.photos.size() < 4 || isResultPhoto(r.photos[3]))
+          && r.postedAt == request.time;
+      }
+
+      // Before it starts the organizer can only cancel; everything else is
+      // fixed once people have signed up. Once it has started they can post
+      // (and correct) the results.
       allow update: if request.auth != null
         && resource.data.createdBy == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"])
-        && request.resource.data.status == "cancelled";
+        && ((request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"])
+            && request.resource.data.status == "cancelled")
+          || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(["results"])
+            && resource.data.status == "open"
+            && resource.data.startsAt <= request.time
+            && isValidResults(request.resource.data.results)));
       allow delete: if false;
 
       // One sign-up per person, keyed by uid. Names and group sizes are public.

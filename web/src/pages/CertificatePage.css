@@ -1,0 +1,191 @@
+.cert-page {
+  max-width: 900px;
+}
+
+.cert-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+}
+
+.cert-back svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* A sheet of paper with an inked double frame, landscape like a real certificate. */
+.cert {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  aspect-ratio: 297 / 210;
+  padding: clamp(18px, 5%, 48px) clamp(18px, 7%, 72px);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-md);
+  outline: 1.5px solid var(--ink);
+  outline-offset: -12px;
+  background: #fffdf6;
+  box-shadow: 6px 6px 0 var(--ink);
+  color: var(--ink);
+  text-align: center;
+  container-type: inline-size;
+}
+
+.cert-wave {
+  width: 60%;
+  height: 12px;
+  fill: none;
+  stroke: var(--tide);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+/* The waves keep to the edges and the wording sits centred between them. */
+.cert-wave:first-child {
+  margin-bottom: auto;
+}
+
+.cert-wave:last-child {
+  margin-top: auto;
+}
+
+.cert-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--tide);
+  font-family: var(--font-hand);
+  font-size: clamp(1.1rem, 3.4cqi, 1.6rem);
+  font-weight: 700;
+}
+
+.cert-brand svg {
+  width: 1.3em;
+  height: 1.3em;
+}
+
+.cert-title {
+  margin: clamp(4px, 1.5cqi, 16px) 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 6cqi, 3.2rem);
+  letter-spacing: 0.01em;
+}
+
+.cert-to {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: clamp(0.8rem, 2cqi, 1rem);
+  font-style: italic;
+}
+
+.cert-name {
+  margin: 0;
+  padding: 0 0.6em;
+  border-bottom: 2px solid var(--buoy);
+  font-family: var(--font-hand);
+  font-size: clamp(2rem, 8.5cqi, 4.4rem);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.cert-for {
+  max-width: 36em;
+  margin: clamp(4px, 1.2cqi, 12px) 0 0;
+  font-size: clamp(0.85rem, 2.3cqi, 1.15rem);
+  line-height: 1.55;
+}
+
+.cert-sdg {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: clamp(0.7rem, 1.7cqi, 0.875rem);
+}
+
+.cert-foot {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: clamp(8px, 3cqi, 28px);
+}
+
+.cert-foot div {
+  display: flex;
+  flex-direction: column;
+  min-width: 30%;
+  padding-top: 4px;
+  border-top: 1.5px solid var(--ink);
+}
+
+.cert-sign {
+  font-family: var(--font-hand);
+  font-size: clamp(1rem, 2.8cqi, 1.5rem);
+  font-weight: 600;
+}
+
+.cert-sign-label {
+  color: var(--ink-soft);
+  font-size: clamp(0.65rem, 1.5cqi, 0.8rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* On a narrow phone the landscape sheet would be tiny; let it grow taller. */
+@media (max-width: 520px) {
+  .cert {
+    aspect-ratio: auto;
+    min-height: 420px;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    filter: none !important;
+  }
+
+  .nav,
+  .nav-paper,
+  .nav-shadow,
+  .footer,
+  .scroll-progress,
+  .cert-back,
+  .cert-actions {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  .cert-page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .cert {
+    width: 100%;
+    height: 186mm;
+    aspect-ratio: auto;
+    box-shadow: none;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

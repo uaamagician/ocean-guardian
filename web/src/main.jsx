@@ -13,6 +13,7 @@ import ActionPage from "./pages/ActionPage.jsx";
 import GuidePage from "./pages/GuidePage.jsx";
 import CreateEventPage from "./pages/CreateEventPage.jsx";
 import EventPage from "./pages/EventPage.jsx";
+import CertificatePage from "./pages/CertificatePage.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import HistoryPage from "./pages/HistoryPage.jsx";
 import ReportsPage from "./pages/ReportsPage";
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
       { path: "guide", element: <GuidePage /> },
       { path: "events/new", element: <CreateEventPage /> },
       { path: "events/:eventId", element: <EventPage /> },
+      { path: "events/:eventId/certificate", element: <CertificatePage /> },
       { path: "me", element: <ProfilePage /> },
       { path: "history", element: <HistoryPage /> },
       { path: "reports", element: <ReportsPage /> },

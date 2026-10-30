@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { CalendarDays, ChevronRight } from "lucide-react";
-import { ORGANIZER_TYPES, headcount, useSignups } from "../lib/events";
+import { ORGANIZER_TYPES, headcount, resultLine, useSignups } from "../lib/events";
 import { organizerLabel } from "../lib/english";
 
 export default function EventCard({ event, showBeach = true }) {
@@ -23,6 +23,7 @@ export default function EventCard({ event, showBeach = true }) {
         <span className="report-meta">
           {organizerLabel(event.organizer, ORGANIZER_TYPES)}
         </span>
+        {event.results && <span className="event-card-result">Collected {resultLine(event.results)}</span>}
       </div>
       <div className="event-card-count">
         <strong>
