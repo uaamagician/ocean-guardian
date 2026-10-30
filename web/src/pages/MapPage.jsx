@@ -20,8 +20,10 @@ export default function MapPage() {
   const [params, setSearchParams] = useSearchParams();
   // The map loads the newest reports; an open beach adds every report around
   // it, so its history goes back to the first one however many came since.
-  const openBeach = beaches?.find((b) => b.id === params.get("b"));
-  const nearby = useNearbyReports(openBeach, BEACH_RADIUS_KM * 2);
+  // A link to one report opens its beach, so look around the report instead.
+  const openAt =
+    beaches?.find((b) => b.id === params.get("b")) ?? latest?.find((r) => r.id === params.get("r"))?.location;
+  const nearby = useNearbyReports(openAt, BEACH_RADIUS_KM * 2);
   const reports = useMemo(() => {
     if (!latest || nearby.length === 0) return latest;
     const ids = new Set(latest.map((r) => r.id));
