@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router";
-import { ChevronDown, MapPinPlus, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router";
+import { ChevronDown, LocateFixed, MapPinPlus, X } from "lucide-react";
 import ReportsMap from "../components/ReportsMap";
 import ReportDetail from "../components/ReportDetail";
 import OceanConditions from "../components/OceanConditions";
@@ -10,6 +10,7 @@ import MapSearch from "../components/MapSearch";
 import usePublishedReports, { useNearbyReports } from "../lib/usePublishedReports";
 import { BEACH_RADIUS_KM, useAllBeaches, useReportsByBeach } from "../lib/beaches";
 import { CATEGORIES } from "../lib/labels";
+import { useUpcomingEvents } from "../lib/events";
 import "./MapPage.css";
 
 const LEGEND = ["clean", "light", "moderate", "heavy"];
@@ -38,6 +39,8 @@ export default function MapPage() {
   const [draft, setDraft] = useState(null);
   const [flyTo, setFlyTo] = useState(null);
   const [legendOpen, setLegendOpen] = useState(false);
+  const upcoming = useUpcomingEvents(100);
+  const navigate = useNavigate();
 
   const reportParam = params.get("r");
   const beachId = params.get("b") ?? (reportParam ? beachOfReport.get(reportParam) : null);
@@ -54,6 +57,39 @@ export default function MapPage() {
     if (entry.r) return reports?.find((r) => r.id === entry.r)?.location ?? null;
     return null;
   }, [entry, beaches, reports]);
+
+  // Where the visitor is. The map opens on the whole world, then, unless a link
+  // asked for a beach, glides to them after a moment so they see where they are.
+  const [me, setMe] = useState(null);
+  const [locating, setLocating] = useState(false);
+  const busy = useRef(false);
+  useEffect(() => {
+    busy.current = Boolean(params.get("b") || params.get("r") || placing);
+  });
+  const locate = useCallback((delay) => {
+    if (!("geolocation" in navigator)) return;
+    setLocating(true);
+    const asked = Date.now();
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const at = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setMe(at);
+        setLocating(false);
+        setTimeout(
+          () => {
+            // Someone who has already opened a beach or started adding one stays put.
+            if (!delay || !busy.current) setFlyTo({ ...at, zoom: 9 });
+          },
+          Math.max(0, delay - (Date.now() - asked)),
+        );
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 10 * 60 * 1000 },
+    );
+  }, []);
+  useEffect(() => {
+    if (!entry.b && !entry.r) locate(2000);
+  }, [entry, locate]);
 
   const stopPlacing = () => {
     setPlacing(false);
@@ -111,6 +147,10 @@ export default function MapPage() {
             <span className="level-dot level-dot-community" />
             Added by users
           </li>
+          <li>
+            <span className="legend-flag" />
+            Upcoming cleanup
+          </li>
           {LEGEND.map((key) => (
             <li key={key}>
               <span className="level-dot" data-tone={CATEGORIES[key].tone} />
@@ -140,7 +180,20 @@ export default function MapPage() {
           placing={placing}
           onPlace={setDraft}
           draft={draft}
+          events={upcoming}
+          onSelectEvent={(id) => navigate(`/events/${id}`, { viewTransition: true })}
+          me={me}
         />
+        <button
+          type="button"
+          className="map-locate"
+          onClick={() => locate(0)}
+          disabled={locating}
+          aria-label="Show where I am"
+          title="Show where I am"
+        >
+          <LocateFixed aria-hidden="true" />
+        </button>
       </div>
 
       {placing && (

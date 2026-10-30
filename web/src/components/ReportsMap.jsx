@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
-import { CircleMarker, MapContainer, ZoomControl, useMap, useMapEvents } from "react-leaflet";
+import { CircleMarker, MapContainer, Marker, ZoomControl, useMap, useMapEvents } from "react-leaflet";
 import { CATEGORIES, TONE_COLORS } from "../lib/labels";
 import { isCommunityBeach } from "../lib/beaches";
 import { MutedTileLayer } from "../lib/mutedTiles";
@@ -46,6 +46,44 @@ function FlyTo({ target }) {
   }, [map, target]);
   return null;
 }
+
+// Labels on cleanup flags only show once the map is zoomed in far enough for
+// them to have room; further out the flags alone mark where cleanups are.
+function ZoomClass() {
+  const map = useMap();
+  useEffect(() => {
+    const update = () => map.getContainer().classList.toggle("is-far", map.getZoom() < 7);
+    update();
+    map.on("zoomend", update);
+    return () => map.off("zoomend", update);
+  }, [map]);
+  return null;
+}
+
+const FLAG =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21.5V3.2" fill="none" stroke="#1d2a32" stroke-width="2.2" stroke-linecap="round"/><path d="M6.4 3.6c3.6-1.6 6.2 1.4 10.6.2l-1.6 4.4 2.6 3.9c-4.3 1.4-7-1.6-11.6.1z" fill="#ffd84d" stroke="#1d2a32" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+
+function whenLabel(date) {
+  const days = Math.round((new Date(date).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 86400e3);
+  if (days <= 0) return "Today";
+  if (days === 1) return "Tomorrow";
+  if (days < 7) return date.toLocaleDateString("en-US", { weekday: "short" });
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+// A small flag beside the beach for each upcoming cleanup, raised above and to
+// the right of the beach's own dot so both stay clickable.
+function eventIcon(event) {
+  const label = `Cleanup ${whenLabel(event.startsAt.toDate())}`;
+  return L.divIcon({
+    className: "event-flag",
+    html: `${FLAG}<span class="event-flag-label">${label}</span>`,
+    iconSize: [26, 26],
+    iconAnchor: [3, 30],
+  });
+}
+
+const ME_ICON = L.divIcon({ className: "me-dot", html: "<span></span>", iconSize: [16, 16], iconAnchor: [8, 8] });
 
 function radiusFor(zoom, reported, selected) {
   const base = zoom < 5 ? 2.5 : zoom < 8 ? 4 : 6;
@@ -234,6 +272,9 @@ export default function ReportsMap({
   flyTo,
   placing = false,
   onPlace,
+  events,
+  onSelectEvent,
+  me,
   draft,
   center = [18, 125],
   zoom = 3,
@@ -257,6 +298,7 @@ export default function ReportsMap({
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         maxZoom={19}
       />
+      <ZoomClass />
       <FocusOn lat={focus?.lat} lng={focus?.lng} />
       <FlyTo target={flyTo} />
       <PlaceHandler active={placing} onPlace={onPlace} />
@@ -275,6 +317,19 @@ export default function ReportsMap({
         onSelect={onSelectBeach}
         snap={!placing}
       />
+      {me && <Marker position={[me.lat, me.lng]} icon={ME_ICON} interactive={false} keyboard={false} />}
+      {!placing &&
+        events?.map((e) => (
+          <Marker
+            key={e.id}
+            position={[e.location.lat, e.location.lng]}
+            icon={eventIcon(e)}
+            title={`${e.title}, ${e.startsAt.toDate().toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}`}
+            zIndexOffset={500}
+            bubblingMouseEvents={false}
+            eventHandlers={{ click: () => onSelectEvent?.(e.id) }}
+          />
+        ))}
       {/* Reports that aren't near any known beach still get their own marker. */}
       {reports?.map((r) => {
         const tone = CATEGORIES[r.aiAnalysis?.category]?.tone ?? "none";
