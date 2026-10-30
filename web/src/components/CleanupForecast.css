@@ -100,10 +100,10 @@
 }
 
 .forecast-why {
-  font-family: var(--font-hand);
-  font-size: 1.6rem;
-  font-weight: 600;
-  line-height: 1.15;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 .forecast-facts {
@@ -165,7 +165,7 @@
   width: 100%;
   height: auto;
   overflow: visible;
-  font-family: var(--font-hand);
+  font-family: var(--font-body);
 }
 
 .tide-night {
@@ -299,8 +299,8 @@
 }
 
 .tide-table tbody th {
-  font-family: var(--font-hand);
-  font-size: 1.35rem;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
   font-weight: 700;
   white-space: nowrap;
 }

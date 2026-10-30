@@ -220,12 +220,13 @@ img {
 
 /* Was the serif accent; now the handwritten one. */
 .serif-italic {
-  font-family: var(--font-hand);
+  font-family: inherit;
   font-style: normal;
-  font-weight: 700;
-  font-size: 1.22em;
-  line-height: 0.9;
+  font-weight: inherit;
+  font-size: 1em;
+  line-height: inherit;
   letter-spacing: 0;
+  color: var(--buoy);
 }
 
 /* ---------- Hand-drawn pieces (see components/Sketch.jsx) ---------- */
@@ -583,12 +584,13 @@ svg.lucide {
 }
 
 .nav-wordmark {
-  font-family: var(--font-hand);
+  font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.75rem;
+  font-size: 1.3rem;
   line-height: 1;
   white-space: nowrap;
   transition: rotate 0.3s var(--ease-spring);
+  letter-spacing: -0.01em;
 }
 
 @media (hover: hover) {
@@ -1446,9 +1448,10 @@ svg.lucide {
 }
 
 .footer-sign {
-  font-family: var(--font-hand);
-  font-size: 1.6rem;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
   color: #ffffff;
+  font-weight: 700;
 }
 
 .footer.wave-edge::after {
@@ -1695,4 +1698,10 @@ svg.lucide {
 .latest-credit {
   font-size: var(--text-2xs);
   color: var(--ink-soft);
+}
+
+/* Leaflet sets its own fonts on maps and their controls; use the site's. */
+.leaflet-container,
+.leaflet-container .leaflet-bar a {
+  font-family: var(--font-body);
 }

@@ -173,8 +173,7 @@
 
 .ocean-temp {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
+  font-weight: 700;
   font-size: 2rem;
   line-height: 1.1;
 }
@@ -225,8 +224,7 @@
 
 .beach-name {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
+  font-weight: 700;
   font-size: 2.25rem;
   line-height: 1.05;
   padding-right: 44px;
@@ -887,8 +885,7 @@
 
 .plan-stats strong {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
+  font-weight: 700;
   font-size: 1.75rem;
   line-height: 1.1;
   font-variant-numeric: lining-nums;

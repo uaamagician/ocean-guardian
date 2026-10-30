@@ -150,8 +150,7 @@
 
 .join-count strong {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
+  font-weight: 700;
   font-size: 2.75rem;
   line-height: 1;
 }
@@ -648,8 +647,7 @@
 
 .event-card-date strong {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
+  font-weight: 700;
   font-size: 1.75rem;
 }
 
@@ -858,9 +856,10 @@
   margin: 0;
   padding-left: var(--space-3);
   border-left: 3px solid var(--marker);
-  font-family: var(--font-hand);
-  font-size: 1.35rem;
-  line-height: 1.35;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  font-style: italic;
 }
 
 .results-compare {

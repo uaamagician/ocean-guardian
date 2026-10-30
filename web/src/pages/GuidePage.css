@@ -176,8 +176,8 @@
   border: 3px solid var(--ink);
   border-radius: 52% 48% 55% 45% / 48% 55% 45% 52%;
   background: var(--marker);
-  font-family: var(--font-hand);
-  font-size: 2rem;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
   font-weight: 700;
   line-height: 1;
   color: var(--ink);
@@ -226,10 +226,10 @@
 /* The examples, written in the margin with an arrow pointing at the photo. */
 .entry-examples {
   position: relative;
-  font-family: var(--font-hand);
-  font-size: 1.55rem;
-  font-weight: 600;
-  line-height: 1.15;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: 1.5;
   color: var(--tide);
 }
 

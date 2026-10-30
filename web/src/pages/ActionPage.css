@@ -326,8 +326,8 @@ a.cl-title:hover {
   height: 40px;
   border: 2.5px solid var(--buoy);
   border-radius: 55% 45% 60% 40% / 45% 60% 40% 55%;
-  font-family: var(--font-hand);
-  font-size: 1.7rem;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
   font-weight: 700;
   line-height: 1;
   color: var(--buoy);

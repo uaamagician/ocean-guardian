@@ -57,8 +57,8 @@
   align-items: center;
   gap: 8px;
   color: var(--tide);
-  font-family: var(--font-hand);
-  font-size: clamp(1.1rem, 3.4cqi, 1.6rem);
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 2.6cqi, 1.25rem);
   font-weight: 700;
 }
 

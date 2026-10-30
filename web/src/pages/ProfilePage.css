@@ -11,8 +11,7 @@
 
 .profile-head h1 {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
+  font-weight: 700;
 }
 
 .profile-signout {
