@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import usePhotoUrls from "../lib/usePhotoUrls";
 import { reportTime } from "../lib/reports";
 import { CATEGORIES } from "../lib/labels";
@@ -34,16 +34,50 @@ export function NowPhoto({ reports, onOpen }) {
   );
 }
 
+// A mouse can drag a row sideways as a finger would; a drag that moved more
+// than a few pixels doesn't count as a click on the photo it ended on.
+function useDragScroll() {
+  const drag = useRef(null);
+  const moved = useRef(false);
+  return {
+    onPointerDown: (e) => {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      drag.current = { x: e.clientX, left: e.currentTarget.scrollLeft };
+      moved.current = false;
+    },
+    onPointerMove: (e) => {
+      if (!drag.current) return;
+      const dx = e.clientX - drag.current.x;
+      if (Math.abs(dx) > 4) moved.current = true;
+      e.currentTarget.scrollLeft = drag.current.left - dx;
+    },
+    onPointerUp: () => {
+      drag.current = null;
+    },
+    onPointerLeave: () => {
+      drag.current = null;
+    },
+    onClickCapture: (e) => {
+      if (moved.current) {
+        e.stopPropagation();
+        e.preventDefault();
+        moved.current = false;
+      }
+    },
+  };
+}
+
 function YearRow({ year, reports, onOpen }) {
   const [all, setAll] = useState(false);
   const shown = all ? reports : reports.slice(0, PER_YEAR);
   const urls = usePhotoUrls(shown.map((r) => r.photos[0]));
+  const dragScroll = useDragScroll();
   return (
     <section className="photo-year">
       <h4>
         {year} <span>{reports.length}</span>
       </h4>
-      <ul className="photo-strip">
+      <ul className="photo-strip" {...dragScroll}>
         {shown.map((r, i) => {
           const level = CATEGORIES[r.aiAnalysis?.category];
           const credit = commonsCredit(r);
@@ -55,7 +89,7 @@ function YearRow({ year, reports, onOpen }) {
                 title={credit ? creditLine(credit) : undefined}
                 aria-label={`${level?.label ?? "Report"}, ${longDate(reportTime(r).toDate())}`}
               >
-                {urls[i] ? <FadeImg src={urls[i]} alt="" loading="lazy" /> : <span className="photo-blank" />}
+                {urls[i] ? <FadeImg src={urls[i]} alt="" loading="lazy" draggable={false} /> : <span className="photo-blank" />}
                 <span className="photo-strip-meta">
                   {level && <span className="level-dot" data-tone={level.tone} />}
                   {shortDate(reportTime(r).toDate())}

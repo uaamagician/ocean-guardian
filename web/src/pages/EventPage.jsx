@@ -7,6 +7,7 @@ import SignInGate from "../components/SignInGate";
 import { CertificateLink, ResultsForm, ResultsView, ThankVolunteers } from "../components/CleanupResults";
 import TaiwanRegistration from "../components/TaiwanRegistration";
 import PhotoHistory, { NowPhoto } from "../components/PhotoHistory";
+import PhotoViewer from "../components/PhotoViewer";
 import { useNearbyReports } from "../lib/usePublishedReports";
 import { BEACH_RADIUS_KM } from "../lib/beaches";
 import { reportTime } from "../lib/reports";
@@ -77,20 +78,33 @@ function AfterCleanup({ event, joined, isOrganizer }) {
 
 // The beach in photos: the latest report large, then every earlier one by
 // year, from all the reports around it rather than only the newest few hundred.
+// A photo opens large on this page; the report itself is a further step.
 function BeachOverTime({ event }) {
   const nearby = useNearbyReports(event.location, BEACH_RADIUS_KM);
   const navigate = useNavigate();
-  const reports = nearby
-    .filter((r) => r.type === "trash")
+  const [viewing, setViewing] = useState(null);
+  const photos = nearby
+    .filter((r) => r.type === "trash" && r.photos?.[0])
     .sort((a, b) => reportTime(b).toMillis() - reportTime(a).toMillis());
-  if (reports.length === 0) return null;
-  const open = (r) => navigate(`/map?b=${encodeURIComponent(event.beachId)}&r=${r.id}`, { viewTransition: true });
+  if (photos.length === 0) return null;
+  const view = (r) => setViewing(photos.findIndex((p) => p.id === r.id));
   return (
     <section className="beach-over-time" aria-labelledby="bot-title">
       <span className="report-label">{event.beachName}</span>
       <h2 id="bot-title">The beach over time</h2>
-      <NowPhoto reports={reports} onOpen={open} />
-      <PhotoHistory reports={reports} onOpen={open} />
+      <NowPhoto reports={photos} onOpen={view} />
+      <PhotoHistory reports={photos} onOpen={view} />
+      {viewing !== null && viewing >= 0 && (
+        <PhotoViewer
+          reports={photos}
+          index={viewing}
+          onIndex={setViewing}
+          onClose={() => setViewing(null)}
+          onOpenReport={(r) =>
+            navigate(`/map?b=${encodeURIComponent(event.beachId)}&r=${r.id}`, { viewTransition: true })
+          }
+        />
+      )}
     </section>
   );
 }
@@ -218,7 +232,6 @@ export default function EventPage() {
           {isOrganizer && !cancelled && !started && isInTaiwan(event.location.lat, event.location.lng) && (
             <TaiwanRegistration event={event} signups={signups} user={user} />
           )}
-          <BeachOverTime event={event} />
           <WorkOrder event={event} signups={signups} />
 
           {isOrganizer && started && !cancelled && (
@@ -298,6 +311,7 @@ export default function EventPage() {
               />
             )}
           </div>
+          <BeachOverTime event={event} />
         </aside>
       </div>
     </div>
