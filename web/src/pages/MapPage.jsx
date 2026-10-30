@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
-import { MapPinPlus, X } from "lucide-react";
+import { ChevronDown, MapPinPlus, X } from "lucide-react";
 import ReportsMap from "../components/ReportsMap";
 import ReportDetail from "../components/ReportDetail";
 import OceanConditions from "../components/OceanConditions";
@@ -37,6 +37,7 @@ export default function MapPage() {
   const [placing, setPlacing] = useState(false);
   const [draft, setDraft] = useState(null);
   const [flyTo, setFlyTo] = useState(null);
+  const [legendOpen, setLegendOpen] = useState(false);
 
   const reportParam = params.get("r");
   const beachId = params.get("b") ?? (reportParam ? beachOfReport.get(reportParam) : null);
@@ -77,7 +78,8 @@ export default function MapPage() {
 
   return (
     <div className="map-page">
-      <header className="map-header">
+      {/* On phones an open beach takes the bottom of the screen, so the header steps aside. */}
+      <header className={!placing && (beach || loneReport) ? "map-header has-sheet" : "map-header"}>
         <MapSearch
           beaches={beaches}
           onBeach={(b) => {
@@ -90,8 +92,17 @@ export default function MapPage() {
           }}
         />
         <h1>World beach map</h1>
-        <p className="report-meta">{status}</p>
-        <ul className="map-legend" aria-label="Legend">
+        {/* On phones the count and hint are left out once the beaches load; problems still show. */}
+        <p className={beaches && !reportsError ? "report-meta map-status is-ready" : "report-meta map-status"}>{status}</p>
+        <button
+          type="button"
+          className="chip-button map-legend-toggle"
+          aria-expanded={legendOpen}
+          onClick={() => setLegendOpen((open) => !open)}
+        >
+          Legend <ChevronDown aria-hidden="true" />
+        </button>
+        <ul className={legendOpen ? "map-legend is-open" : "map-legend"} aria-label="Legend">
           <li>
             <span className="level-dot level-dot-beach" />
             No reports yet

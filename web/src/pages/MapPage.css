@@ -1126,3 +1126,79 @@
   border-width: 1.5px;
   font-size: var(--text-xs);
 }
+
+/* ---------- Map header on phones ---------- */
+
+/* Only the search stays out; the legend folds behind a button and the add
+   button shrinks, so the header covers a strip instead of half the map. */
+.map-legend-toggle {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  .map-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+
+  .map-header .map-search {
+    flex: 1 1 100%;
+  }
+
+  .map-header h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .map-status {
+    flex: 1 1 100%;
+    margin: 0;
+  }
+
+  .map-status.is-ready {
+    display: none;
+  }
+
+  .map-legend-toggle {
+    display: inline-flex;
+  }
+
+  .map-legend-toggle svg {
+    transition: transform 0.2s var(--ease-out);
+  }
+
+  .map-legend-toggle[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
+
+  .map-legend {
+    display: none;
+    order: 3;
+    flex: 1 1 100%;
+    margin: 0;
+    padding: var(--space-1) var(--space-1) 0;
+  }
+
+  .map-legend.is-open {
+    display: flex;
+  }
+
+  .map-add {
+    margin-top: 0;
+    min-height: 34px;
+    padding: 0 var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  .map-header.has-sheet {
+    display: none;
+  }
+}
