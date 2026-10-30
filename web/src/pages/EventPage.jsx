@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { Ban, CalendarDays, MapPin } from "lucide-react";
 import WorkOrder from "../components/WorkOrder";
 import SignupForm from "../components/SignupForm";
 import SignInGate from "../components/SignInGate";
 import { CertificateLink, ResultsForm, ResultsView, ThankVolunteers } from "../components/CleanupResults";
 import TaiwanRegistration from "../components/TaiwanRegistration";
+import PhotoHistory, { NowPhoto } from "../components/PhotoHistory";
+import { useNearbyReports } from "../lib/usePublishedReports";
+import { BEACH_RADIUS_KM } from "../lib/beaches";
+import { reportTime } from "../lib/reports";
 import { isInTaiwan } from "../lib/regions";
 import { AiSaw, Snapshots } from "../components/Snapshots";
 import { planInputs } from "../lib/cleanup";
@@ -68,6 +72,26 @@ function AfterCleanup({ event, joined, isOrganizer }) {
       </p>
       <CertificateLink eventId={event.id} label={isOrganizer ? "Organizer certificate" : "Your certificate"} />
     </div>
+  );
+}
+
+// The beach in photos: the latest report large, then every earlier one by
+// year, from all the reports around it rather than only the newest few hundred.
+function BeachOverTime({ event }) {
+  const nearby = useNearbyReports(event.location, BEACH_RADIUS_KM);
+  const navigate = useNavigate();
+  const reports = nearby
+    .filter((r) => r.type === "trash")
+    .sort((a, b) => reportTime(b).toMillis() - reportTime(a).toMillis());
+  if (reports.length === 0) return null;
+  const open = (r) => navigate(`/map?b=${encodeURIComponent(event.beachId)}&r=${r.id}`, { viewTransition: true });
+  return (
+    <section className="beach-over-time" aria-labelledby="bot-title">
+      <span className="report-label">{event.beachName}</span>
+      <h2 id="bot-title">The beach over time</h2>
+      <NowPhoto reports={reports} onOpen={open} />
+      <PhotoHistory reports={reports} onOpen={open} />
+    </section>
   );
 }
 
@@ -194,6 +218,7 @@ export default function EventPage() {
           {isOrganizer && !cancelled && !started && isInTaiwan(event.location.lat, event.location.lng) && (
             <TaiwanRegistration event={event} signups={signups} user={user} />
           )}
+          <BeachOverTime event={event} />
           <WorkOrder event={event} signups={signups} />
 
           {isOrganizer && started && !cancelled && (

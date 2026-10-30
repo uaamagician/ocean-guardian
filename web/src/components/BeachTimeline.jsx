@@ -3,6 +3,7 @@ import { CATEGORIES, TONE_COLORS } from "../lib/labels";
 import { reportTime } from "../lib/reports";
 import { BEACH_RADIUS_KM } from "../lib/beaches";
 import ReportDetail, { Level } from "./ReportDetail";
+import PhotoHistory from "./PhotoHistory";
 
 const RANK = { clean: 0, light: 1, moderate: 2, heavy: 3 };
 const ROW_LABELS = ["Clean", "Light", "Moderate", "Heavy"];
@@ -164,6 +165,16 @@ export default function BeachTimeline({ reports, focusReportId, onSelectReport }
         }}
       />
 
+      <h4 className="beach-timeline-heading">Photos by year</h4>
+      <PhotoHistory
+        reports={reports}
+        onOpen={(r) => {
+          setYear(null);
+          onSelectReport(r.id);
+        }}
+      />
+
+      <h4 className="beach-timeline-heading">Every report</h4>
       {years.length > 1 && (
         <div className="toolbar-chips beach-timeline-years" role="group" aria-label="Show one year">
           {[[null, reports.length], ...years].map(([y, n]) => (

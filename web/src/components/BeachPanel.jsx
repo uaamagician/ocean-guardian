@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Level } from "./ReportDetail";
 import BeachTimeline from "./BeachTimeline";
+import { NowPhoto } from "./PhotoHistory";
 import FadeImg from "./FadeImg";
 import CleanupPlan from "./CleanupPlan";
 import useWikiSummary from "../lib/useWikiSummary";
@@ -345,6 +346,13 @@ export default function BeachPanel({ beach, reports, allReports, focusReportId, 
       <div className="bp-body" role="tabpanel">
         {tab === "overview" && (
           <>
+            <NowPhoto
+              reports={reports}
+              onOpen={(r) => {
+                setTab("reports");
+                onSelectReport(r.id);
+              }}
+            />
             <DebrisSummary reports={reports} onOpenPlan={() => setTab("cleanup")} />
             <Conditions beach={beach} />
           </>

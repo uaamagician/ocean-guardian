@@ -1307,3 +1307,143 @@
     background: var(--marker);
   }
 }
+
+/* ---------- A beach in photos ---------- */
+
+.now-photo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.now-photo button {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--sand);
+  cursor: pointer;
+}
+
+.now-photo img,
+.now-photo-blank {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.now-photo-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 2px 10px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-pill);
+  background: var(--marker);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+.now-photo figcaption {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.now-photo figcaption small {
+  display: block;
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+}
+
+.photo-history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.photo-year h4 {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+}
+
+.photo-year h4 span {
+  margin-left: 4px;
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+/* A row per year that scrolls sideways once it holds more than fit. */
+.photo-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 96px;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0 0 var(--space-2);
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.photo-strip button {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.photo-strip img,
+.photo-blank {
+  display: block;
+  width: 96px;
+  height: 72px;
+  object-fit: cover;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-sm);
+  background: var(--sand);
+}
+
+.photo-strip-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.photo-strip-meta .level-dot {
+  width: 8px;
+  height: 8px;
+}
+
+.photo-strip .photo-strip-more {
+  display: grid;
+  place-items: center;
+  height: 72px;
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-sm);
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.beach-timeline-heading {
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+}
