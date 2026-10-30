@@ -14,6 +14,7 @@ import {
   ORGANIZER_TYPES,
   cancelEvent,
   headcount,
+  kidCount,
   useContacts,
   useEvent,
   useMyContact,
@@ -29,7 +30,13 @@ function Roster({ signups, contacts }) {
         <li key={s.id}>
           <div>
             <strong>{s.name}</strong>
-            {s.groupSize > 1 && <span className="report-meta"> +{s.groupSize - 1}</span>}
+            {s.groupSize > 1 && (
+              <span className="report-meta">
+                {" "}
+                +{s.groupSize - 1}
+                {s.kids > 0 && `, ${kidCount(s.kids)}`}
+              </span>
+            )}
           </div>
           {s.bringing.length > 0 && (
             <span className="report-meta">Bringing {s.bringing.map((t) => TOOL_BY_ID[t]?.name.toLowerCase()).filter(Boolean).join(", ")}</span>

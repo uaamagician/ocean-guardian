@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { Check, Navigation, Printer, TriangleAlert, Truck, Users } from "lucide-react";
 import { TOOL_BY_ID } from "../lib/guide";
 import { describeUv, describeWeather, fetchDayOutlook, localClock } from "../lib/ocean";
-import { headcount } from "../lib/events";
+import { headcount, kidCount, kidsIn } from "../lib/events";
 import { Level } from "./ReportDetail";
 
 const span = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
@@ -80,6 +80,7 @@ function DayOutlook({ event }) {
 export default function WorkOrder({ event, signups }) {
   const wo = event.workOrder;
   const joined = headcount(signups);
+  const kids = kidsIn(signups);
   const target = Math.min(event.capacity, wo.volunteers.max);
   const pledged = (tool) => (signups ?? []).filter((s) => s.bringing.includes(tool)).length;
   const start = event.startsAt.toDate();
@@ -135,7 +136,7 @@ export default function WorkOrder({ event, signups }) {
         </h3>
         <div className="wo-crew">
           <strong>
-            {joined} <span>of {target} joined</span>
+            {joined} <span>of {target} joined{kids > 0 && `, ${kidCount(kids)}`}</span>
           </strong>
           <span className="report-meta">AI suggests {span(wo.volunteers)} people, capacity {event.capacity}</span>
         </div>
@@ -143,22 +144,26 @@ export default function WorkOrder({ event, signups }) {
           <span style={{ width: `${Math.min(100, (joined / target) * 100)}%` }} />
         </div>
         {wo.teams?.length > 0 && (
-          <ol className="wo-teams">
-            {wo.teams.map((t) => (
-              <li key={t.name}>
-                <strong>{t.name}</strong>
-                <span className="wo-team-size">{t.people} people</span>
-                <p>{t.task}</p>
-              </li>
-            ))}
-          </ol>
+          <>
+            <p className="report-meta">The organizer splits people into these teams on the day. Nothing to pick now.</p>
+            <ol className="wo-teams">
+              {wo.teams.map((t) => (
+                <li key={t.name}>
+                  <strong>{t.name}</strong>
+                  <span className="wo-team-size">{t.people} people</span>
+                  <p>{t.task}</p>
+                </li>
+              ))}
+            </ol>
+          </>
         )}
       </section>
 
       <section className="wo-block">
-        <h3>Gear checklist</h3>
+        <h3>Gear</h3>
         <p className="report-meta">
-          Volunteers say what they can bring when they sign up. About {span(wo.bags)} full bags of debris expected.
+          What the day needs in all. Volunteers don't have to bring any of it; those who can say so when they join.
+          About {span(wo.bags)} full bags of debris expected.
         </p>
         <ul className="wo-gear">
           {wo.gear.map((g) => {
@@ -183,7 +188,7 @@ export default function WorkOrder({ event, signups }) {
                       <Check aria-hidden="true" /> {n} bringing
                     </>
                   ) : (
-                    "Nobody yet"
+                    "Not yet"
                   )}
                 </span>
               </li>

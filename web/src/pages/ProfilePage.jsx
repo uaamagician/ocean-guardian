@@ -6,7 +6,7 @@ import SignInGate from "../components/SignInGate";
 import { Avatar } from "../components/UserMenu";
 import { isGoogleUser, signOutUser, useUser } from "../lib/auth";
 import { englishName } from "../lib/english";
-import { useMyEvents, useMySignups } from "../lib/events";
+import { kidCount, useMyEvents, useMySignups } from "../lib/events";
 import { TOOL_BY_ID } from "../lib/guide";
 import "./Events.css";
 import "./ProfilePage.css";
@@ -31,6 +31,7 @@ function JoinedList({ events, now }) {
       <p className="joined-note">
         {e.status === "cancelled" ? "Cancelled by the organizer. " : ""}
         You signed up {e.mySignup.groupSize === 1 ? "yourself" : `${e.mySignup.groupSize} people`}
+        {e.mySignup.kids > 0 && ` (${kidCount(e.mySignup.kids)})`}
         {e.mySignup.bringing.length > 0 &&
           `, bringing ${e.mySignup.bringing.map((t) => TOOL_BY_ID[t]?.name.toLowerCase()).filter(Boolean).join(", ")}`}
         .

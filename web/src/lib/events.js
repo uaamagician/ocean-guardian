@@ -175,11 +175,12 @@ export function useBeachEvents(beachId) {
   );
 }
 
-export async function saveSignup(eventId, { name, groupSize, bringing, note, contact }) {
+export async function saveSignup(eventId, { name, groupSize, kids, bringing, note, contact }) {
   const user = requireGoogleUser();
   const ref = doc(db, "events", eventId, "signups", user.uid);
   // uid is stored too, so the profile page can find sign-ups across events.
-  const fields = { uid: user.uid, name: name.trim(), groupSize, bringing, note: note.trim() };
+  // groupSize counts everyone, kids included; kids says how many of them are.
+  const fields = { uid: user.uid, name: name.trim(), groupSize, kids, bringing, note: note.trim() };
   const existing = await getDoc(ref);
   // Edits leave createdAt untouched; the rules require it to stay as stored.
   if (existing.exists()) await updateDoc(ref, fields);
@@ -244,3 +245,15 @@ export function cancelEvent(eventId) {
 }
 
 export const headcount = (signups) => (signups ?? []).reduce((n, s) => n + s.groupSize, 0);
+
+// Sign-ups made before kids were counted have no kids field.
+export const kidsIn = (signups) => (signups ?? []).reduce((n, s) => n + (s.kids ?? 0), 0);
+
+export const kidCount = (n) => `${n} ${n === 1 ? "kid" : "kids"}`;
+
+// "You and 2 more (1 kid)": who a sign-up brings along, as the person sees it.
+export function describeParty(signup) {
+  const more = signup.groupSize - 1;
+  if (more === 0) return "Just you";
+  return `You and ${more} more${signup.kids ? ` (${kidCount(signup.kids)})` : ""}`;
+}

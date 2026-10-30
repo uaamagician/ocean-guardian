@@ -123,13 +123,17 @@ service cloud.firestore {
         allow read: if true;
         allow create, update: if isGoogleUser() && request.auth.uid == uid
           && isOpenEvent()
-          && request.resource.data.keys().hasOnly(["uid", "name", "groupSize", "bringing", "note", "createdAt"])
+          && request.resource.data.keys().hasOnly(["uid", "name", "groupSize", "kids", "bringing", "note", "createdAt"])
           && request.resource.data.keys().hasAll(["uid", "name", "groupSize", "bringing", "note", "createdAt"])
           && request.resource.data.uid == uid
           && request.resource.data.name is string
           && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 40
           && request.resource.data.groupSize is int
           && request.resource.data.groupSize >= 1 && request.resource.data.groupSize <= 10
+          // How many of the group are kids; older sign-ups don't have it.
+          && (!("kids" in request.resource.data)
+            || (request.resource.data.kids is int
+              && request.resource.data.kids >= 0 && request.resource.data.kids < request.resource.data.groupSize))
           && request.resource.data.bringing is list && request.resource.data.bringing.size() <= 13
           && request.resource.data.note is string && request.resource.data.note.size() <= 200
           && (resource == null
