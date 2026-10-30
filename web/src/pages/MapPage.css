@@ -1447,3 +1447,13 @@
   font-family: var(--font-display);
   font-size: var(--text-base);
 }
+
+/* The beach dots fade out for a zoom's animation and back in at the new scale. */
+.leaflet-beaches-pane {
+  transition: opacity 0.18s ease-out;
+}
+
+.leaflet-beaches-pane.is-zooming {
+  opacity: 0;
+  transition: none;
+}

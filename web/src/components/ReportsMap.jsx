@@ -85,9 +85,11 @@ function eventIcon(event) {
 
 const ME_ICON = L.divIcon({ className: "me-dot", html: "<span></span>", iconSize: [16, 16], iconAnchor: [8, 8] });
 
+// Dots come in three sizes, by how far the map is zoomed in.
+const baseRadius = (zoom) => (zoom < 5 ? 2.5 : zoom < 8 ? 4 : 6);
+
 function radiusFor(zoom, reported, selected) {
-  const base = zoom < 5 ? 2.5 : zoom < 8 ? 4 : 6;
-  return base + (reported ? 3 : 0) + (selected ? 4 : 0);
+  return baseRadius(zoom) + (reported ? 3 : 0) + (selected ? 4 : 0);
 }
 
 // ~15k beaches: drawn imperatively on one canvas layer. As React-Leaflet
@@ -102,7 +104,9 @@ function BeachLayer({ beaches, tones, selectedId, onSelect, snap }) {
 
   useEffect(() => {
     if (!beaches) return undefined;
-    const renderer = L.canvas({ padding: 0.5 });
+    // Their own pane, so it can be hidden while the map zooms (see below).
+    if (!map.getPane("beaches")) map.createPane("beaches").style.zIndex = 420;
+    const renderer = L.canvas({ padding: 0.5, pane: "beaches" });
     const group = L.layerGroup().addTo(map);
     const byId = markers.current;
     for (const b of beaches) {
@@ -126,9 +130,13 @@ function BeachLayer({ beaches, tones, selectedId, onSelect, snap }) {
     };
   }, [map, beaches]);
 
+  // Restyling 15k dots is the slow part of a zoom, and their size only changes
+  // at two zoom levels, so a zoom restyles them only when it crosses one.
+  const sizedFor = useRef(null);
   useEffect(() => {
     const apply = () => {
       const zoom = map.getZoom();
+      sizedFor.current = baseRadius(zoom);
       const front = [];
       for (const [id, marker] of markers.current) {
         const tone = tones?.get(id);
@@ -146,9 +154,28 @@ function BeachLayer({ beaches, tones, selectedId, onSelect, snap }) {
       front.forEach((m) => m.bringToFront());
     };
     apply();
-    map.on("zoomend", apply);
-    return () => map.off("zoomend", apply);
+    const onZoomEnd = () => {
+      if (baseRadius(map.getZoom()) !== sizedFor.current) apply();
+    };
+    map.on("zoomend", onZoomEnd);
+    return () => map.off("zoomend", onZoomEnd);
   }, [map, beaches, tones, selectedId]);
+
+  // During a zoom Leaflet stretches the canvas bitmap, which balloons every dot
+  // until it redraws. Hide the dots for the animation and fade them back in
+  // once they're drawn at the new scale.
+  useEffect(() => {
+    const pane = map.getPane("beaches");
+    if (!pane) return undefined;
+    const hide = () => pane.classList.add("is-zooming");
+    const show = () => requestAnimationFrame(() => pane.classList.remove("is-zooming"));
+    map.on("zoomstart", hide);
+    map.on("zoomend", show);
+    return () => {
+      map.off("zoomstart", hide);
+      map.off("zoomend", show);
+    };
+  }, [map, beaches]);
 
   useSnap(map, markers, snap, onSelectRef);
 
