@@ -72,7 +72,7 @@
 
 .tl-credit {
   margin-top: var(--space-2);
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   color: var(--ink-soft);
 }
 

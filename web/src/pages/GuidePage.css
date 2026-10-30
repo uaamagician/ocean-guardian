@@ -194,7 +194,7 @@
 /* Clear of the number stamp hanging off the print's corner. */
 .entry-photo figcaption {
   margin-top: 26px;
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   color: var(--ink-soft);
 }
 

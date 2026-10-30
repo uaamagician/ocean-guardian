@@ -1029,7 +1029,7 @@
 
 .journey-credit {
   margin-top: var(--space-2);
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   color: var(--ink-soft);
   opacity: 0.8;
 }
@@ -1344,7 +1344,7 @@
   right: var(--space-4);
   /* Clear of the footer's shoreline, which rises over the photo's bottom. */
   bottom: calc(var(--shore, 46px) + var(--space-3));
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   color: rgba(255, 255, 255, 0.6);
 }
 
@@ -1564,7 +1564,7 @@
 .history-snap-credit {
   display: block;
   margin-top: var(--space-2);
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   color: var(--ink-soft);
 }
 
