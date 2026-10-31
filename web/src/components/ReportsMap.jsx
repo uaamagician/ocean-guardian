@@ -154,11 +154,29 @@ function BeachLayer({ beaches, tones, selectedId, onSelect, snap }) {
       front.forEach((m) => m.bringToFront());
     };
     apply();
+    // An animated zoom announces its target first. Setting the new radii then,
+    // without a redraw, lets the projection Leaflet does at the end of every
+    // zoom draw them at no extra cost.
+    const onZoomAnim = (e) => {
+      const base = baseRadius(e.zoom);
+      if (base === sizedFor.current) return;
+      sizedFor.current = base;
+      for (const [id, marker] of markers.current) {
+        const r = radiusFor(e.zoom, Boolean(tones?.get(id)) || isCommunityBeach(id), id === selectedId);
+        marker.options.radius = r;
+        marker._radius = r;
+      }
+    };
+    // Zooms without an animation (and anything the above missed) restyle in full.
     const onZoomEnd = () => {
       if (baseRadius(map.getZoom()) !== sizedFor.current) apply();
     };
+    map.on("zoomanim", onZoomAnim);
     map.on("zoomend", onZoomEnd);
-    return () => map.off("zoomend", onZoomEnd);
+    return () => {
+      map.off("zoomanim", onZoomAnim);
+      map.off("zoomend", onZoomEnd);
+    };
   }, [map, beaches, tones, selectedId]);
 
   // During a zoom Leaflet stretches the canvas bitmap, which balloons every dot
@@ -195,15 +213,24 @@ function useSnap(map, markers, enabled, onSelectRef) {
   useEffect(() => {
     if (!enabled) return undefined;
     const container = map.getContainer();
-    // Dots bucketed by layer-pixel position; layer pixels don't change while
-    // panning, so the index is rebuilt only when the zoom changes.
+    // The dots on screen, bucketed by layer-pixel position. Rebuilt after a
+    // zoom or a pan, lazily, the first time the pointer needs it.
     let grid = null;
     let indexed = 0;
     const build = () => {
       grid = new Map();
       indexed = markers.current.size;
+      // The visible area in layer pixels, with a margin for the snap reach.
+      const view = map.getPixelBounds();
+      const origin = map.getPixelOrigin();
+      const minX = view.min.x - origin.x - CELL;
+      const minY = view.min.y - origin.y - CELL;
+      const maxX = view.max.x - origin.x + CELL;
+      const maxY = view.max.y - origin.y + CELL;
       for (const [id, marker] of markers.current) {
-        const p = map.latLngToLayerPoint(marker.getLatLng());
+        // Leaflet keeps each dot's layer-pixel position after projecting it.
+        const p = marker._point ?? map.latLngToLayerPoint(marker.getLatLng());
+        if (p.x < minX || p.x > maxX || p.y < minY || p.y > maxY) continue;
         const key = `${Math.floor(p.x / CELL)},${Math.floor(p.y / CELL)}`;
         if (!grid.has(key)) grid.set(key, []);
         grid.get(key).push({ id, marker, p });
@@ -275,12 +302,12 @@ function useSnap(map, markers, enabled, onSelectRef) {
 
     map.on("mousemove", onMove);
     map.on("mouseout dragstart zoomstart", clear);
-    map.on("zoomend viewreset", reset);
+    map.on("zoomend viewreset moveend", reset);
     map.on("click", onClick);
     return () => {
       map.off("mousemove", onMove);
       map.off("mouseout dragstart zoomstart", clear);
-      map.off("zoomend viewreset", reset);
+      map.off("zoomend viewreset moveend", reset);
       map.off("click", onClick);
       clear();
     };
