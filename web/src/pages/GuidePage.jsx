@@ -41,6 +41,14 @@ function useHashTarget() {
 const STAMPS = { natural: "Leave it", hazardous: "Don't touch" };
 
 function PhotoCredit({ photo }) {
+  // Our own photos have no license or source page to point to.
+  if (!photo.source) {
+    return (
+      <figcaption>
+        {photo.caption}. Photo: {photo.credit}
+      </figcaption>
+    );
+  }
   return (
     <figcaption>
       {photo.caption}. Photo: {photo.credit},{" "}

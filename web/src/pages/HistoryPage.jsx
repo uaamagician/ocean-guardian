@@ -19,6 +19,8 @@ const formatDate = (iso) =>
   new Date(`${iso}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
 function Credit({ item }) {
+  // Our own photos have no license or source page to point to.
+  if (!item.source) return <figcaption className="tl-credit">Photo: {item.credit}</figcaption>;
   return (
     <figcaption className="tl-credit">
       Photo: {item.credit},{" "}
@@ -101,7 +103,7 @@ export default function HistoryPage() {
               item.kind === "milestone" ? (
                 <MilestoneItem key={item.year} item={item} />
               ) : (
-                <CleanupItem key={item.source} item={item} side={side++ % 2 ? "right" : "left"} />
+                <CleanupItem key={item.source ?? item.image} item={item} side={side++ % 2 ? "right" : "left"} />
               ),
             )}
           </ol>

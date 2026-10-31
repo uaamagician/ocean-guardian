@@ -119,8 +119,8 @@ export function GuideTeaser() {
   );
 }
 
-const CTA_IMAGE =
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/2022_Beach_Cleanup_at_the_Long_Fong_Fishing_Port.jpg/1920px-2022_Beach_Cleanup_at_the_Long_Fong_Fishing_Port.jpg";
+// Volunteers at work along Shalun Beach, from a cleanup our team joined.
+const CTA_IMAGE = "/photos/shalun-beach.webp";
 
 export function FinalCta() {
   return (
@@ -135,7 +135,7 @@ export function FinalCta() {
         <p>Start with the beach nearest you. It takes one photo.</p>
         <ActionButtons light className="final-actions" />
       </Reveal>
-      <small className="final-cta-credit">Long Fong Fishing Port, Miaoli. Photo: Taiwankengo, CC BY-SA 4.0</small>
+      <small className="final-cta-credit">Shalun Beach, Tamsui. Photo: the Ocean Guardian team</small>
     </section>
   );
 }

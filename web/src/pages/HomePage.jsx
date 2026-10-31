@@ -343,7 +343,8 @@ function HistoryTeaser() {
                 </span>
               </Link>
               <small className="history-snap-credit">
-                Photo: {h.credit}, {h.license}
+                Photo: {h.credit}
+                {h.license && `, ${h.license}`}
               </small>
             </Reveal>
           ))}

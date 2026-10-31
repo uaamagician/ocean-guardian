@@ -46,10 +46,8 @@ const STOPS = [
     region: "Taiwan",
     title: "Our own coast",
     body: "Taiwan has run more than 220,000 coastal cleanups since 2020. What's still missing is a live picture of which beach needs help next.",
-    image: wiki(
-      "6/6b/2022_Beach_Cleanup_at_the_Long_Fong_Fishing_Port.jpg/1280px-2022_Beach_Cleanup_at_the_Long_Fong_Fishing_Port.jpg",
-    ),
-    credit: "Long Fong Fishing Port, Miaoli. Photo: Taiwankengo, CC BY-SA 4.0",
+    image: "/photos/shalun-litter.webp",
+    credit: "Shalun Beach, Tamsui, before our cleanup. Photo: the Ocean Guardian team",
   },
 ];
 

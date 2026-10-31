@@ -1,6 +1,6 @@
-// Past beach cleanups documented on Wikimedia Commons, oldest first. Each
-// summary only restates the photo's own description; the credit, license and
-// source link come from the file's page and must stay with the photo.
+// Past beach cleanups, oldest first: ones documented on Wikimedia Commons,
+// whose summaries only restate the photo's own description and whose credit,
+// license and source must stay with the photo, and ones our own team joined.
 
 const thumb = (path) => `https://upload.wikimedia.org/wikipedia/commons/thumb/${path}`;
 
@@ -58,6 +58,18 @@ export const HISTORY = [
     credit: "USAID Vietnam",
     license: "Public domain",
     source: "https://commons.wikimedia.org/wiki/File:Beach_Clean-up_Day_in_Ha_Long_Bay_(32094621842).jpg",
+  },
+  {
+    kind: "milestone",
+    year: 2018,
+    title: "Taiwan's marine debris action plan",
+    body: "Taiwan's environmental agency and ocean NGOs draw up a joint plan against marine debris, from cutting single-use plastic to cleaning the coast.",
+  },
+  {
+    kind: "milestone",
+    year: 2019,
+    title: "Plastic straws leave Taiwan's food courts",
+    body: "Single-use plastic straws are banned for dine-in customers at Taiwan's schools, government offices, department stores and fast-food chains.",
   },
   {
     kind: "cleanup",
@@ -136,6 +148,16 @@ export const HISTORY = [
     credit: "Cpl. Jessi Stegall, U.S. Marine Corps",
     license: "Public domain",
     source: "https://commons.wikimedia.org/wiki/File:III_MEF,_JSDF_Personnel_Conduct_Beach_Cleanup_on_Ishigaki_(9009085).jpg",
+  },
+  {
+    kind: "cleanup",
+    date: "2026-10-31",
+    place: "Shalun Beach, Tamsui, New Taipei",
+    country: "Taiwan",
+    summary:
+      "A cleanup our team joined: volunteers swept the sand and the dune grass on a cloudy morning, then carried the full bags up to the road for the cleaning team to collect.",
+    image: "/photos/shalun-cleanup.webp",
+    credit: "the Ocean Guardian team",
   },
 ];
 

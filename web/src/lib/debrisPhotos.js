@@ -1,46 +1,33 @@
-// Example photos for each kind of debris on the Field Guide, from Wikimedia
-// Commons. The caption says where each was taken; credit, license and source
-// stay with the photo.
+// Example photos for each kind of debris on the Field Guide. Where we have our
+// own, from cleanups we joined, they come first; the rest are from Wikimedia
+// Commons, and their credit, license and source stay with the photo.
+export const OUR_TEAM = "the Ocean Guardian team";
+
 export const DEBRIS_PHOTOS = {
   bottles: {
-    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/Plastic_Trash_in_Raja_Ampat%2C_Bird%27s_Head_Seascape.jpg/960px-Plastic_Trash_in_Raja_Ampat%2C_Bird%27s_Head_Seascape.jpg",
-    caption: "Raja Ampat, Indonesia",
-    credit: "Jones/Shimlock, Secret Sea Visions",
-    license: "CC BY-SA 4.0",
-    licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0",
-    source: "https://commons.wikimedia.org/wiki/File:Plastic_Trash_in_Raja_Ampat,_Bird%27s_Head_Seascape.jpg",
+    src: "/photos/shalun-bottle.webp",
+    caption: "A drink bottle in the dune grass, Shalun Beach, Taiwan",
+    credit: OUR_TEAM,
   },
   bags: {
-    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e2/Galinhos_Beach%2C_Galinhos_%28Rio_Grande_do_Norte%2C_Brazil%2C_October_2023%29.jpg/960px-Galinhos_Beach%2C_Galinhos_%28Rio_Grande_do_Norte%2C_Brazil%2C_October_2023%29.jpg",
-    caption: "Galinhos Beach, Brazil",
-    credit: "Malafaia2407",
-    license: "CC BY 4.0",
-    licenseUrl: "https://creativecommons.org/licenses/by/4.0",
-    source: "https://commons.wikimedia.org/wiki/File:Galinhos_Beach,_Galinhos_(Rio_Grande_do_Norte,_Brazil,_October_2023).jpg",
+    src: "/photos/shalun-film.webp",
+    caption: "Plastic film on the sand, Shalun Beach, Taiwan",
+    credit: OUR_TEAM,
   },
   foodware: {
-    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Plastic_straws_littered_on_gravel_driveway.jpg/960px-Plastic_straws_littered_on_gravel_driveway.jpg",
-    caption: "Straws on gravel outside a restaurant",
-    credit: "The earth hero",
-    license: "CC BY-SA 4.0",
-    licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0",
-    source: "https://commons.wikimedia.org/wiki/File:Plastic_straws_littered_on_gravel_driveway.jpg",
+    src: "/photos/shalun-spoon.webp",
+    caption: "A plastic spoon among the dune plants, Shalun Beach, Taiwan",
+    credit: OUR_TEAM,
   },
   styrofoam: {
-    src: "https://upload.wikimedia.org/wikipedia/commons/0/04/Physical_weathering_styrofoam_cup_Lake_Michigan_obverse.jpg",
-    caption: "A weathered foam cup, Lake Michigan shore",
-    credit: "Visviva",
-    license: "CC0",
-    licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0",
-    source: "https://commons.wikimedia.org/wiki/File:Physical_weathering_styrofoam_cup_Lake_Michigan_obverse.jpg",
+    src: "/photos/shalun-foam.webp",
+    caption: "A broken block of packaging foam, Shalun Beach, Taiwan",
+    credit: OUR_TEAM,
   },
   fishing: {
-    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Costa_Esqueletos_%282006%29_48.jpg/960px-Costa_Esqueletos_%282006%29_48.jpg",
-    caption: "Skeleton Coast, Namibia",
-    credit: "LBM1948",
-    license: "CC BY-SA 4.0",
-    licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0",
-    source: "https://commons.wikimedia.org/wiki/File:Costa_Esqueletos_(2006)_48.jpg",
+    src: "/photos/shalun-net.webp",
+    caption: "A tangle of rope and net, Shalun Beach, Taiwan",
+    credit: OUR_TEAM,
   },
   cigarettes: {
     src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/Detritus_from_the_sea_and_air_%286140659760%29.jpg/960px-Detritus_from_the_sea_and_air_%286140659760%29.jpg",
@@ -90,11 +77,8 @@ export const DEBRIS_PHOTOS = {
     source: "https://commons.wikimedia.org/wiki/File:Marine_Debris_--_Lighters_(43102098570).jpg",
   },
   natural: {
-    src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Driftwood_on_Cheltenham_Beach%2C_Devonport.jpg/960px-Driftwood_on_Cheltenham_Beach%2C_Devonport.jpg",
-    caption: "Cheltenham Beach, Auckland",
-    credit: "Bjankuloski06",
-    license: "CC BY 4.0",
-    licenseUrl: "https://creativecommons.org/licenses/by/4.0",
-    source: "https://commons.wikimedia.org/wiki/File:Driftwood_on_Cheltenham_Beach,_Devonport.jpg",
+    src: "/photos/shalun-driftwood.webp",
+    caption: "The driftwood stays, the plastic caught in it goes. Shalun Beach, Taiwan",
+    credit: OUR_TEAM,
   },
 };
