@@ -1,13 +1,18 @@
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const logger = require("firebase-functions/logger");
 const { initializeApp } = require("firebase-admin/app");
-const { FieldValue } = require("firebase-admin/firestore");
+const { FieldValue, getFirestore } = require("firebase-admin/firestore");
 
 initializeApp();
 
 const { GEMINI_API_KEY, makeAi, generateWithFallback, downloadPhoto, inlinePhoto } = require("./gemini");
+const { nearestBeachKm } = require("./beachCheck");
 
 const CONFIDENCE_THRESHOLD = 0.5;
+// Reports further than this from every beach on the map wait for a person to
+// look at them instead of going live: a pin dropped at home, or a beach that
+// still needs adding. Matches BEACH_RADIUS_KM on the site.
+const BEACH_RADIUS_KM = 3;
 
 const SHARED_RULES =
   "Write items and uncertainItems in English, using short lowercase common names. " +
@@ -106,14 +111,22 @@ exports.analyzeReport = onDocumentCreated(
       const photos = await Promise.all(report.photos.map(downloadPhoto));
       const analysis = await analyzePhotos(report.type, photos);
 
+      // If the beach list can't be loaded, don't hold the report back over it.
+      const beachKm = await nearestBeachKm(getFirestore(), report.location).catch((err) => {
+        logger.warn("Beach check skipped", { reportId, error: err.message });
+        return null;
+      });
+      const farFromBeach = beachKm !== null && beachKm > BEACH_RADIUS_KM;
+
       const publishable =
-        analysis.confidence >= CONFIDENCE_THRESHOLD && !IRRELEVANT.has(analysis.category);
+        analysis.confidence >= CONFIDENCE_THRESHOLD && !IRRELEVANT.has(analysis.category) && !farFromBeach;
 
       await snap.ref.update({
         aiAnalysis: { ...analysis, analyzedAt: FieldValue.serverTimestamp() },
         status: publishable ? "published" : "pending_review",
+        ...(farFromBeach && { reviewReason: "far_from_beach", nearestBeachKm: Math.round(beachKm * 10) / 10 }),
       });
-      logger.info("Report analyzed", { reportId, photoCount: photos.length, ...analysis, publishable });
+      logger.info("Report analyzed", { reportId, photoCount: photos.length, ...analysis, beachKm, publishable });
     } catch (err) {
       logger.error("Report analysis failed", { reportId, error: err.message });
       await snap.ref.update({ status: "pending_review", aiError: err.message });

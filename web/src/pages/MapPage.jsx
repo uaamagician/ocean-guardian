@@ -35,7 +35,8 @@ export default function MapPage() {
   // for wherever you came from instead of stepping through every beach clicked.
   const setParams = (next) => setSearchParams(next, { replace: true });
   // Adding a beach: `placing` turns map clicks into a location pick for the form.
-  const [placing, setPlacing] = useState(false);
+  // `?add=1` (from the report page) opens straight into adding a beach.
+  const [placing, setPlacing] = useState(() => params.get("add") === "1");
   const [draft, setDraft] = useState(null);
   const [flyTo, setFlyTo] = useState(null);
   const [legendOpen, setLegendOpen] = useState(false);

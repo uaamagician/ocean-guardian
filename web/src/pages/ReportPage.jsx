@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
+import { BEACH_RADIUS_KM, findNearby, useAllBeaches } from "../lib/beaches";
 import { Camera, Images } from "lucide-react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
@@ -201,7 +202,14 @@ export default function ReportPage() {
     setChoice("map");
   };
 
-  const canSubmit = photos.length > 0 && spot && !photoBusy && !submitting;
+  // Reports belong to a beach. A spot far from every beach on the map is
+  // usually a pin left at home, so it can't be sent until it's moved, or the
+  // beach is added to the map first. (The server checks this too.)
+  const { beaches: allBeaches } = useAllBeaches();
+  const nearest = useMemo(() => (spot && allBeaches ? findNearby(allBeaches, spot, Infinity) : null), [spot, allBeaches]);
+  const farFromBeach = Boolean(nearest && nearest.km > BEACH_RADIUS_KM);
+
+  const canSubmit = photos.length > 0 && spot && !farFromBeach && !photoBusy && !submitting;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -288,6 +296,25 @@ export default function ReportPage() {
         onChoose={setChoice}
         onPin={pin}
       />
+
+      {farFromBeach && (
+        <div className="far-note" role="alert">
+          <strong>This spot isn't at a beach on the map</strong>
+          <p>
+            It's {nearest.km < 10 ? nearest.km.toFixed(1) : Math.round(nearest.km)} km from the nearest one,{" "}
+            {nearest.beach.name}. Reports go on the beach they were taken at, so move the pin there. If the beach is
+            missing from the map, add it first, then report it.
+          </p>
+          <div className="far-note-actions">
+            <button type="button" className="btn btn-small" onClick={() => setChoice("map")}>
+              Pick the spot on the map
+            </button>
+            <Link to="/map?add=1" className="btn-text">
+              Add a missing beach
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="section">
         <button type="submit" className="btn btn-primary" disabled={!canSubmit}>

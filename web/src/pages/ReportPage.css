@@ -246,3 +246,25 @@
   font-size: var(--text-sm);
   white-space: nowrap;
 }
+
+.far-note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 2px solid var(--buoy);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.far-note p {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.far-note-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}

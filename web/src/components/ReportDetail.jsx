@@ -76,6 +76,13 @@ export default function ReportDetail({ report, showStatus = false }) {
         </p>
       )}
 
+      {showStatus && report.reviewReason === "far_from_beach" && (
+        <p className="report-meta">
+          This report was sent from {report.nearestBeachKm} km away from the nearest beach on the map, so it waits for
+          a person to check it before it goes on the map.
+        </p>
+      )}
+
       {showStatus && report.aiError && (
         <p className="report-meta">The AI couldn't analyze this report, so a person will review it.</p>
       )}
