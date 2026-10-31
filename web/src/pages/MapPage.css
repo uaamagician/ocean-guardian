@@ -1462,12 +1462,14 @@
   font-size: var(--text-base);
 }
 
-/* The beach dots fade out for a zoom's animation and back in at the new scale. */
-.leaflet-beaches-pane {
+/* The dots fade out for a zoom's animation and back in at the new scale. */
+.reports-map .leaflet-beaches-pane,
+.reports-map .leaflet-overlay-pane {
   transition: opacity 0.18s ease-out;
 }
 
-.leaflet-beaches-pane.is-zooming {
+.reports-map.is-zooming .leaflet-beaches-pane,
+.reports-map.is-zooming .leaflet-overlay-pane {
   opacity: 0;
   transition: none;
 }

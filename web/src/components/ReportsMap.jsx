@@ -49,13 +49,26 @@ function FlyTo({ target }) {
 
 // Labels on cleanup flags only show once the map is zoomed in far enough for
 // them to have room; further out the flags alone mark where cleanups are.
+//
+// During a zoom Leaflet stretches the dot layers (the beaches' canvas and the
+// lone reports' SVG) as pictures, which balloons every dot until they redraw.
+// `is-zooming` hides them for the animation; they fade back in at the new scale.
 function ZoomClass() {
   const map = useMap();
   useEffect(() => {
-    const update = () => map.getContainer().classList.toggle("is-far", map.getZoom() < 7);
+    const container = map.getContainer();
+    const update = () => container.classList.toggle("is-far", map.getZoom() < 7);
+    const hide = () => container.classList.add("is-zooming");
+    const show = () => requestAnimationFrame(() => container.classList.remove("is-zooming"));
     update();
     map.on("zoomend", update);
-    return () => map.off("zoomend", update);
+    map.on("zoomstart", hide);
+    map.on("zoomend", show);
+    return () => {
+      map.off("zoomend", update);
+      map.off("zoomstart", hide);
+      map.off("zoomend", show);
+    };
   }, [map]);
   return null;
 }
@@ -178,22 +191,6 @@ function BeachLayer({ beaches, tones, selectedId, onSelect, snap }) {
       map.off("zoomend", onZoomEnd);
     };
   }, [map, beaches, tones, selectedId]);
-
-  // During a zoom Leaflet stretches the canvas bitmap, which balloons every dot
-  // until it redraws. Hide the dots for the animation and fade them back in
-  // once they're drawn at the new scale.
-  useEffect(() => {
-    const pane = map.getPane("beaches");
-    if (!pane) return undefined;
-    const hide = () => pane.classList.add("is-zooming");
-    const show = () => requestAnimationFrame(() => pane.classList.remove("is-zooming"));
-    map.on("zoomstart", hide);
-    map.on("zoomend", show);
-    return () => {
-      map.off("zoomstart", hide);
-      map.off("zoomend", show);
-    };
-  }, [map, beaches]);
 
   useSnap(map, markers, snap, onSelectRef);
 
