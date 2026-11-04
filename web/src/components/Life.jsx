@@ -277,7 +277,7 @@ export function Crab() {
       crab.classList.toggle("is-fleeing", fast);
       move = crab.animate([{ translate: `${from}px 0` }, { translate: `${to}px 0` }], {
         duration: (Math.abs(to - from) / speed) * 1000,
-        easing: fast ? "cubic-bezier(0.2, 0, 0.3, 1)" : "cubic-bezier(0.45, 0, 0.4, 1)",
+        easing: fast ? "cubic-bezier(0.3, 0.35, 0.55, 1)" : "cubic-bezier(0.3, 0.15, 0.7, 0.85)",
       });
       return move.finished.then(
         () => place(to),
@@ -306,7 +306,7 @@ export function Crab() {
         if (flee) {
           dir = flee;
           flee = 0;
-          await dash(clamp(x + dir * rand(220, 320)), 520, true);
+          await dash(clamp(x + dir * rand(160, 240)), 230, true);
           if (!flee) await nap(rand(1500, 2500));
           continue;
         }
@@ -318,7 +318,7 @@ export function Crab() {
           dir = Math.random() < 0.5 ? 1 : -1;
           place(dir > 0 ? OFF_LEFT : offRight());
         }
-        await dash(clamp(x + dir * rand(90, 260)), rand(130, 210));
+        await dash(clamp(x + dir * rand(70, 200)), rand(55, 85));
         if (flee || stopped) continue;
         await nap(rand(700, 2400));
         // Changes its mind now and then, but only once it's well out on the sand.

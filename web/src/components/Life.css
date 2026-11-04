@@ -310,11 +310,11 @@
 /* Legs on each side take turns, a quick scuttle, only while it moves; they
    go quicker still when it runs from a click. */
 .crab .part-legs-left {
-  animation: scuttle 0.36s ease-in-out infinite paused;
+  animation: scuttle 0.5s ease-in-out infinite paused;
 }
 
 .crab .part-legs-right {
-  animation: scuttle 0.36s ease-in-out infinite reverse paused;
+  animation: scuttle 0.5s ease-in-out infinite reverse paused;
 }
 
 .crab-path.is-walking .part-legs-left,
@@ -324,7 +324,7 @@
 
 .crab-path.is-fleeing .part-legs-left,
 .crab-path.is-fleeing .part-legs-right {
-  animation-duration: 0.18s;
+  animation-duration: 0.28s;
 }
 
 /* Claws held up, opening and closing in turn. */
