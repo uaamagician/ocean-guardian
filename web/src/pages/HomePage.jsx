@@ -334,7 +334,7 @@ function HistoryTeaser() {
         </div>
         <ul className="history-strip">
           {picks.map((h, i) => (
-            <Reveal as="li" key={h.source} delay={i * 40}>
+            <Reveal as="li" key={h.image} delay={i * 40}>
               <Link to="/history" className="history-snap" viewTransition>
                 <FadeImg src={h.image} alt={`Beach cleanup, ${h.place}`} loading="lazy" />
                 <span className="history-snap-place">{h.place}</span>

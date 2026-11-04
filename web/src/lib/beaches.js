@@ -171,7 +171,14 @@ function useCommunityBeaches() {
 export function useAllBeaches() {
   const { beaches, error } = useBeaches();
   const community = useCommunityBeaches();
-  const all = useMemo(() => (beaches ? [...beaches, ...community] : null), [beaches, community]);
+  // An added beach takes its country from the nearest listed one, for the region filters.
+  const all = useMemo(
+    () =>
+      beaches
+        ? [...beaches, ...community.map((b) => ({ ...b, country: findNearby(beaches, b, 100)?.beach.country ?? null }))]
+        : null,
+    [beaches, community],
+  );
   return { beaches: all, error };
 }
 
