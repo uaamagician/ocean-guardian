@@ -179,7 +179,8 @@ export function Gulls() {
           style={{ top: g.top, animationDelay: `${g.delay}s`, animationDuration: `${g.duration}s` }}
         >
           <svg className="gull" viewBox="0 0 60 24" style={{ width: g.size }} focusable="false">
-            <path d="M2 14 C 12 4, 22 4, 30 14 C 38 4, 48 4, 58 14" />
+            <path className="gull-wing is-left" d="M30 14 C 22 4, 12 4, 2 14" />
+            <path className="gull-wing is-right" d="M30 14 C 38 4, 48 4, 58 14" />
           </svg>
         </span>
       ))}

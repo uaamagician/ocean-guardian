@@ -443,10 +443,15 @@
   opacity: 0.8;
 }
 
+/* Each wing swings up and down about the body, mirrored. */
 .gull path {
   transform-box: view-box;
   transform-origin: 30px 14px;
   animation: flap 0.9s ease-in-out infinite;
+}
+
+.gull .is-right {
+  animation-name: flap-right;
 }
 
 .gull-flight:nth-child(2) .gull path {
@@ -475,18 +480,25 @@
   }
 }
 
-/* Seen from above, a wingbeat shows as the wings narrowing and the tips
-   pulling in, then opening wide again. A glide now and then between beats. */
+/* A wingbeat: both wings lift together and sweep back down, each turning
+   about the shoulder. The right wing runs the same beat mirrored. */
 @keyframes flap {
   0%,
   100% {
-    scale: 1 1;
+    rotate: -14deg;
   }
-  30% {
-    scale: 0.82 0.45;
+  50% {
+    rotate: 22deg;
   }
-  60% {
-    scale: 1 1.1;
+}
+
+@keyframes flap-right {
+  0%,
+  100% {
+    rotate: 14deg;
+  }
+  50% {
+    rotate: -22deg;
   }
 }
 
