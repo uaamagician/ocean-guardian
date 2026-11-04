@@ -27,12 +27,14 @@ import shellImg from "../assets/life/shell.webp";
 import starfishImg from "../assets/life/starfish.webp";
 import "./Life.css";
 
-// Clicking an animal startles it: a swimmer turns and darts back the way it
-// came in a puff of bubbles, the crab scuttles back, a gull hurries on; then
-// each settles and carries on. The animals sit behind the section's text, so
-// a click is matched to one by where it landed rather than what it hit. One
-// swimming behind a card or panel can't be seen there, so isn't clicked.
-function useStartle(selector, { rate = -6, turn = true, bubbles = true, pad = 0, behind = false } = {}) {
+// Clicking an animal startles it: a swimmer turns, darts back the way it came
+// in a puff of bubbles, turns again and catches up with its route; a gull
+// hurries on. The route itself never stops or reverses, the dart is laid on
+// top of it, so clicking again and again never makes one jump. The swimmers
+// sit behind the section's text, so a click is matched to one by where it
+// landed rather than what it hit; one behind a card or panel can't be seen
+// there, so isn't clicked.
+function useStartle(selector, { flee = true, bubbles = true, pad = 0, behind = false } = {}) {
   const ref = useRef(null);
   useEffect(() => {
     const box = ref.current;
@@ -82,19 +84,41 @@ function useStartle(selector, { rate = -6, turn = true, bubbles = true, pad = 0,
           .finished.then(() => dot.remove(), () => dot.remove());
       }
     };
+    // Fins, flippers and wings beat faster for a while; the route (the
+    // element's own animation) keeps its pace unless the animal hurries on.
+    const hurry = (el, ms) => {
+      const own = el.getAnimations();
+      const limbs = el.getAnimations({ subtree: true }).filter((a) => !own.includes(a));
+      for (const a of flee ? limbs : [...limbs, ...own]) a.updatePlaybackRate(flee ? 2.5 : 3.5);
+      clearTimeout(el.calmTimer);
+      el.calmTimer = setTimeout(() => {
+        for (const a of el.getAnimations({ subtree: true })) a.updatePlaybackRate(1);
+      }, ms);
+    };
     const startle = (el) => {
-      const swim = el.getAnimations()[0];
-      if (!swim || el.classList.contains("is-startled")) return;
-      el.classList.add("is-startled");
-      if (turn) el.classList.add("is-turned");
       if (bubbles) puff(el);
-      swim.playbackRate = rate;
-      setTimeout(() => {
-        el.classList.remove("is-turned");
-        swim.playbackRate = 1;
-        swim.play();
-        setTimeout(() => el.classList.remove("is-startled"), 300);
-      }, 1300);
+      if (!flee) {
+        hurry(el, 1300);
+        return;
+      }
+      hurry(el, 1800);
+      // Start from wherever an earlier dart has got to, even mid-turn.
+      const transform = getComputedStyle(el).transform;
+      const now = new DOMMatrixReadOnly(transform === "none" ? undefined : transform);
+      const at = now.m41;
+      const dir = Number(el.dataset.dir) || 1;
+      const back = Math.max(-420, Math.min(420, at - dir * 170));
+      el.dart?.cancel();
+      el.dart = el.animate(
+        [
+          { transform: `translateX(${at}px) scaleX(${now.a})`, easing: "ease-in-out" },
+          { transform: `translateX(${at}px) scaleX(-1)`, offset: 0.1, easing: "cubic-bezier(0.2, 0, 0.3, 1)" },
+          { transform: `translateX(${back}px) scaleX(-1)`, offset: 0.42, easing: "ease-in-out" },
+          { transform: `translateX(${back}px) scaleX(1)`, offset: 0.54, easing: "ease-in-out" },
+          { transform: "translateX(0) scaleX(1)" },
+        ],
+        { duration: 3400 },
+      );
     };
     let frame = 0;
     const onMove = (e) => {
@@ -115,7 +139,7 @@ function useStartle(selector, { rate = -6, turn = true, bubbles = true, pad = 0,
       section.removeEventListener("pointermove", onMove);
       section.removeEventListener("click", onClick);
     };
-  }, [selector, rate, turn, bubbles, pad, behind]);
+  }, [selector, flee, bubbles, pad, behind]);
   return ref;
 }
 
@@ -186,12 +210,12 @@ export function SeaLife({ fish = ["blue", "pink"], turtle = true }) {
   return (
     <div ref={ref} className="sea-life" aria-hidden="true">
       {turtle && (
-        <div className="turtle-path">
+        <div className="turtle-path" data-dir="1">
           <Turtle />
         </div>
       )}
       {fish.map((colour, i) => (
-        <div key={colour} className={`fish-path fish-path-${i + 1}`}>
+        <div key={colour} className={`fish-path fish-path-${i + 1}`} data-dir={i === 0 ? 1 : -1}>
           <Fish colour={colour} />
         </div>
       ))}
@@ -212,12 +236,105 @@ export function SeaLife({ fish = ["blue", "pink"], turtle = true }) {
   );
 }
 
-// A crab that scuttles sideways along the bottom of a sand section now and then.
+const rand = (min, max) => min + Math.random() * (max - min);
+
+// A crab that wanders along the bottom of a sand section the way crabs do:
+// a quick sideways dash, a stop to look around, now and then a change of
+// mind, and off one side for a while before it comes back. Clicking it sends
+// it dashing away from the pointer.
 export function Crab() {
-  const ref = useStartle(".crab-path", { rate: -5, turn: false, bubbles: false, pad: 8 });
+  const laneRef = useRef(null);
+  const fleeRef = useRef(null);
+  useEffect(() => {
+    const lane = laneRef.current;
+    const crab = lane?.firstElementChild;
+    if (!crab || matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+    const OFF_LEFT = -90;
+    const offRight = () => lane.clientWidth + 20;
+    let x = OFF_LEFT;
+    let dir = 1;
+    let flee = 0;
+    let move = null;
+    let wake = null;
+    let stopped = false;
+    let first = true;
+
+    const place = (to) => {
+      x = to;
+      crab.style.translate = `${to}px 0`;
+    };
+    const nap = (ms) =>
+      new Promise((resolve) => {
+        const timer = setTimeout(resolve, ms);
+        wake = () => {
+          clearTimeout(timer);
+          resolve();
+        };
+      });
+    const dash = (to, speed, fast = false) => {
+      const from = x;
+      crab.classList.add("is-walking");
+      crab.classList.toggle("is-fleeing", fast);
+      move = crab.animate([{ translate: `${from}px 0` }, { translate: `${to}px 0` }], {
+        duration: (Math.abs(to - from) / speed) * 1000,
+        easing: fast ? "cubic-bezier(0.2, 0, 0.3, 1)" : "cubic-bezier(0.45, 0, 0.4, 1)",
+      });
+      return move.finished.then(
+        () => place(to),
+        () => {}, // cut short by a click, which has already placed it
+      ).finally(() => {
+        move = null;
+        crab.classList.remove("is-walking", "is-fleeing");
+      });
+    };
+    const clamp = (to) => Math.min(offRight(), Math.max(OFF_LEFT, to));
+
+    fleeRef.current = (clientX) => {
+      const box = crab.getBoundingClientRect();
+      flee = clientX < box.left + box.width / 2 ? 1 : -1;
+      if (move) {
+        place(parseFloat(getComputedStyle(crab).translate) || 0);
+        move.cancel();
+      }
+      wake?.();
+    };
+
+    place(OFF_LEFT);
+    (async () => {
+      await nap(3000);
+      while (!stopped) {
+        if (flee) {
+          dir = flee;
+          flee = 0;
+          await dash(clamp(x + dir * rand(220, 320)), 520, true);
+          if (!flee) await nap(rand(1500, 2500));
+          continue;
+        }
+        if (x <= OFF_LEFT || x >= offRight()) {
+          // Off one side: stay away a while, then come in from either side.
+          if (!first) await nap(rand(5000, 10000));
+          first = false;
+          if (flee) continue;
+          dir = Math.random() < 0.5 ? 1 : -1;
+          place(dir > 0 ? OFF_LEFT : offRight());
+        }
+        await dash(clamp(x + dir * rand(90, 260)), rand(130, 210));
+        if (flee || stopped) continue;
+        await nap(rand(700, 2400));
+        // Changes its mind now and then, but only once it's well out on the sand.
+        const middle = x > lane.clientWidth * 0.25 && x < lane.clientWidth * 0.75;
+        if (middle && Math.random() < 0.25) dir = -dir;
+      }
+    })();
+    return () => {
+      stopped = true;
+      move?.cancel();
+      wake?.();
+    };
+  }, []);
   return (
-    <div ref={ref} className="crab-lane" aria-hidden="true">
-      <div className="crab-path">
+    <div ref={laneRef} className="crab-lane" aria-hidden="true">
+      <div className="crab-path" onClick={(e) => fleeRef.current?.(e.clientX)}>
         <Layers
           className="crab"
           ratio="393 / 335"
@@ -265,7 +382,7 @@ const GULLS = [
 
 // Gulls flying over the beach, seen from above, flapping as they go.
 export function Gulls() {
-  const ref = useStartle(".gull-flight", { rate: 4, turn: false, bubbles: false, pad: 14 });
+  const ref = useStartle(".gull-flight", { flee: false, bubbles: false, pad: 14 });
   return (
     <div ref={ref} className="gulls" aria-hidden="true">
       {GULLS.map((g) => (

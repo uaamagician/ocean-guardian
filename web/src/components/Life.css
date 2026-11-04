@@ -293,26 +293,38 @@
   z-index: 2;
 }
 
+/* Moved by Crab() in Life.jsx. It sits above the section's content, so it
+   takes its own clicks. */
 .crab-path {
   position: absolute;
   bottom: 12px;
   left: 0;
-  animation: crab-walk 26s linear infinite;
-  animation-delay: 3s;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .crab {
   width: 74px;
 }
 
-/* Legs on each side take turns, a quick scuttle; it only stops while the
-   crab stops to look around. */
+/* Legs on each side take turns, a quick scuttle, only while it moves; they
+   go quicker still when it runs from a click. */
 .crab .part-legs-left {
-  animation: scuttle 0.36s ease-in-out infinite;
+  animation: scuttle 0.36s ease-in-out infinite paused;
 }
 
 .crab .part-legs-right {
-  animation: scuttle 0.36s ease-in-out infinite reverse;
+  animation: scuttle 0.36s ease-in-out infinite reverse paused;
+}
+
+.crab-path.is-walking .part-legs-left,
+.crab-path.is-walking .part-legs-right {
+  animation-play-state: running;
+}
+
+.crab-path.is-fleeing .part-legs-left,
+.crab-path.is-fleeing .part-legs-right {
+  animation-duration: 0.18s;
 }
 
 /* Claws held up, opening and closing in turn. */
@@ -360,26 +372,6 @@
   }
   80% {
     rotate: -4deg;
-  }
-}
-
-/* Out along the sand, a pause to look around, then off the other side. The
-   long gap at the end keeps it an occasional visitor. */
-@keyframes crab-walk {
-  0% {
-    translate: -90px 0;
-  }
-  22% {
-    translate: 38vw 0;
-  }
-  30% {
-    translate: 38vw 0;
-  }
-  55% {
-    translate: calc(100vw + 20px) 0;
-  }
-  100% {
-    translate: calc(100vw + 20px) 0;
   }
 }
 
@@ -517,36 +509,6 @@
 }
 
 /* ---------- Startled by a click (useStartle in Life.jsx) ---------- */
-
-/* A swimmer turns about on the spot before it darts back. */
-.turtle-path,
-.fish-path {
-  transition: scale 0.3s ease;
-}
-
-.turtle-path.is-turned,
-.fish-path.is-turned {
-  scale: -1 1;
-}
-
-/* Kicking hard while it flees. */
-.is-startled .turtle,
-.is-startled .turtle .part {
-  animation-duration: 0.9s;
-}
-
-.is-startled .fish .part-tail {
-  animation-duration: 0.22s;
-}
-
-.crab-path.is-startled .crab .part-legs-left,
-.crab-path.is-startled .crab .part-legs-right {
-  animation-duration: 0.16s;
-}
-
-.gull-flight.is-startled .gull path {
-  animation-duration: 0.32s;
-}
 
 .startle-bubble {
   position: absolute;
