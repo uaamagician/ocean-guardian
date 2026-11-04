@@ -515,3 +515,43 @@
     animation: none;
   }
 }
+
+/* ---------- Startled by a click (useStartle in Life.jsx) ---------- */
+
+/* A swimmer turns about on the spot before it darts back. */
+.turtle-path,
+.fish-path {
+  transition: scale 0.3s ease;
+}
+
+.turtle-path.is-turned,
+.fish-path.is-turned {
+  scale: -1 1;
+}
+
+/* Kicking hard while it flees. */
+.is-startled .turtle,
+.is-startled .turtle .part {
+  animation-duration: 0.9s;
+}
+
+.is-startled .fish .part-tail {
+  animation-duration: 0.22s;
+}
+
+.crab-path.is-startled .crab .part-legs-left,
+.crab-path.is-startled .crab .part-legs-right {
+  animation-duration: 0.16s;
+}
+
+.gull-flight.is-startled .gull path {
+  animation-duration: 0.32s;
+}
+
+.startle-bubble {
+  position: absolute;
+  border: 1.5px solid rgba(29, 42, 50, 0.35);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.9) 0 18%, rgba(255, 255, 255, 0.25) 40%);
+  pointer-events: none;
+}

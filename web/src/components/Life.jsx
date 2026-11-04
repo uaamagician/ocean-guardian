@@ -4,6 +4,7 @@
 // pictures (art/creatures), cut apart by scripts/split-creatures.py so their
 // flippers, claws, legs and tails can move. All decorative: hidden from screen
 // readers and stilled for reduced motion (see Life.css).
+import { useEffect, useRef } from "react";
 import turtleBody from "../assets/life/turtle-body.webp";
 import turtleFrontLeft from "../assets/life/turtle-front-left.webp";
 import turtleFrontRight from "../assets/life/turtle-front-right.webp";
@@ -25,6 +26,98 @@ import sunRays from "../assets/life/sun-rays.webp";
 import shellImg from "../assets/life/shell.webp";
 import starfishImg from "../assets/life/starfish.webp";
 import "./Life.css";
+
+// Clicking an animal startles it: a swimmer turns and darts back the way it
+// came in a puff of bubbles, the crab scuttles back, a gull hurries on; then
+// each settles and carries on. The animals sit behind the section's text, so
+// a click is matched to one by where it landed rather than what it hit. One
+// swimming behind a card or panel can't be seen there, so isn't clicked.
+function useStartle(selector, { rate = -6, turn = true, bubbles = true, pad = 0, behind = false } = {}) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const box = ref.current;
+    const section = box?.parentElement;
+    if (!section) return undefined;
+    // Cards here often paint their face on ::before.
+    const opaque = (style) => style.backgroundColor !== "rgba(0, 0, 0, 0)" || style.backgroundImage !== "none";
+    const hidden = (node) => {
+      for (let n = node; n && n !== section; n = n.parentElement) {
+        if (opaque(getComputedStyle(n)) || opaque(getComputedStyle(n, "::before"))) return true;
+      }
+      return false;
+    };
+    const under = (e) => {
+      if (e.target.closest("a, button, input, select, textarea, label")) return null;
+      if (behind && hidden(e.target)) return null;
+      for (const el of box.querySelectorAll(selector)) {
+        const r = el.firstElementChild.getBoundingClientRect();
+        if (e.clientX >= r.left - pad && e.clientX <= r.right + pad && e.clientY >= r.top - pad && e.clientY <= r.bottom + pad) {
+          return el;
+        }
+      }
+      return null;
+    };
+    const puff = (el) => {
+      const r = el.firstElementChild.getBoundingClientRect();
+      const b = box.getBoundingClientRect();
+      for (let i = 0; i < 5; i += 1) {
+        const dot = document.createElement("span");
+        const size = 4 + Math.random() * 7;
+        dot.className = "startle-bubble";
+        Object.assign(dot.style, {
+          left: `${r.left - b.left + r.width * (0.3 + Math.random() * 0.4)}px`,
+          top: `${r.top - b.top + r.height * (0.3 + Math.random() * 0.4)}px`,
+          width: `${size}px`,
+          height: `${size}px`,
+        });
+        box.append(dot);
+        dot
+          .animate(
+            [
+              { translate: "0 0", opacity: 0.9 },
+              { translate: `${(Math.random() - 0.5) * 24}px ${-50 - Math.random() * 50}px`, opacity: 0 },
+            ],
+            { duration: 900 + i * 160, easing: "ease-out" },
+          )
+          .finished.then(() => dot.remove(), () => dot.remove());
+      }
+    };
+    const startle = (el) => {
+      const swim = el.getAnimations()[0];
+      if (!swim || el.classList.contains("is-startled")) return;
+      el.classList.add("is-startled");
+      if (turn) el.classList.add("is-turned");
+      if (bubbles) puff(el);
+      swim.playbackRate = rate;
+      setTimeout(() => {
+        el.classList.remove("is-turned");
+        swim.playbackRate = 1;
+        swim.play();
+        setTimeout(() => el.classList.remove("is-startled"), 300);
+      }, 1300);
+    };
+    let frame = 0;
+    const onMove = (e) => {
+      if (e.pointerType !== "mouse" || frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        section.style.cursor = under(e) ? "pointer" : "";
+      });
+    };
+    const onClick = (e) => {
+      const el = under(e);
+      if (el) startle(el);
+    };
+    section.addEventListener("pointermove", onMove);
+    section.addEventListener("click", onClick);
+    return () => {
+      cancelAnimationFrame(frame);
+      section.removeEventListener("pointermove", onMove);
+      section.removeEventListener("click", onClick);
+    };
+  }, [selector, rate, turn, bubbles, pad, behind]);
+  return ref;
+}
 
 // One picture made of stacked layers on the same canvas. Each moving part
 // turns about its pivot: where it joins the body, as % of the canvas.
@@ -89,8 +182,9 @@ const BUBBLES = [
 // A turtle crossing the water, a fish or two and bubbles rising, behind a
 // section's content. Place it as the section's first child, before .band-inner.
 export function SeaLife({ fish = ["blue", "pink"], turtle = true }) {
+  const ref = useStartle(".turtle-path, .fish-path", { behind: true });
   return (
-    <div className="sea-life" aria-hidden="true">
+    <div ref={ref} className="sea-life" aria-hidden="true">
       {turtle && (
         <div className="turtle-path">
           <Turtle />
@@ -120,8 +214,9 @@ export function SeaLife({ fish = ["blue", "pink"], turtle = true }) {
 
 // A crab that scuttles sideways along the bottom of a sand section now and then.
 export function Crab() {
+  const ref = useStartle(".crab-path", { rate: -5, turn: false, bubbles: false, pad: 8 });
   return (
-    <div className="crab-lane" aria-hidden="true">
+    <div ref={ref} className="crab-lane" aria-hidden="true">
       <div className="crab-path">
         <Layers
           className="crab"
@@ -170,8 +265,9 @@ const GULLS = [
 
 // Gulls flying over the beach, seen from above, flapping as they go.
 export function Gulls() {
+  const ref = useStartle(".gull-flight", { rate: 4, turn: false, bubbles: false, pad: 14 });
   return (
-    <div className="gulls" aria-hidden="true">
+    <div ref={ref} className="gulls" aria-hidden="true">
       {GULLS.map((g) => (
         <span
           key={g.top}
