@@ -33,6 +33,16 @@ export const COMMONS_REPORTS = {
   "Js0Sq8D9T3U6MvbeUH0a": { country: "United Kingdom", artist: "Nigel Mykura", license: "CC BY-SA 2.0", page: "https://commons.wikimedia.org/wiki/File:Chesil_Beach_-_geograph.org.uk_-_1286329.jpg" },
   "L7epyBm30A2v4NpuHFLw": { country: "Yemen", artist: "Gerry & Bonni", license: "CC BY 2.0", page: "https://commons.wikimedia.org/wiki/File:Trash_on_beach_(6408224371).jpg" },
   "4qev2fAZqKJhIpXP2xH8": { country: "United Kingdom", artist: "Jeremy Bolwell", license: "CC BY-SA 2.0", page: "https://commons.wikimedia.org/wiki/File:Trash_stash_on_Oxwich_Bay_sands_-_geograph.org.uk_-_2417043.jpg" },
+  "YzUpP067NJoHda99Qajg": { country: "United States", artist: "Justin Dolske from Cupertino, USA", license: "CC BY-SA 2.0", page: "https://commons.wikimedia.org/wiki/File:Beach_trash_(30870156434).jpg" },
+  "1yzqT925VJyRCLP1zCNz": { country: "United States", artist: "Visviva", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Plastic_drum_buried_in_beach_sand_Lake_Street.jpg" },
+  "MJTzhodm532vp5WItmYt": { country: "United States", artist: "National Marine Sanctuaries", license: "Public domain", page: "https://commons.wikimedia.org/wiki/File:GFNMS_-_Ocean_Beach_Marine_Debris_(27626283113).jpg" },
+  "OUrJtDzkKoGT27IuRLoY": { country: "United States", artist: "Kevin Krejci from Near the Pacific Ocean, USA", license: "CC BY 2.0", page: "https://commons.wikimedia.org/wiki/File:Plastic_Ocean_(4408273247).jpg" },
+  "HiznWAy5EFRAca8eepT7": { country: "United States", artist: "dronepicr", license: "CC BY 2.0", page: "https://commons.wikimedia.org/wiki/File:Garbage_Black_sand_beach_Maui_Hawaii_Road_to_Hana_(45690820912).jpg" },
+  "9QS15R7l3TsfMqertQKd": { country: "United States", artist: "Jim.henderson", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Bottle_Beach,_Dead_Horse_Bay_jeh.jpg" },
+  "WJaib31IXWGRHyqRVXxn": { country: "United States", artist: "Visviva", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Aluminum_can_shredded_by_Lake_MIchigan.jpg" },
+  "ISg60IJrgGRlAygPyROW": { country: "United States", artist: "Visviva", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Physical_weathering_styrofoam_cup_Lake_MIchigan.jpg" },
+  "1cPmXr4dodbikovTeogk": { country: "United States", artist: "Visviva", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Weathered_Pepsi_can_1987-2020.jpg" },
+  "MtfDB7t2FTgJSNjEChMt": { country: "United States", artist: "Visviva", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Balloon_ribbons_in_sand_Lake_Street.jpg" },
 };
 
 export const commonsCredit = (report) => (report ? COMMONS_REPORTS[report.id] ?? null : null);
