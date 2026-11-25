@@ -14,6 +14,7 @@ import { MIN_REPORTS_FOR_PLAN, planInputs, topItems, usePlanIds, usePlanRequest,
 import "./Home.css";
 import "./ActionPage.css";
 import "./Events.css";
+import { useEventStart } from "../lib/beachTime";
 
 const SEVERITY_RANK = { heavy: 4, moderate: 3, light: 2, clean: 1 };
 const PAGE = 12;
@@ -59,7 +60,7 @@ function EventRow({ event, reports }) {
   const signups = useSignups(event.id);
   const joined = headcount(signups);
   const left = Math.max(0, event.capacity - joined);
-  const start = event.startsAt.toDate();
+  const { start, tz } = useEventStart(event);
   const evidence = planInputs(reports, event.location);
   const found = topItems(evidence, 3);
   return (
@@ -75,7 +76,7 @@ function EventRow({ event, reports }) {
         <span className="cl-meta">
           <span>
             <Clock aria-hidden="true" />
-            {start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}, {event.durationHours} h
+            {start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}{tz && ` ${tz}`}, {event.durationHours} h
           </span>
           <span>
             <MapPin aria-hidden="true" />

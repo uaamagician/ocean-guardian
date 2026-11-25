@@ -2,11 +2,12 @@ import { Link } from "react-router";
 import { CalendarDays, ChevronRight } from "lucide-react";
 import { ORGANIZER_TYPES, headcount, resultLine, useSignups } from "../lib/events";
 import { organizerLabel } from "../lib/english";
+import { useEventStart } from "../lib/beachTime";
 
 export default function EventCard({ event, showBeach = true }) {
   const signups = useSignups(event.id);
   const joined = headcount(signups);
-  const start = event.startsAt.toDate();
+  const { start, tz } = useEventStart(event);
   return (
     <Link to={`/events/${event.id}`} className="event-card" viewTransition>
       <div className="event-card-date" aria-hidden="true">
@@ -18,6 +19,7 @@ export default function EventCard({ event, showBeach = true }) {
         <span className="report-meta">
           <CalendarDays aria-hidden="true" />
           {start.toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit" })}
+          {tz && ` ${tz}`}
           {showBeach && `, ${event.beachName}`}
         </span>
         <span className="report-meta">

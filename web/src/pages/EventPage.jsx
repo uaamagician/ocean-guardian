@@ -30,6 +30,7 @@ import {
   useSignups,
 } from "../lib/events";
 import "./Events.css";
+import { useZone, wallClock, zoneLabel } from "../lib/beachTime";
 
 // The join card sticks beside the work order. When it's taller than the screen
 // (its options open), a fixed top would hide its bottom until the page ends, so
@@ -151,6 +152,7 @@ export default function EventPage() {
   const [editingResults, setEditingResults] = useState(false);
   // Read once per visit; whether the cleanup has started doesn't need a live clock.
   const [now] = useState(() => Date.now());
+  const zone = useZone(event?.location);
 
   if (event === undefined) {
     return (
@@ -176,7 +178,8 @@ export default function EventPage() {
   const cancelled = event.status === "cancelled";
   const mySignup = signups?.find((s) => s.id === uid);
   const full = joined >= event.capacity;
-  const start = event.startsAt.toDate();
+  const start = wallClock(event.startsAt.toDate(), zone);
+  const tz = zoneLabel(event.startsAt.toDate(), zone);
   // The photos the AI plan was made from.
   const evidence = planInputs(reports, event.location);
 
@@ -200,7 +203,7 @@ export default function EventPage() {
             <p className="event-meta">
               <span>
                 <CalendarDays aria-hidden="true" />
-                {start.toLocaleString("en-US", { weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                {start.toLocaleString("en-US", { weekday: "long", month: "long", day: "numeric", hour: "numeric", minute: "2-digit" })}{tz && ` ${tz}`}
               </span>
               <span>
                 <MapPin aria-hidden="true" />

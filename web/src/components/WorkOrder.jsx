@@ -5,11 +5,12 @@ import { TOOL_BY_ID } from "../lib/guide";
 import { describeUv, describeWeather, fetchDayOutlook, localClock } from "../lib/ocean";
 import { headcount, kidCount, kidsIn } from "../lib/events";
 import { Level } from "./ReportDetail";
+import { useEventStart } from "../lib/beachTime";
 
 const span = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
 
 function useDayOutlook(event) {
-  const date = event.startsAt.toDate().toLocaleDateString("en-CA");
+  const date = useEventStart(event).start.toLocaleDateString("en-CA");
   const key = `${event.location.lat},${event.location.lng},${date}`;
   const [state, setState] = useState({ key: null, value: undefined });
   useEffect(() => {
@@ -83,7 +84,7 @@ export default function WorkOrder({ event, signups }) {
   const kids = kidsIn(signups);
   const target = Math.min(event.capacity, wo.volunteers.max);
   const pledged = (tool) => (signups ?? []).filter((s) => s.bringing.includes(tool)).length;
-  const start = event.startsAt.toDate();
+  const { start, tz } = useEventStart(event);
 
   return (
     <section className="wo" aria-labelledby="wo-title">
@@ -103,7 +104,7 @@ export default function WorkOrder({ event, signups }) {
           <dt>When</dt>
           <dd>
             {start.toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
-            , {event.durationHours} h
+            {tz && ` ${tz}`}, {event.durationHours} h
           </dd>
         </div>
         <div>

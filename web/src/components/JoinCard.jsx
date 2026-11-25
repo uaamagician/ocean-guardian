@@ -5,13 +5,14 @@ import { planInputs } from "../lib/cleanup";
 import { AiSaw, Snapshots } from "./Snapshots";
 // The tile styles live with the Cleanups page, where they started.
 import "../pages/ActionPage.css";
+import { useEventStart } from "../lib/beachTime";
 
 // An upcoming cleanup as a card: the beach's latest photo, the date, what the
 // AI saw there, and how many spots are left.
 export default function JoinCard({ event, reports }) {
   const signups = useSignups(event.id);
   const joined = headcount(signups);
-  const start = event.startsAt.toDate();
+  const { start, tz } = useEventStart(event);
   const left = Math.max(0, event.capacity - joined);
   const evidence = planInputs(reports, event.location);
   return (
@@ -26,7 +27,7 @@ export default function JoinCard({ event, reports }) {
       <div className="join-tile-body">
         <strong className="join-tile-title">{event.title}</strong>
         <span className="report-meta">
-          {start.toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit" })}, {event.beachName}
+          {start.toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit" })}{tz && ` ${tz}`}, {event.beachName}
         </span>
         <span className="report-meta">
           {organizerLabel(event.organizer, ORGANIZER_TYPES)}

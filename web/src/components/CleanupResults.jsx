@@ -7,6 +7,7 @@ import { headcount, resultLine, saveResults } from "../lib/events";
 import { ENGLISH_ONLY, hasCjk } from "../lib/english";
 import { Snapshots } from "./Snapshots";
 import FadeImg from "./FadeImg";
+import { useEventStart } from "../lib/beachTime";
 
 const MAX_PHOTOS = 4;
 const looksLikeEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
@@ -232,7 +233,7 @@ export function ResultsForm({ event, signups, onDone }) {
 export function ThankVolunteers({ event, contacts }) {
   const emails = Object.values(contacts ?? {}).filter(looksLikeEmail);
   const link = `${window.location.origin}/events/${event.id}`;
-  const date = event.startsAt.toDate().toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  const date = useEventStart(event).start.toLocaleDateString("en-US", { month: "long", day: "numeric" });
   const subject = `Thank you for cleaning ${event.beachName}`;
   const body = [
     "Hi everyone,",

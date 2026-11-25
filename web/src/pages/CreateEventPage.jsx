@@ -13,6 +13,7 @@ import { ENGLISH_ONLY, englishName, hasCjk } from "../lib/english";
 import SignInGate from "../components/SignInGate";
 import { isInTaiwan } from "../lib/regions";
 import { LEAD_DAYS } from "../components/TaiwanRegistration";
+import { fromWallClock, useZone, zoneLabel } from "../lib/beachTime";
 import "./Events.css";
 
 const span = ({ min, max }) => (min === max ? `${min}` : `${min} to ${max}`);
@@ -54,7 +55,10 @@ function EventForm({ beach, record, user }) {
   const [error, setError] = useState("");
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  const startsAt = new Date(`${form.date}T${form.time}`);
+  // The date and time are the beach's, wherever the organizer is.
+  const zone = useZone(beach);
+  const startsAt = fromWallClock(form.date, form.time, zone);
+  const tz = zoneLabel(startsAt, zone);
   const inFuture = startsAt.getTime() > now + 60_000;
   const notEnglish = [form.title, form.meetingPoint, form.organizerName, form.description].some(hasCjk);
   const valid =
@@ -108,6 +112,11 @@ function EventForm({ beach, record, user }) {
             <input type="number" min={0.5} max={12} step={0.5} value={form.durationHours} onChange={set("durationHours")} />
           </label>
         </div>
+        {tz && (
+          <p className="report-meta">
+            Local time at {beach.name} ({tz}).
+          </p>
+        )}
         {!inFuture && <p className="error-text">Pick a date and time in the future.</p>}
         {isInTaiwan(beach.lat, beach.lng) && (
           <p className="tw-note">

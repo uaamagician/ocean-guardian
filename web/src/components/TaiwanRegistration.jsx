@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Check, Copy, ExternalLink } from "lucide-react";
 import { englishName } from "../lib/english";
 import { headcount } from "../lib/events";
+import { useEventStart } from "../lib/beachTime";
 
 export const PLATFORM_URL = "https://ecolife2.moenv.gov.tw/Coastal/SeaApply/SeaCleanupApply";
 // Local environmental bureaus ask for cleanups to be registered this far ahead,
@@ -106,11 +107,13 @@ export default function TaiwanRegistration({ event, signups, user }) {
   const [saved, update] = useSaved(event.id);
   // Read once per visit, like the rest of the event page.
   const [now] = useState(() => Date.now());
-  const start = event.startsAt.toDate();
+  // The form wants the beach's clock; the deadline and "started" go by the real time.
+  const { start } = useEventStart(event);
+  const real = event.startsAt.toMillis();
   const end = new Date(start.getTime() + event.durationHours * 3600e3);
-  const due = new Date(start.getTime() - LEAD_DAYS * 86400e3);
+  const due = new Date(real - LEAD_DAYS * 86400e3);
   const late = now > due.getTime();
-  const started = now >= start.getTime();
+  const started = now >= real;
   const coords = `${event.location.lat.toFixed(5)}, ${event.location.lng.toFixed(5)}`;
   const contactName = saved.name ?? englishName(user);
   const pickup = saved.pickup ?? event.meetingPoint ?? "";

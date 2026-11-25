@@ -6,6 +6,7 @@ import { isGoogleUser, useUser } from "../lib/auth";
 import { englishName, isEnglish } from "../lib/english";
 import { resultLine, useEvent, useSignups } from "../lib/events";
 import "./CertificatePage.css";
+import { useEventStart } from "../lib/beachTime";
 
 // A wave drawn by hand, for the certificate's top and bottom edges.
 function WaveRule() {
@@ -17,7 +18,7 @@ function WaveRule() {
 }
 
 function Sheet({ event, name, organizing }) {
-  const date = event.startsAt.toDate().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  const date = useEventStart(event).start.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   const r = event.results;
   return (
     <article className="cert" aria-label="Certificate">
