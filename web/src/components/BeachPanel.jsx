@@ -364,7 +364,7 @@ export default function BeachPanel({ beach, reports, allReports, focusReportId, 
         {tab === "about" && <About beach={beach} />}
       </div>
       <div className="bp-footer">
-        <Link to="/report" className="btn btn-primary">
+        <Link to={`/report?b=${encodeURIComponent(beach.id)}`} className="btn btn-primary">
           Report this beach
         </Link>
       </div>

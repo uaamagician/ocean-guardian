@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { BEACH_RADIUS_KM, findNearby, useAllBeaches } from "../lib/beaches";
 import { Camera, Images } from "lucide-react";
 import { doc, onSnapshot } from "firebase/firestore";
@@ -11,14 +11,20 @@ import LocationPicker from "../components/LocationPicker";
 import { readPhotoExif } from "../lib/photoExif";
 import "./ReportPage.css";
 
-function useGeoPosition() {
-  const [state, setState] = useState({ status: "locating" });
+// Asks for the device's location on arrival, unless `wait` (then only once
+// relocate() is called).
+function useGeoPosition(wait) {
+  const [state, setState] = useState({ status: wait ? "idle" : "locating" });
   const request = useCallback(() => {
     getPosition()
       .then((value) => setState({ status: "ok", value }))
       .catch((error) => setState({ status: "error", message: error.message }));
   }, []);
-  useEffect(request, [request]);
+  useEffect(() => {
+    if (!wait) request();
+    // Only on arrival.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const relocate = useCallback(() => {
     setState({ status: "locating" });
     request();
@@ -143,9 +149,14 @@ export default function ReportPage() {
   const [photos, setPhotos] = useState([]);
   const [photoBusy, setPhotoBusy] = useState(false);
   const [photoError, setPhotoError] = useState("");
-  const [location, relocate] = useGeoPosition();
-  const [choice, setChoice] = useState(null);
+  // Coming from a beach on the map, the report starts at that beach, so
+  // there's no need to locate the device.
+  const [params] = useSearchParams();
+  const fromBeachId = params.get("b");
+  const [location, relocate] = useGeoPosition(Boolean(fromBeachId));
+  const [choice, setChoice] = useState(fromBeachId ? "map" : null);
   const [pinned, setPinned] = useState(null);
+  const [pinnedBeach, setPinnedBeach] = useState(null);
   const [submitting, setSubmitting] = useState(null);
   const [submitError, setSubmitError] = useState("");
   const [reportId, setReportId] = useState(null);
@@ -202,13 +213,28 @@ export default function ReportPage() {
 
   const pin = (ll) => {
     setPinned({ lat: ll.lat, lng: ll.lng });
+    setPinnedBeach(null);
     setChoice("map");
+  };
+  const choose = (next) => {
+    setChoice(next);
+    if (next === "here" && location.status === "idle") relocate();
   };
 
   // Reports belong to a beach. A spot far from every beach on the map is
   // usually a pin left at home, so it can't be sent until it's moved, or the
   // beach is added to the map first. (The server checks this too.)
   const { beaches: allBeaches } = useAllBeaches();
+  // Pin the beach the reporter came from once the beach list is in, once:
+  // the list refreshes, and a pin the reporter has moved should stay put.
+  const startBeach = fromBeachId && allBeaches ? allBeaches.find((b) => b.id === fromBeachId) : null;
+  const startPinned = useRef(false);
+  useEffect(() => {
+    if (!startBeach || startPinned.current) return;
+    startPinned.current = true;
+    setPinned({ lat: startBeach.lat, lng: startBeach.lng });
+    setPinnedBeach(startBeach.name);
+  }, [startBeach]);
   const nearest = useMemo(() => (spot && allBeaches ? findNearby(allBeaches, spot, Infinity) : null), [spot, allBeaches]);
   const farFromBeach = Boolean(nearest && nearest.km > BEACH_RADIUS_KM);
 
@@ -241,9 +267,15 @@ export default function ReportPage() {
     setPhotos([]);
     setPhotoError("");
     setReportId(null);
-    setChoice(null);
-    setPinned(null);
-    relocate();
+    setChoice(fromBeachId ? "map" : null);
+    if (startBeach) {
+      setPinned({ lat: startBeach.lat, lng: startBeach.lng });
+      setPinnedBeach(startBeach.name);
+    } else {
+      setPinned(null);
+      setPinnedBeach(null);
+    }
+    if (!fromBeachId) relocate();
   };
 
   if (reportId) return <Submitted reportId={reportId} onAgain={reset} />;
@@ -296,7 +328,8 @@ export default function ReportPage() {
         }}
         photoSpot={photoSpot}
         photoWithoutSpot={photoWithoutSpot}
-        onChoose={setChoice}
+        placeName={source === "map" ? pinnedBeach : null}
+        onChoose={choose}
         onPin={pin}
       />
 

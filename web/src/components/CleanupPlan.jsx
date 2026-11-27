@@ -138,7 +138,7 @@ export default function CleanupPlan({ beach, allReports }) {
           The AI plans a cleanup from at least {MIN_REPORTS_FOR_PLAN} reports of the same beach. This one needs{" "}
           {missing} more.
         </p>
-        <Link to="/report" className="btn btn-primary" viewTransition>
+        <Link to={`/report?b=${encodeURIComponent(beach.id)}`} className="btn btn-primary" viewTransition>
           Report this beach
         </Link>
       </div>

@@ -230,7 +230,7 @@ function BeachRow({ beach, list, allReports }) {
             {ask.loading ? "Planning…" : "Get AI plan"}
           </button>
         ) : (
-          <Link to="/report" className="btn btn-small" viewTransition>
+          <Link to={`/report?b=${encodeURIComponent(beach.id)}`} className="btn btn-small" viewTransition>
             Add a photo
           </Link>
         )}

@@ -43,6 +43,11 @@ export const COMMONS_REPORTS = {
   "ISg60IJrgGRlAygPyROW": { country: "United States", artist: "Visviva", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Physical_weathering_styrofoam_cup_Lake_MIchigan.jpg" },
   "1cPmXr4dodbikovTeogk": { country: "United States", artist: "Visviva", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Weathered_Pepsi_can_1987-2020.jpg" },
   "MtfDB7t2FTgJSNjEChMt": { country: "United States", artist: "Visviva", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Balloon_ribbons_in_sand_Lake_Street.jpg" },
+  "quOQzNqSwV2vUC1UXjST": { country: "Germany", artist: "Thotti22", license: "CC BY 3.0", page: "https://commons.wikimedia.org/wiki/File:Angeschwemmter_M%C3%BCll_an_der_Emsm%C3%BCndung_bei_Campen_-_panoramio.jpg" },
+  "XlLLEk4iL1w7JKjFYkEa": { country: "Germany", artist: "Thorsten Hartmann", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Treibgut.jpg" },
+  "QUxSxE3QWLa9nU9cTZri": { country: "Germany", artist: "Wikitarisch", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Strandgut_in_Gitterbox_auf_Helgoland_mit_vielf%C3%A4ltigen_Gegenst%C3%A4nden.jpg" },
+  "14FYpqgKXHfrZoDwJsF6": { country: "Germany", artist: "Siegbert Brey", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Strand_Muell_Box.jpg" },
+  "qyXDY6K7tradzeYVwhqT": { country: "Germany", artist: "ProjectDK", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Toothbrush_In_Nature_Reserve.jpg" },
 };
 
 export const commonsCredit = (report) => (report ? COMMONS_REPORTS[report.id] ?? null : null);

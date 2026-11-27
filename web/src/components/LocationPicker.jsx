@@ -50,7 +50,7 @@ const CHOICES = [
 // phone's position is right; a photo from the library may have been taken
 // anywhere, so it can come from the photo's own location data or be placed by
 // hand.
-export default function LocationPicker({ source, spot, gps, onRetry, photoSpot, photoWithoutSpot, onChoose, onPin }) {
+export default function LocationPicker({ source, spot, gps, onRetry, photoSpot, photoWithoutSpot, placeName, onChoose, onPin }) {
   const { beaches } = useBeaches();
   const choices = CHOICES.filter((c) => c.value !== "photo" || photoSpot);
 
@@ -67,7 +67,7 @@ export default function LocationPicker({ source, spot, gps, onRetry, photoSpot, 
         ))}
       </fieldset>
 
-      <WhereStatus source={source} spot={spot} gps={gps} onRetry={onRetry} />
+      <WhereStatus source={source} spot={spot} gps={gps} placeName={placeName} onRetry={onRetry} />
       {source === "here" && photoWithoutSpot && (
         <p className="where-warn">
           The photo you chose has no location saved in it. If it wasn't taken where you are now, pick the spot on the map.
@@ -102,16 +102,18 @@ export default function LocationPicker({ source, spot, gps, onRetry, photoSpot, 
   );
 }
 
-function WhereStatus({ source, spot, gps, onRetry }) {
+function WhereStatus({ source, spot, gps, placeName, onRetry }) {
   if (source === "photo") return <p className="location">Saved in the photo when it was taken. Tap the map to move it.</p>;
   if (source === "map") {
     return (
       <p className="location">
-        {spot ? "Placed by you. Tap the map again to move it." : "Tap the map where the photo was taken, or search for the beach."}
+        {spot
+          ? `${placeName ? `At ${placeName}, the beach you picked on the map.` : "Placed by you."} Tap the map again to move it.`
+          : "Tap the map where the photo was taken, or search for the beach."}
       </p>
     );
   }
-  if (gps.status === "locating") return <p className="location">Finding your location…</p>;
+  if (gps.status === "locating" || gps.status === "idle") return <p className="location">Finding your location…</p>;
   if (gps.status === "error") {
     return (
       <div className="location">
