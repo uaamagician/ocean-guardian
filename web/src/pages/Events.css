@@ -85,12 +85,16 @@
   margin: 0 auto;
   padding: var(--space-6) var(--space-4) var(--space-8);
   display: grid;
+  /* minmax(0, …): Safari sizes a width: 100% photo by its full pixel width
+     when working out how wide the column must be, which pushed the column
+     (and the join card above the photo) past the right edge of an iPhone. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-6);
 }
 
 @media (min-width: 1000px) {
   .event-body {
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: minmax(0, 1fr) 380px;
     align-items: start;
   }
 

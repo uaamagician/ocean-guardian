@@ -1326,6 +1326,9 @@
   overflow: hidden;
   background: var(--sand);
   cursor: pointer;
+  /* Takes its width from the card, never from the photo's own pixel width
+     (Safari otherwise lets a large photo widen the card). */
+  contain: inline-size;
 }
 
 .now-photo img,
