@@ -73,6 +73,9 @@ export default function LocationPicker({ source, spot, gps, onRetry, photoSpot, 
           The photo you chose has no location saved in it. If it wasn't taken where you are now, pick the spot on the map.
         </p>
       )}
+      {source === "map" && photoWithoutSpot && !spot && (
+        <p className="where-warn">The photo you chose has no location saved in it, so show where it was taken.</p>
+      )}
 
       {source === "map" && <MapSearch beaches={beaches} onBeach={onPin} onPlace={onPin} />}
       <MapContainer

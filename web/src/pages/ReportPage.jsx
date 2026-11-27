@@ -186,9 +186,12 @@ export default function ReportPage() {
   };
 
   // Until the reporter picks, a library photo's own location wins over where
-  // they are standing now.
+  // they are standing now. A library photo without one is often sent from
+  // home later, so it starts with no spot at all: the reporter pins it.
   const photoSpot = photos.find((p) => p.spot)?.spot ?? null;
-  const source = choice === "photo" && !photoSpot ? "here" : (choice ?? (photoSpot ? "photo" : "here"));
+  const photoWithoutSpot = !photoSpot && photos.some((p) => p.fromLibrary);
+  const fallback = photoWithoutSpot ? "map" : "here";
+  const source = choice === "photo" && !photoSpot ? fallback : (choice ?? (photoSpot ? "photo" : fallback));
   const spot =
     source === "map" ? pinned : source === "photo" ? photoSpot : location.status === "ok" ? location.value : null;
 
@@ -292,7 +295,7 @@ export default function ReportPage() {
           relocate();
         }}
         photoSpot={photoSpot}
-        photoWithoutSpot={!photoSpot && photos.some((p) => p.fromLibrary)}
+        photoWithoutSpot={photoWithoutSpot}
         onChoose={setChoice}
         onPin={pin}
       />
