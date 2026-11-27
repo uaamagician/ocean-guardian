@@ -83,6 +83,13 @@ export default function ReportDetail({ report, showStatus = false }) {
         </p>
       )}
 
+      {showStatus && report.reviewReason === "inland" && (
+        <p className="report-meta">
+          This report was sent from a spot away from the sea, so it waits for a person to check it before it goes on
+          the map.
+        </p>
+      )}
+
       {showStatus && report.aiError && (
         <p className="report-meta">The AI couldn't analyze this report, so a person will review it.</p>
       )}

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { collection, doc, limit, onSnapshot, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { httpsCallable } from "firebase/functions";
+import { db, functions } from "../firebase";
 import { distanceKm } from "./usePublishedReports";
 import { ensureSignedIn, reportTime } from "./reports";
 import { CATEGORIES } from "./labels";
@@ -143,7 +144,8 @@ function useCommunityBeaches() {
         communityQuery,
         (snap) =>
           setBeaches(
-            snap.docs.map((d) => {
+            // A beach added inland is kept but hidden (see screenBeach in functions).
+            snap.docs.filter((d) => !d.get("hidden")).map((d) => {
               const data = d.data();
               return {
                 id: `${COMMUNITY_PREFIX}${d.id}`,
@@ -190,6 +192,10 @@ export function findNearby(beaches, point, km = 0.3) {
   }
   return best;
 }
+
+// Whether a spot can take a new beach: by the sea, or next to a listed one.
+const checkBeachSpotFn = httpsCallable(functions, "checkBeachSpot");
+export const checkBeachSpot = (point) => checkBeachSpotFn({ lat: point.lat, lng: point.lng }).then((res) => res.data);
 
 export async function addBeach({ name, kind, notes, location }) {
   const user = await ensureSignedIn();

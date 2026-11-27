@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { BEACH_KINDS, addBeach, findNearby } from "../lib/beaches";
+import { useEffect, useState } from "react";
+import { BEACH_KINDS, addBeach, checkBeachSpot, findNearby } from "../lib/beaches";
 import { ENGLISH_ONLY, hasCjk } from "../lib/english";
 
 const NAME_MAX = 80;
@@ -12,9 +12,26 @@ export default function AddBeachForm({ point, beaches, onAdded, onOpenBeach, onC
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // Beaches on the map are by the sea; a spot inland is turned away here
+  // (the server hides one that gets through). If the check can't run, saving
+  // isn't held up over it.
+  const [inland, setInland] = useState(null);
+  useEffect(() => {
+    if (!point) return undefined;
+    let cancelled = false;
+    checkBeachSpot(point).then(
+      (spot) => !cancelled && setInland(spot.ok ? null : { point, coastKm: spot.coastKm }),
+      () => !cancelled && setInland(null),
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [point]);
+  const inlandHere = inland && inland.point === point ? inland : null;
+
   const nearby = point ? findNearby(beaches, point) : null;
   const notEnglish = hasCjk(name) || hasCjk(notes);
-  const canSave = point && name.trim().length >= 2 && !notEnglish && !saving;
+  const canSave = point && !inlandHere && name.trim().length >= 2 && !notEnglish && !saving;
 
   const submit = async (e) => {
     e.preventDefault();
@@ -55,6 +72,15 @@ export default function AddBeachForm({ point, beaches, onAdded, onOpenBeach, onC
             <p className="report-meta">Click the shoreline on the map where the beach is.</p>
           )}
         </div>
+
+        {inlandHere && (
+          <p className="add-beach-warning" role="alert">
+            {inlandHere.coastKm == null
+              ? "This spot is far from the sea."
+              : `This spot is ${inlandHere.coastKm} km from the sea.`}{" "}
+            Beaches on the map are on the coast, so click the shoreline where the beach is.
+          </p>
+        )}
 
         {nearby && (
           <p className="add-beach-warning">

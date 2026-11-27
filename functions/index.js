@@ -1,4 +1,5 @@
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const { initializeApp } = require("firebase-admin/app");
 const { FieldValue, getFirestore } = require("firebase-admin/firestore");
@@ -7,12 +8,33 @@ initializeApp();
 
 const { GEMINI_API_KEY, makeAi, generateWithFallback, downloadPhoto, inlinePhoto } = require("./gemini");
 const { nearestBeachKm } = require("./beachCheck");
+const { coastKm } = require("./coast");
 
 const CONFIDENCE_THRESHOLD = 0.5;
 // Reports further than this from every beach on the map wait for a person to
 // look at them instead of going live: a pin dropped at home, or a beach that
 // still needs adding. Matches BEACH_RADIUS_KM on the site.
 const BEACH_RADIUS_KM = 3;
+// A beach someone adds must be on the sea. The coastline data is simplified,
+// a kilometre or two off in places, so this leaves room for that.
+const COAST_KM = 3;
+
+const round1 = (km) => Math.round(km * 10) / 10;
+
+// Whether a spot is on a beach: near a listed one (lake beaches included), or
+// near one people added that is itself by the sea.
+async function beachCheck(location) {
+  const km = await nearestBeachKm(getFirestore(), location);
+  if (km.listed <= BEACH_RADIUS_KM) return { onBeach: true, km: km.listed };
+  const coast = coastKm(location);
+  if (km.added <= BEACH_RADIUS_KM && coast <= COAST_KM) return { onBeach: true, km: km.added };
+  return {
+    onBeach: false,
+    reason: km.added <= BEACH_RADIUS_KM ? "inland" : "far_from_beach",
+    km: Math.min(km.listed, km.added),
+    coast,
+  };
+}
 
 const SHARED_RULES =
   "Write items and uncertainItems in English, using short lowercase common names. " +
@@ -112,11 +134,11 @@ exports.analyzeReport = onDocumentCreated(
       const analysis = await analyzePhotos(report.type, photos);
 
       // If the beach list can't be loaded, don't hold the report back over it.
-      const beachKm = await nearestBeachKm(getFirestore(), report.location).catch((err) => {
+      const place = await beachCheck(report.location).catch((err) => {
         logger.warn("Beach check skipped", { reportId, error: err.message });
-        return null;
+        return { onBeach: true };
       });
-      const farFromBeach = beachKm !== null && beachKm > BEACH_RADIUS_KM;
+      const farFromBeach = !place.onBeach;
 
       const publishable =
         analysis.confidence >= CONFIDENCE_THRESHOLD && !IRRELEVANT.has(analysis.category) && !farFromBeach;
@@ -124,14 +146,44 @@ exports.analyzeReport = onDocumentCreated(
       await snap.ref.update({
         aiAnalysis: { ...analysis, analyzedAt: FieldValue.serverTimestamp() },
         status: publishable ? "published" : "pending_review",
-        ...(farFromBeach && { reviewReason: "far_from_beach", nearestBeachKm: Math.round(beachKm * 10) / 10 }),
+        ...(farFromBeach && { reviewReason: place.reason, nearestBeachKm: round1(place.km) }),
       });
-      logger.info("Report analyzed", { reportId, photoCount: photos.length, ...analysis, beachKm, publishable });
+      logger.info("Report analyzed", { reportId, photoCount: photos.length, ...analysis, place, publishable });
     } catch (err) {
       logger.error("Report analysis failed", { reportId, error: err.message });
       await snap.ref.update({ status: "pending_review", aiError: err.message });
     }
   },
 );
+
+// A beach people add has to be by the sea or next to a listed beach; one
+// that isn't stays in the database but is hidden from the map.
+function beachSpot(location) {
+  return nearestBeachKm(getFirestore(), location).then(({ listed }) => {
+    const coast = coastKm(location);
+    return { ok: coast <= COAST_KM || listed <= BEACH_RADIUS_KM, coastKm: coast };
+  });
+}
+
+exports.screenBeach = onDocumentCreated({ document: "beaches/{beachId}", region: "us-central1" }, async (event) => {
+  const snap = event.data;
+  const location = snap?.get("location");
+  if (!location) return;
+  const spot = await beachSpot(location);
+  if (spot.ok) return;
+  await snap.ref.update({ hidden: true, reviewReason: "inland", coastKm: Number.isFinite(spot.coastKm) ? round1(spot.coastKm) : null });
+  logger.info("Added beach hidden as inland", { beachId: event.params.beachId, coastKm: spot.coastKm });
+});
+
+// The add-a-beach form asks first, so it can explain instead of saving a beach
+// that would only be hidden.
+exports.checkBeachSpot = onCall({ region: "us-central1" }, async (request) => {
+  const { lat, lng } = request.data ?? {};
+  if (typeof lat !== "number" || typeof lng !== "number" || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+    throw new HttpsError("invalid-argument", "lat and lng must be numbers");
+  }
+  const spot = await beachSpot({ lat, lng });
+  return { ok: spot.ok, coastKm: Number.isFinite(spot.coastKm) ? round1(spot.coastKm) : null };
+});
 
 exports.planCleanup = require("./planCleanup").planCleanup;
