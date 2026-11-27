@@ -76,8 +76,8 @@ export default function AddBeachForm({ point, beaches, onAdded, onOpenBeach, onC
         {inlandHere && (
           <p className="add-beach-warning" role="alert">
             {inlandHere.coastKm == null
-              ? "This spot is far from the sea."
-              : `This spot is ${inlandHere.coastKm} km from the sea.`}{" "}
+              ? "This spot is far from any coastline."
+              : `This spot is ${inlandHere.coastKm} km from the coastline.`}{" "}
             Beaches on the map are on the coast, so click the shoreline where the beach is.
           </p>
         )}
