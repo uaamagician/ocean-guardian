@@ -5,7 +5,6 @@ import { Camera, Images } from "lucide-react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import { MAX_PHOTOS, fromReportDoc, getPosition, resizePhoto, submitReport } from "../lib/reports";
-import { TYPES } from "../lib/labels";
 import ReportDetail from "../components/ReportDetail";
 import LocationPicker from "../components/LocationPicker";
 import { readPhotoExif } from "../lib/photoExif";
@@ -145,7 +144,6 @@ function Submitted({ reportId, onAgain }) {
 }
 
 export default function ReportPage() {
-  const [type, setType] = useState("trash");
   const [photos, setPhotos] = useState([]);
   const [photoBusy, setPhotoBusy] = useState(false);
   const [photoError, setPhotoError] = useState("");
@@ -247,7 +245,7 @@ export default function ReportPage() {
     setSubmitting({ done: 0, total: photos.length });
     try {
       const id = await submitReport({
-        type,
+        type: "trash",
         photos: photos.map((p) => p.blob),
         location: spot,
         takenAt,
@@ -286,22 +284,6 @@ export default function ReportPage() {
         <h1>Report a beach</h1>
         <p className="page-intro">Photograph the beach, then check where it goes on the map. AI checks it for debris and adds it to the map everyone can see.</p>
       </div>
-
-      <fieldset className="type-toggle">
-        <legend className="visually-hidden">What are you reporting?</legend>
-        {Object.entries(TYPES).map(([value, label]) => (
-          <label key={value}>
-            <input
-              type="radio"
-              name="type"
-              value={value}
-              checked={type === value}
-              onChange={() => setType(value)}
-            />
-            <span>{label}</span>
-          </label>
-        ))}
-      </fieldset>
 
       <PhotoPicker
         photos={photos}

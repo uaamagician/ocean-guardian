@@ -41,7 +41,7 @@ service cloud.firestore {
       allow create: if request.auth != null
         && request.resource.data.keys().hasOnly(["type", "photos", "location", "takenAt", "reporterId", "createdAt", "status"])
         && request.resource.data.keys().hasAll(["type", "photos", "location", "reporterId", "createdAt", "status"])
-        && request.resource.data.type in ["trash", "coral"]
+        && request.resource.data.type == "trash"
         && request.resource.data.reporterId == request.auth.uid
         && request.resource.data.status == "processing"
         && request.resource.data.createdAt == request.time

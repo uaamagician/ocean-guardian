@@ -5,11 +5,6 @@ export const CATEGORIES = {
   moderate: { label: "Moderate debris", tone: "moderate" },
   heavy: { label: "Heavy debris", tone: "heavy" },
   not_beach: { label: "Not a beach photo", tone: "none" },
-  healthy: { label: "Healthy coral", tone: "clean" },
-  partially_bleached: { label: "Partly bleached", tone: "light" },
-  severely_bleached: { label: "Severely bleached", tone: "moderate" },
-  dead: { label: "Dead coral", tone: "heavy" },
-  not_coral: { label: "Not a coral photo", tone: "none" },
 };
 
 export const STATUS = {
@@ -20,7 +15,6 @@ export const STATUS = {
 
 export const TYPES = {
   trash: "Beach debris",
-  coral: "Coral",
 };
 
 export const TONE_COLORS = {

@@ -59,18 +59,9 @@ const PROMPTS = {
       "Natural material is NOT debris: never list vegetation, seaweed, driftwood, shells, rocks or footprints. " +
       SHARED_RULES,
   },
-  coral: {
-    categories: ["healthy", "partially_bleached", "severely_bleached", "dead", "not_coral"],
-    instruction:
-      "You are analyzing citizen-submitted underwater photos of coral for a reef health map. " +
-      "Rate the coral condition as one of: healthy, partially_bleached, severely_bleached, dead. " +
-      "If the photos do not show coral, use not_coral. " +
-      "In items, list what you observe about the reef (e.g. branching coral, bleached patches, algae cover, broken branches). " +
-      SHARED_RULES,
-  },
 };
 
-const IRRELEVANT = new Set(["not_beach", "not_coral"]);
+const IRRELEVANT = new Set(["not_beach"]);
 
 async function analyzePhotos(type, photos) {
   const { categories, instruction } = PROMPTS[type];
